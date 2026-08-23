@@ -7,7 +7,7 @@ Breakdown task untuk development. Diurutkan berdasarkan dependency — kerjakan 
 ## Phase 1: Project Setup & Foundation
 
 - [x] **T-001** — Init Next.js project (App Router, TypeScript, Tailwind CSS)
-- [ ] **T-002** — Setup Supabase project (create project, get credentials)
+- [x] **T-002** — Setup Supabase project (create project, get credentials)
 - [x] **T-003** — Setup environment variables (`.env.local`)
 - [x] **T-004** — Install dependencies: `@supabase/supabase-js`, `@supabase/ssr`, `xlsx`
 - [x] **T-005** — Setup Supabase clients (`lib/supabase/client.ts`, `lib/supabase/server.ts`)
@@ -20,17 +20,17 @@ Breakdown task untuk development. Diurutkan berdasarkan dependency — kerjakan 
 
 ## Phase 2: Database & Auth
 
-- [ ] **T-010** — Create SQL migration: `profiles` table + trigger on `auth.users` insert
-- [ ] **T-011** — Create SQL migration: `tahun_ajaran`, `semester` tables
-- [ ] **T-012** — Create SQL migration: `kelas`, `mapel` tables
-- [ ] **T-013** — Create SQL migration: `guru_kelas`, `guru_mapel` tables
-- [ ] **T-014** — Create SQL migration: `siswa` table (with soft delete)
-- [ ] **T-015** — Create SQL migration: `kehadiran` table
-- [ ] **T-016** — Create SQL migration: `komponen_nilai`, `nilai`, `nilai_akhir` tables
-- [ ] **T-017** — Setup Row Level Security (RLS) policies untuk semua tabel
-- [ ] **T-018** — Build login page (`/login`)
-- [ ] **T-019** — Implement auth redirect logic (post-login → role-based redirect)
-- [ ] **T-020** — Build `useAuth` and `useRole` hooks
+- [x] **T-010** — Create SQL migration: `profiles` table + trigger on `auth.users` insert
+- [x] **T-011** — Create SQL migration: `tahun_ajaran`, `semester` tables
+- [x] **T-012** — Create SQL migration: `kelas`, `mapel` tables
+- [x] **T-013** — Create SQL migration: `guru_kelas`, `guru_mapel` tables
+- [x] **T-014** — Create SQL migration: `siswa` table (with soft delete)
+- [x] **T-015** — Create SQL migration: `kehadiran` table
+- [x] **T-016** — Create SQL migration: `komponen_nilai`, `nilai`, `nilai_akhir` tables
+- [x] **T-017** — Setup Row Level Security (RLS) policies untuk semua tabel
+- [x] **T-018** — Build login page (`/login`)
+- [x] **T-019** — Implement auth redirect logic (post-login → role-based redirect)
+- [x] **T-020** — Build `useAuth` and `useRole` hooks
 
 ---
 
@@ -155,15 +155,15 @@ Phase 1 (Setup)
 
 ## Estimasi Waktu
 
-| Phase | Estimasi |
-|-------|----------|
-| 1. Setup | 1 hari |
-| 2. DB & Auth | 1 hari |
-| 3. Admin Master Data | 2 hari |
-| 4. Kelola Siswa | 1 hari |
-| 5. Kehadiran | 2-3 hari |
-| 6. Nilai | 2-3 hari |
-| 7. Dashboard | 0.5 hari |
-| 8. Admin View All | 1 hari |
-| 9. Polish & Deploy | 1-2 hari |
-| **Total** | **~12-15 hari** |
+| Phase                | Estimasi        |
+| -------------------- | --------------- |
+| 1. Setup             | 1 hari          |
+| 2. DB & Auth         | 1 hari          |
+| 3. Admin Master Data | 2 hari          |
+| 4. Kelola Siswa      | 1 hari          |
+| 5. Kehadiran         | 2-3 hari        |
+| 6. Nilai             | 2-3 hari        |
+| 7. Dashboard         | 0.5 hari        |
+| 8. Admin View All    | 1 hari          |
+| 9. Polish & Deploy   | 1-2 hari        |
+| **Total**            | **~12-15 hari** |

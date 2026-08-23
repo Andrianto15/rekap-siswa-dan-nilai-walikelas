@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
 import type { Profile } from '@/lib/types';
@@ -9,57 +9,78 @@ export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
+
+  const fetchProfile = useCallback(async (currentUser: User) => {
+    try {
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', currentUser.id)
+        .single();
+
+      if (profileData) {
+        setProfile(profileData);
+      } else {
+        setProfile({
+          id: currentUser.id,
+          full_name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Pengguna',
+          role: currentUser.user_metadata?.role || 'guru',
+        });
+      }
+    } catch {
+      setProfile({
+        id: currentUser.id,
+        full_name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Pengguna',
+        role: currentUser.user_metadata?.role || 'guru',
+      });
+    }
+  }, [supabase]);
 
   useEffect(() => {
-    async function getUserData() {
+    let isMounted = true;
+
+    async function initAuth() {
       try {
         const {
-          data: { user },
+          data: { user: initialUser },
         } = await supabase.auth.getUser();
 
-        setUser(user);
+        if (!isMounted) return;
 
-        if (user) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', user.id)
-            .single();
-
-          if (profile) {
-            setProfile(profile);
-          } else {
-            // Fallback profile if record not yet populated
-            setProfile({
-              id: user.id,
-              full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Pengguna',
-              role: user.user_metadata?.role || 'guru',
-            });
-          }
+        setUser(initialUser);
+        if (initialUser) {
+          await fetchProfile(initialUser);
         }
       } catch (err) {
-        console.error('Error fetching user auth:', err);
+        console.error('Auth initialization error:', err);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     }
 
-    getUserData();
+    initAuth();
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      if (!session?.user) {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (!isMounted) return;
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) {
+        await fetchProfile(currentUser);
+      } else {
         setProfile(null);
       }
     });
 
     return () => {
+      isMounted = false;
       subscription.unsubscribe();
     };
-  }, [supabase]);
+  }, [supabase, fetchProfile]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
