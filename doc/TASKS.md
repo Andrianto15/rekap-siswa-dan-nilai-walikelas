@@ -129,11 +129,11 @@ Breakdown task untuk development. Diurutkan berdasarkan dependency — kerjakan 
 
 ## Phase 9: Polish & Deploy
 
-- [ ] **T-045** — Responsive testing & fix (360px, 768px, 1024px+)
-- [ ] **T-046** — Loading states, empty states, error handling
-- [ ] **T-047** — Seed data untuk testing (admin user, sample data)
-- [ ] **T-048** — Deploy ke Vercel + setup env variables
-- [ ] **T-049** — Final testing di production
+- [x] **T-045** — Responsive testing & fix (360px, 768px, 1024px+)
+- [x] **T-046** — Loading states, empty states, error handling
+- [x] **T-047** — Seed data untuk testing (admin user, sample data)
+- [x] **T-048** — Deploy ke Vercel + setup env variables
+- [x] **T-049** — Final testing di production
 
 ---
 
