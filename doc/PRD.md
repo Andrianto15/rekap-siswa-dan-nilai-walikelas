@@ -122,6 +122,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 | **Performance** | First load < 3s di 3G |
 | **Auth** | Row Level Security (RLS) di Supabase |
 | **Data Safety & Soft Delete** | Universal soft delete (`deleted_at timestamptz null`) pada seluruh tabel database (`profiles`, `tahun_ajaran`, `semester`, `kelas`, `mapel`, `guru_kelas`, `guru_mapel`, `siswa`, `kehadiran`, `komponen_nilai`, `nilai`, `nilai_akhir`). Seluruh query select memfilter `deleted_at is null`, dan operasi delete melakukan update timestamp. Partial unique index digunakan untuk record aktif. |
+| **Audit Timestamps** | Universal audit columns (`created_at timestamptz default now()` & `updated_at timestamptz default now()`) pada seluruh 12 tabel database. `created_at` diisi sekali saat insert, dan `updated_at` diperbarui otomatis oleh trigger PostgreSQL (`handle_updated_at()`) dan layer aplikasi pada setiap update/mutasi. |
 | **Browser** | Chrome, Safari, Firefox (latest 2 versions) |
 
 ---
@@ -146,6 +147,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - `tests/lib/utils.test.ts`: Utility formatting (`formatDate`, `formatShortDate`, `formatNumber`) & `cn`.
   - `tests/lib/excel.test.ts`: Template download, Excel export, and Excel file parser (`parseExcelFile`).
   - `tests/lib/soft-delete.test.ts`: Soft delete integrity verification, active records filtering logic & model structure.
+  - `tests/lib/timestamps.test.ts`: Timestamp mutation tracking, `created_at` immutability & `updated_at` trigger logic.
   - `tests/hooks/useRole.test.ts` & `tests/hooks/useAuth.test.ts`: Role resolution, session state management & sign out.
   - `tests/lib/supabase/supabase.test.ts`: Browser and server Supabase client instantiation.
   - `tests/lib/supabase/middleware.test.ts`: Authentication guarding, admin role authorization, and route redirection.

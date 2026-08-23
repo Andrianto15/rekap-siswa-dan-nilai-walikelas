@@ -151,6 +151,7 @@ export default function MappingAdminPage() {
           kelas_id: selectedKelasId,
           semester_id: selectedSemesterId,
           deleted_at: null,
+          updated_at: new Date().toISOString(),
         },
         { onConflict: 'guru_id,semester_id' }
       );
@@ -178,7 +179,10 @@ export default function MappingAdminPage() {
     try {
       const { error } = await supabase
         .from('guru_kelas')
-        .update({ deleted_at: new Date().toISOString() })
+        .update({
+          deleted_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
         .eq('id', id);
       if (error) throw error;
       toastSuccess('Berhasil', 'Penugasan wali kelas dihapus');
@@ -201,6 +205,7 @@ export default function MappingAdminPage() {
           mapel_id: selectedMapelId,
           semester_id: selectedSemesterId,
           deleted_at: null,
+          updated_at: new Date().toISOString(),
         },
         { onConflict: 'guru_id,mapel_id,semester_id' }
       );
@@ -228,7 +233,10 @@ export default function MappingAdminPage() {
     try {
       const { error } = await supabase
         .from('guru_mapel')
-        .update({ deleted_at: new Date().toISOString() })
+        .update({
+          deleted_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
         .eq('id', id);
       if (error) throw error;
       toastSuccess('Berhasil', 'Penugasan guru mapel dihapus');

@@ -403,6 +403,7 @@ export default function InputNilaiPage() {
           .update({
             nama: compName.trim(),
             urutan: compOrder,
+            updated_at: new Date().toISOString(),
           })
           .eq('id', editingComp.id);
 
@@ -450,7 +451,10 @@ export default function InputNilaiPage() {
     try {
       const { error } = await supabase
         .from('komponen_nilai')
-        .update({ deleted_at: new Date().toISOString() })
+        .update({
+          deleted_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
         .eq('id', id);
       if (error) throw error;
       toastSuccess('Berhasil', `Komponen ${name} dihapus.`);

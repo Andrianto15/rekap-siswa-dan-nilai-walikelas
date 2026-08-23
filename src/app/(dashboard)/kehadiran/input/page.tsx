@@ -223,7 +223,10 @@ export default function InputKehadiranPage() {
       // 1. Soft delete existing records for this day and these students
       await supabase
         .from('kehadiran')
-        .update({ deleted_at: new Date().toISOString() })
+        .update({
+          deleted_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
         .eq('tanggal', selectedDate)
         .in('siswa_id', siswaIds)
         .is('deleted_at', null);
@@ -287,7 +290,10 @@ export default function InputKehadiranPage() {
       // 1. Soft delete all records for this month and students
       await supabase
         .from('kehadiran')
-        .update({ deleted_at: new Date().toISOString() })
+        .update({
+          deleted_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
         .gte('tanggal', startDate)
         .lte('tanggal', endDate)
         .in('siswa_id', siswaIds)

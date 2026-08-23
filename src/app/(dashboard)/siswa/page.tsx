@@ -187,6 +187,7 @@ export default function SiswaPage() {
           .update({
             nis: nis.trim(),
             nama: nama.trim(),
+            updated_at: new Date().toISOString(),
           })
           .eq('id', editingSiswa.id);
 
@@ -226,7 +227,10 @@ export default function SiswaPage() {
     try {
       const { error } = await supabase
         .from('siswa')
-        .update({ deleted_at: new Date().toISOString() })
+        .update({
+          deleted_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
         .eq('id', id);
 
       if (error) throw error;
@@ -293,6 +297,7 @@ export default function SiswaPage() {
         nama: r.nama,
         kelas_id: selectedKelasId,
         semester_id: activeSemester.id,
+        updated_at: new Date().toISOString(),
       }));
 
       const { error } = await supabase

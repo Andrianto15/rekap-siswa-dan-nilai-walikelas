@@ -48,6 +48,7 @@ create table if not exists public.tahun_ajaran (
   nama text not null,
   is_active boolean not null default false,
   created_at timestamptz default now(),
+  updated_at timestamptz default now(),
   deleted_at timestamptz null
 );
 create unique index if not exists uq_tahun_ajaran_nama on public.tahun_ajaran (nama) where deleted_at is null;
@@ -58,6 +59,7 @@ create table if not exists public.semester (
   tipe text not null check (tipe in ('ganjil', 'genap')),
   is_active boolean not null default false,
   created_at timestamptz default now(),
+  updated_at timestamptz default now(),
   deleted_at timestamptz null
 );
 create unique index if not exists uq_semester_tahun_tipe on public.semester (tahun_ajaran_id, tipe) where deleted_at is null;
@@ -69,6 +71,7 @@ create table if not exists public.kelas (
   id uuid primary key default gen_random_uuid(),
   nama text not null,
   created_at timestamptz default now(),
+  updated_at timestamptz default now(),
   deleted_at timestamptz null
 );
 create unique index if not exists uq_kelas_nama on public.kelas (nama) where deleted_at is null;
@@ -77,6 +80,7 @@ create table if not exists public.mapel (
   id uuid primary key default gen_random_uuid(),
   nama text not null,
   created_at timestamptz default now(),
+  updated_at timestamptz default now(),
   deleted_at timestamptz null
 );
 create unique index if not exists uq_mapel_nama on public.mapel (nama) where deleted_at is null;
@@ -90,6 +94,7 @@ create table if not exists public.guru_kelas (
   kelas_id uuid not null references public.kelas(id) on delete cascade,
   semester_id uuid not null references public.semester(id) on delete cascade,
   created_at timestamptz default now(),
+  updated_at timestamptz default now(),
   deleted_at timestamptz null
 );
 create unique index if not exists uq_guru_kelas on public.guru_kelas (guru_id, semester_id) where deleted_at is null;
@@ -100,6 +105,7 @@ create table if not exists public.guru_mapel (
   mapel_id uuid not null references public.mapel(id) on delete cascade,
   semester_id uuid not null references public.semester(id) on delete cascade,
   created_at timestamptz default now(),
+  updated_at timestamptz default now(),
   deleted_at timestamptz null
 );
 create unique index if not exists uq_guru_mapel on public.guru_mapel (guru_id, mapel_id, semester_id) where deleted_at is null;
@@ -114,6 +120,7 @@ create table if not exists public.siswa (
   kelas_id uuid not null references public.kelas(id) on delete cascade,
   semester_id uuid not null references public.semester(id) on delete cascade,
   created_at timestamptz default now(),
+  updated_at timestamptz default now(),
   deleted_at timestamptz null
 );
 create unique index if not exists uq_siswa_nis_semester on public.siswa (nis, semester_id) where deleted_at is null;
@@ -144,6 +151,7 @@ create table if not exists public.komponen_nilai (
   nama text not null,
   urutan int not null default 1 check (urutan between 1 and 5),
   created_at timestamptz default now(),
+  updated_at timestamptz default now(),
   deleted_at timestamptz null
 );
 create unique index if not exists uq_komponen_nilai_urutan on public.komponen_nilai (mapel_id, guru_id, semester_id, urutan) where deleted_at is null;
@@ -173,6 +181,52 @@ create table if not exists public.nilai_akhir (
   deleted_at timestamptz null
 );
 create unique index if not exists uq_nilai_akhir_siswa_mapel_semester on public.nilai_akhir (siswa_id, mapel_id, semester_id) where deleted_at is null;
+
+-- Automatic updated_at trigger function
+create or replace function public.handle_updated_at()
+returns trigger as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$ language plpgsql;
+
+-- Apply triggers
+drop trigger if exists set_profiles_updated_at on public.profiles;
+create trigger set_profiles_updated_at before update on public.profiles for each row execute function public.handle_updated_at();
+
+drop trigger if exists set_tahun_ajaran_updated_at on public.tahun_ajaran;
+create trigger set_tahun_ajaran_updated_at before update on public.tahun_ajaran for each row execute function public.handle_updated_at();
+
+drop trigger if exists set_semester_updated_at on public.semester;
+create trigger set_semester_updated_at before update on public.semester for each row execute function public.handle_updated_at();
+
+drop trigger if exists set_kelas_updated_at on public.kelas;
+create trigger set_kelas_updated_at before update on public.kelas for each row execute function public.handle_updated_at();
+
+drop trigger if exists set_mapel_updated_at on public.mapel;
+create trigger set_mapel_updated_at before update on public.mapel for each row execute function public.handle_updated_at();
+
+drop trigger if exists set_guru_kelas_updated_at on public.guru_kelas;
+create trigger set_guru_kelas_updated_at before update on public.guru_kelas for each row execute function public.handle_updated_at();
+
+drop trigger if exists set_guru_mapel_updated_at on public.guru_mapel;
+create trigger set_guru_mapel_updated_at before update on public.guru_mapel for each row execute function public.handle_updated_at();
+
+drop trigger if exists set_siswa_updated_at on public.siswa;
+create trigger set_siswa_updated_at before update on public.siswa for each row execute function public.handle_updated_at();
+
+drop trigger if exists set_kehadiran_updated_at on public.kehadiran;
+create trigger set_kehadiran_updated_at before update on public.kehadiran for each row execute function public.handle_updated_at();
+
+drop trigger if exists set_komponen_nilai_updated_at on public.komponen_nilai;
+create trigger set_komponen_nilai_updated_at before update on public.komponen_nilai for each row execute function public.handle_updated_at();
+
+drop trigger if exists set_nilai_updated_at on public.nilai;
+create trigger set_nilai_updated_at before update on public.nilai for each row execute function public.handle_updated_at();
+
+drop trigger if exists set_nilai_akhir_updated_at on public.nilai_akhir;
+create trigger set_nilai_akhir_updated_at before update on public.nilai_akhir for each row execute function public.handle_updated_at();
 
 -- ------------------------------------------------------------------------------
 -- 8. Row Level Security (RLS) Policies

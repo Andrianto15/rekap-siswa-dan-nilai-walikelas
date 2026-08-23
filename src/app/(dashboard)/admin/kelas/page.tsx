@@ -89,7 +89,10 @@ export default function KelasAdminPage() {
       if (editingKelas) {
         const { error } = await supabase
           .from('kelas')
-          .update({ nama: namaKelas.trim() })
+          .update({
+            nama: namaKelas.trim(),
+            updated_at: new Date().toISOString(),
+          })
           .eq('id', editingKelas.id);
         if (error) throw error;
         toastSuccess('Berhasil', 'Data kelas berhasil diperbarui');
@@ -122,7 +125,10 @@ export default function KelasAdminPage() {
     try {
       const { error } = await supabase
         .from('kelas')
-        .update({ deleted_at: new Date().toISOString() })
+        .update({
+          deleted_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
         .eq('id', id);
       if (error) throw error;
       toastSuccess('Berhasil', `Kelas ${nama} berhasil dihapus`);

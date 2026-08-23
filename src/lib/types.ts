@@ -18,6 +18,7 @@ export interface TahunAjaran {
   nama: string;
   is_active: boolean;
   created_at?: string;
+  updated_at?: string;
   deleted_at?: string | null;
 }
 
@@ -27,6 +28,7 @@ export interface Semester {
   tipe: SemesterTipe;
   is_active: boolean;
   created_at?: string;
+  updated_at?: string;
   deleted_at?: string | null;
   tahun_ajaran?: TahunAjaran;
 }
@@ -35,6 +37,7 @@ export interface Kelas {
   id: string;
   nama: string;
   created_at?: string;
+  updated_at?: string;
   deleted_at?: string | null;
 }
 
@@ -42,6 +45,7 @@ export interface Mapel {
   id: string;
   nama: string;
   created_at?: string;
+  updated_at?: string;
   deleted_at?: string | null;
 }
 
@@ -51,6 +55,7 @@ export interface GuruKelas {
   kelas_id: string;
   semester_id: string;
   created_at?: string;
+  updated_at?: string;
   deleted_at?: string | null;
   guru?: Profile;
   kelas?: Kelas;
@@ -63,6 +68,7 @@ export interface GuruMapel {
   mapel_id: string;
   semester_id: string;
   created_at?: string;
+  updated_at?: string;
   deleted_at?: string | null;
   guru?: Profile;
   mapel?: Mapel;
@@ -76,6 +82,7 @@ export interface Siswa {
   kelas_id: string;
   semester_id: string;
   created_at?: string;
+  updated_at?: string;
   deleted_at?: string | null;
   kelas?: Kelas;
 }
@@ -100,6 +107,7 @@ export interface KomponenNilai {
   nama: string;
   urutan: number;
   created_at?: string;
+  updated_at?: string;
   deleted_at?: string | null;
 }
 

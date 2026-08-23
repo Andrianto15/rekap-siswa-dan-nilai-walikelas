@@ -67,7 +67,10 @@ export default function MapelAdminPage() {
       if (editingMapel) {
         const { error } = await supabase
           .from('mapel')
-          .update({ nama: namaMapel.trim() })
+          .update({
+            nama: namaMapel.trim(),
+            updated_at: new Date().toISOString(),
+          })
           .eq('id', editingMapel.id);
         if (error) throw error;
         toastSuccess('Berhasil', 'Mata pelajaran berhasil diperbarui');
@@ -100,7 +103,10 @@ export default function MapelAdminPage() {
     try {
       const { error } = await supabase
         .from('mapel')
-        .update({ deleted_at: new Date().toISOString() })
+        .update({
+          deleted_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
         .eq('id', id);
       if (error) throw error;
       toastSuccess('Berhasil', `Mata pelajaran ${nama} berhasil dihapus`);

@@ -97,13 +97,23 @@ export default function PeriodeAdminPage() {
     try {
       if (isTahunActive) {
         // Deactivate other tahun ajaran
-        await supabase.from('tahun_ajaran').update({ is_active: false }).neq('id', editingTahun?.id || '00000000-0000-0000-0000-000000000000');
+        await supabase
+          .from('tahun_ajaran')
+          .update({
+            is_active: false,
+            updated_at: new Date().toISOString(),
+          })
+          .neq('id', editingTahun?.id || '00000000-0000-0000-0000-000000000000');
       }
 
       if (editingTahun) {
         const { error } = await supabase
           .from('tahun_ajaran')
-          .update({ nama: namaTahun, is_active: isTahunActive })
+          .update({
+            nama: namaTahun,
+            is_active: isTahunActive,
+            updated_at: new Date().toISOString(),
+          })
           .eq('id', editingTahun.id);
         if (error) throw error;
         toastSuccess('Berhasil', 'Tahun ajaran berhasil diperbarui');
@@ -127,8 +137,20 @@ export default function PeriodeAdminPage() {
   // Set active Tahun Ajaran
   const handleSetActiveTahun = async (tahunId: string) => {
     try {
-      await supabase.from('tahun_ajaran').update({ is_active: false }).neq('id', tahunId);
-      const { error } = await supabase.from('tahun_ajaran').update({ is_active: true }).eq('id', tahunId);
+      await supabase
+        .from('tahun_ajaran')
+        .update({
+          is_active: false,
+          updated_at: new Date().toISOString(),
+        })
+        .neq('id', tahunId);
+      const { error } = await supabase
+        .from('tahun_ajaran')
+        .update({
+          is_active: true,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', tahunId);
       if (error) throw error;
       toastSuccess('Status Diperbarui', 'Tahun ajaran aktif diubah');
       fetchPeriodes();
@@ -149,7 +171,10 @@ export default function PeriodeAdminPage() {
     try {
       const { error } = await supabase
         .from('tahun_ajaran')
-        .update({ deleted_at: new Date().toISOString() })
+        .update({
+          deleted_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
         .eq('id', tahunId);
       if (error) throw error;
       toastSuccess('Berhasil', 'Tahun ajaran berhasil dihapus');
@@ -175,7 +200,13 @@ export default function PeriodeAdminPage() {
     try {
       if (isSemesterActive) {
         // Deactivate all semesters
-        await supabase.from('semester').update({ is_active: false }).neq('id', '00000000-0000-0000-0000-000000000000');
+        await supabase
+          .from('semester')
+          .update({
+            is_active: false,
+            updated_at: new Date().toISOString(),
+          })
+          .neq('id', '00000000-0000-0000-0000-000000000000');
       }
 
       const { error } = await supabase.from('semester').insert({
@@ -199,8 +230,20 @@ export default function PeriodeAdminPage() {
   // Set active Semester
   const handleSetActiveSemester = async (semesterId: string) => {
     try {
-      await supabase.from('semester').update({ is_active: false }).neq('id', semesterId);
-      const { error } = await supabase.from('semester').update({ is_active: true }).eq('id', semesterId);
+      await supabase
+        .from('semester')
+        .update({
+          is_active: false,
+          updated_at: new Date().toISOString(),
+        })
+        .neq('id', semesterId);
+      const { error } = await supabase
+        .from('semester')
+        .update({
+          is_active: true,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', semesterId);
       if (error) throw error;
       toastSuccess('Status Diperbarui', 'Semester aktif berhasil diubah');
       fetchPeriodes();
@@ -221,7 +264,10 @@ export default function PeriodeAdminPage() {
     try {
       const { error } = await supabase
         .from('semester')
-        .update({ deleted_at: new Date().toISOString() })
+        .update({
+          deleted_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
         .eq('id', semesterId);
       if (error) throw error;
       toastSuccess('Berhasil', 'Semester berhasil dihapus');

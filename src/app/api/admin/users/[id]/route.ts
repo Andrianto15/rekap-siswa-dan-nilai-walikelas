@@ -114,7 +114,10 @@ export async function DELETE(
     // Soft delete profile
     const { error: deleteError } = await supabaseAdmin
       .from('profiles')
-      .update({ deleted_at: new Date().toISOString() })
+      .update({
+        deleted_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
       .eq('id', id);
 
     if (deleteError) {

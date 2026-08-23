@@ -55,5 +55,20 @@
   - Memperbarui test suites `tests/api/admin-users.test.ts`, `tests/api/admin-users-id.test.ts`, `tests/hooks/useAuth.test.ts`, dan `tests/lib/supabase/middleware.test.ts` untuk mendukung chaining `.is('deleted_at', null)`.
   - Memastikan seluruh unit test lulus 100% (63 passing tests).
 
+### Implementasi Universal updated_at & Trigger Mutasi
+- **Database Schema & Migrations**:
+  - Menambahkan kolom `updated_at timestamptz default now()` ke 8 tabel yang belum memiliki kolom tersebut (`tahun_ajaran`, `semester`, `kelas`, `mapel`, `guru_kelas`, `guru_mapel`, `siswa`, `komponen_nilai`).
+  - Menambahkan fungsi trigger PostgreSQL `public.handle_updated_at()` yang otomatis memperbarui nilai `new.updated_at = now()`.
+  - Memasang trigger `BEFORE UPDATE` pada seluruh 12 tabel database.
+  - Menambahkan file migration `supabase/migrations/20260823000003_add_updated_at_to_all_tables.sql` dan menyinkronkan `supabase/schema.sql`.
+- **TypeScript Types**:
+  - Menambahkan properti `updated_at?: string;` ke seluruh entity model interfaces di `src/lib/types.ts`.
+- **Application & API Update Handlers**:
+  - Memastikan seluruh operasi `.update()`, `.upsert()`, dan soft-delete secara konsisten menyertakan `updated_at: new Date().toISOString()`.
+  - Memastikan nilai `created_at` bersifat immutable dan hanya diisi satu kali ketika initial create.
+- **Unit Testing**:
+  - Menambahkan test suite baru `tests/lib/timestamps.test.ts` untuk memverifikasi immutability `created_at`, pembaruan nilai `updated_at` pada saat mutasi/soft-delete, serta kelengkapan timestamp pada seluruh model.
+  - Memastikan seluruh 11 test suites lulus 100% (66 tests passed).
+
 ### Pembaruan Dokumentasi
-- Memperbarui `doc/PRD.md` dengan section Non-Functional Requirements & Data Safety untuk dokumentasi soft delete dan cakupan unit testing `tests/lib/soft-delete.test.ts`.
+- Memperbarui `doc/PRD.md` dengan section Audit Timestamps dan penambahan cakupan test suite `tests/lib/timestamps.test.ts`.
