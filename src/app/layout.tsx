@@ -13,7 +13,9 @@ export const metadata: Metadata = {
   title: 'Rekap Siswa & Nilai Wali Kelas',
   description: 'Sistem Informasi Rekap Kehadiran dan Penilaian Siswa untuk Wali Kelas dan Guru Mata Pelajaran',
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
   },
 };
 
