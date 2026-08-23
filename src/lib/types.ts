@@ -75,10 +75,14 @@ export interface GuruMapel {
   semester?: Semester;
 }
 
+export type JenisKelamin = 'L' | 'P';
+
 export interface Siswa {
   id: string;
   nama: string;
   nis: string;
+  nisn?: string | null;
+  jenis_kelamin?: JenisKelamin | null;
   kelas_id: string;
   semester_id: string;
   created_at?: string;

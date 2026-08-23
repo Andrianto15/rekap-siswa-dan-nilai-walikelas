@@ -316,10 +316,11 @@ export default function AdminViewAllDataPage() {
     const currentTeacher = teachers.find((t) => t.id === selectedTeacherId)?.full_name || 'Guru';
     const currentKelas = teacherWaliKelas?.nama || 'Kelas';
 
-    const headers = ['No', 'NIS', 'Nama Siswa', 'Sakit', 'Izin', 'Alpa', 'Total Absen'];
+    const headers = ['No', 'NIS', 'NISN', 'Nama Siswa', 'Sakit', 'Izin', 'Alpa', 'Total Absen'];
     const rows = rekapKehadiran.map((item, idx) => [
       idx + 1,
       item.siswa.nis,
+      item.siswa.nisn || '-',
       item.siswa.nama,
       item.sakit,
       item.izin,
@@ -342,10 +343,11 @@ export default function AdminViewAllDataPage() {
     const currentKelas = gradingClasses.find((k) => k.id === selectedGradingKelasId)?.nama || 'Kelas';
 
     const compHeaders = komponenList.map((c) => c.nama);
-    const headers = ['Peringkat', 'NIS', 'Nama Siswa', ...compHeaders, 'Rata-Rata', 'Nilai Akhir'];
+    const headers = ['Peringkat', 'NIS', 'NISN', 'Nama Siswa', ...compHeaders, 'Rata-Rata', 'Nilai Akhir'];
     const rows = rekapNilai.map((item) => [
       item.ranking || '-',
       item.siswa.nis,
+      item.siswa.nisn || '-',
       item.siswa.nama,
       ...komponenList.map((c) => item.nilaiKomponen[c.id] ?? '-'),
       item.rataRata > 0 ? item.rataRata : '-',
@@ -519,7 +521,8 @@ export default function AdminViewAllDataPage() {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-14">No</TableHead>
-                <TableHead className="w-32">NIS</TableHead>
+                <TableHead className="w-28">NIS</TableHead>
+                <TableHead className="w-32">NISN</TableHead>
                 <TableHead>Nama Siswa</TableHead>
                 <TableHead className="text-center w-24">Sakit</TableHead>
                 <TableHead className="text-center w-24">Izin</TableHead>
@@ -529,16 +532,17 @@ export default function AdminViewAllDataPage() {
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableEmpty colSpan={7} message="Memuat presensi..." />
+                <TableEmpty colSpan={8} message="Memuat presensi..." />
               ) : !teacherWaliKelas ? (
-                <TableEmpty colSpan={7} message="Guru ini tidak ditugaskan sebagai wali kelas di semester aktif." />
+                <TableEmpty colSpan={8} message="Guru ini tidak ditugaskan sebagai wali kelas di semester aktif." />
               ) : rekapKehadiran.length === 0 ? (
-                <TableEmpty colSpan={7} message="Belum ada siswa di kelas ini." />
+                <TableEmpty colSpan={8} message="Belum ada siswa di kelas ini." />
               ) : (
                 rekapKehadiran.map((item, idx) => (
                   <TableRow key={item.siswa.id}>
                     <TableCell className="font-semibold text-slate-400">{idx + 1}</TableCell>
                     <TableCell className="font-mono text-xs font-semibold text-slate-700">{item.siswa.nis}</TableCell>
+                    <TableCell className="font-mono text-xs text-slate-600">{item.siswa.nisn || '-'}</TableCell>
                     <TableCell className="font-semibold text-slate-900">{item.siswa.nama}</TableCell>
                     <TableCell className="text-center">
                       {item.sakit > 0 ? <Badge variant="sakit">{item.sakit}</Badge> : '-'}
@@ -621,6 +625,7 @@ export default function AdminViewAllDataPage() {
               <TableRow>
                 <TableHead className="w-20 text-center">Ranking</TableHead>
                 <TableHead className="w-28">NIS</TableHead>
+                <TableHead className="w-32">NISN</TableHead>
                 <TableHead>Nama Siswa</TableHead>
                 {komponenList.map((comp) => (
                   <TableHead key={comp.id} className="text-center">{comp.nama}</TableHead>
@@ -631,9 +636,9 @@ export default function AdminViewAllDataPage() {
             </TableHeader>
             <TableBody>
               {!selectedMapelId ? (
-                <TableEmpty colSpan={komponenList.length + 5} message="Guru ini tidak memiliki mata pelajaran yang diampu." />
+                <TableEmpty colSpan={komponenList.length + 6} message="Guru ini tidak memiliki mata pelajaran yang diampu." />
               ) : rekapNilai.length === 0 ? (
-                <TableEmpty colSpan={komponenList.length + 5} message="Belum ada data siswa di kelas yang dipilih." />
+                <TableEmpty colSpan={komponenList.length + 6} message="Belum ada data siswa di kelas yang dipilih." />
               ) : (
                 rekapNilai.map((item) => (
                   <TableRow key={item.siswa.id}>
@@ -657,6 +662,7 @@ export default function AdminViewAllDataPage() {
                       )}
                     </TableCell>
                     <TableCell className="font-mono text-xs font-semibold text-slate-700">{item.siswa.nis}</TableCell>
+                    <TableCell className="font-mono text-xs text-slate-600">{item.siswa.nisn || '-'}</TableCell>
                     <TableCell className="font-semibold text-slate-900">{item.siswa.nama}</TableCell>
                     {komponenList.map((comp) => (
                       <TableCell key={comp.id} className="text-center font-medium">

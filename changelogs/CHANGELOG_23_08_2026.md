@@ -96,3 +96,35 @@
   - Seluruh 12 test suites lulus 100% (67 tests passed).
 - **PRD & Dokumentasi**:
   - Menambahkan standar UI/UX form controls untuk dropdown kelas pada `doc/PRD.md`.
+
+---
+
+## Versi 0.3.6
+### Implementasi Kolom NISN & Jenis Kelamin (L/P) pada Data Siswa, View, Import, & Template
+- **Database Schema & Migrations**:
+  - Menambahkan migration `supabase/migrations/20260823000004_add_nisn_to_siswa.sql` (`alter table public.siswa add column if not exists nisn text null;`).
+  - Menambahkan migration `supabase/migrations/20260823000005_add_jenis_kelamin_to_siswa.sql` (`alter table public.siswa add column if not exists jenis_kelamin text null check (jenis_kelamin in ('L', 'P'));`).
+  - Memperbarui schema master di `supabase/schema.sql`.
+- **TypeScript Model**:
+  - Menambahkan tipe `JenisKelamin = 'L' | 'P'` dan properti opsional `nisn?: string | null;` serta `jenis_kelamin?: JenisKelamin | null;` pada interface `Siswa` di `src/lib/types.ts`.
+- **Modul Kelola Siswa (`src/app/(dashboard)/siswa/page.tsx`)**:
+  - Menambahkan state dan field input `NISN (Nomor Induk Siswa Nasional)` dan selector `Jenis Kelamin (L / P)` pada modal Tambah / Edit Siswa.
+  - Memperluas filter pencarian agar mencocokkan query terhadap Nama, NIS, dan NISN.
+  - Menambahkan kolom `NISN` dan badge `L/P` pada tabel daftar siswa kelas.
+  - Memperbarui generator template download Excel (`Template_Impor_Siswa.xlsx`) dengan header `['NIS', 'NISN', 'Nama Lengkap', 'L/P']` beserta contoh data.
+  - Memperbarui parser upload file Excel agar membaca kolom `NISN`/`nisn` dan `L/P`/`Jenis Kelamin` (termasuk normalisasi teks L/P/Laki-laki/Perempuan) serta menampilkan pratinjau data sebelum import ke database.
+- **Modul Kehadiran & Presensi**:
+  - `src/app/(dashboard)/kehadiran/page.tsx`: Menambahkan kolom `NISN` pada tabel rekap, modal riwayat ketidakhadiran, dan file export Excel.
+  - `src/app/(dashboard)/kehadiran/input/page.tsx`: Menampilkan identitas NISN pada baris siswa presensi harian dan kolom sticky matriks bulanan.
+- **Modul Nilai & Penilaian**:
+  - `src/app/(dashboard)/nilai/page.tsx`: Menambahkan kolom `NISN` pada tabel rekapitulasi nilai dan file export Excel rekap nilai.
+  - `src/app/(dashboard)/nilai/input/page.tsx`: Menambahkan kolom `NISN` pada tabel input nilai komponen dan nilai akhir.
+- **Modul Admin Data Supervisi**:
+  - `src/app/(dashboard)/admin/data/page.tsx`: Menambahkan kolom `NISN` pada tabel supervisi kehadiran dan nilai, serta menyertakan NISN pada seluruh file export Excel admin.
+- **Unit Testing & QA**:
+  - Menambahkan test suite `tests/lib/siswa.test.ts` untuk memvalidasi struktur data Siswa (NIS, NISN, Jenis Kelamin L/P), template Excel, parser import dengan normalisasi gender, dan fungsi filter pencarian.
+  - Seluruh 13 test suites lulus 100% (76 tests passed).
+- **PRD**:
+  - Menyinkronkan `doc/PRD.md` dengan entitas NIS, NISN, Jenis Kelamin L/P, alur upload/import, serta cakupan QA testing.
+
+

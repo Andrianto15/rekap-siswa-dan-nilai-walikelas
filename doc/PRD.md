@@ -32,7 +32,8 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 
 - Satu guru = **satu kelas** (wali kelas).
 - Siswa terdaftar di satu kelas per tahun ajaran.
-- Input siswa bisa **satu per satu** atau **upload file Excel**.
+- Identitas siswa memuat **NIS** (Nomor Induk Siswa, wajib), **NISN** (Nomor Induk Siswa Nasional, opsional), dan **Jenis Kelamin** (`L`/`P`, opsional).
+- Input siswa bisa **satu per satu** atau **upload file Excel** dengan template kolom `NIS`, `NISN`, `Nama Lengkap`, dan `L/P`.
 
 ### 3.3 Mata Pelajaran
 
@@ -45,6 +46,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 - Status: **Sakit (S)**, **Izin (I)**, **Alfa (A)**.
 - Default = **Hadir** (jika tidak ada input, dianggap hadir).
 - Bisa input per tanggal atau per bulan.
+- View dan export menampilkan identitas lengkap siswa (NIS & NISN).
 
 ### 3.5 Nilai
 
@@ -53,6 +55,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 - Rata-rata dihitung otomatis dari komponen yang terisi.
 - **Nilai akhir** = rata-rata, tapi bisa di-edit manual.
 - Ranking otomatis berdasarkan nilai akhir.
+- View dan export menampilkan identitas lengkap siswa (NIS & NISN).
 
 ---
 
@@ -76,29 +79,29 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 |-------|-----------|
 | Input per tanggal | Pilih tanggal → tampilkan semua siswa → centang S/I/A |
 | Input per bulan | Pilih bulan → grid siswa × tanggal → isi S/I/A |
-| Rekap per bulan | Tabel semua siswa, kolom: S, I, A count per bulan |
-| Rekap keseluruhan | Tabel semua siswa, kolom: total S, I, A semester ini |
-| Rekap per siswa | Detail kehadiran per bulan untuk satu siswa |
-| Download Excel | Export rekap ke file `.xlsx` |
+| Rekap per bulan | Tabel semua siswa, kolom: NIS, NISN, Nama, S, I, A count per bulan |
+| Rekap keseluruhan | Tabel semua siswa, kolom: NIS, NISN, Nama, total S, I, A semester ini |
+| Rekap per siswa | Detail kehadiran per bulan untuk satu siswa (menampilkan NIS & NISN) |
+| Download Excel | Export rekap ke file `.xlsx` lengkap dengan kolom NIS dan NISN |
 
 ### 4.4 Menu Nilai (Guru)
 
 | Fitur | Deskripsi |
 |-------|-----------|
-| Input nilai | Pilih mapel → tabel siswa × komponen nilai → isi nilai |
-| Rekap nilai | Tabel semua siswa + komponen + rata-rata per mapel |
+| Input nilai | Pilih mapel → tabel siswa (NIS, NISN, Nama) × komponen nilai → isi nilai |
+| Rekap nilai | Tabel semua siswa + komponen + rata-rata per mapel + NIS & NISN |
 | Nilai akhir | Tabel nilai akhir (rata-rata) per siswa, editable |
 | Ranking | Urutan siswa 1-N berdasarkan nilai akhir |
-| Download Excel | Export rekap nilai ke file `.xlsx` |
+| Download Excel | Export rekap nilai ke file `.xlsx` lengkap dengan kolom NIS dan NISN |
 
 ### 4.5 Menu Siswa (Guru)
 
 | Fitur | Deskripsi |
 |-------|-----------|
-| Daftar siswa | List siswa di kelas guru |
-| Tambah siswa | Form input satu per satu |
-| Upload Excel | Upload file `.xlsx` untuk bulk import |
-| Edit / Hapus | Edit data atau hapus siswa |
+| Daftar siswa | List siswa di kelas guru dengan kolom NIS, NISN, Nama, dan L/P |
+| Tambah siswa | Form input satu per satu (NIS, NISN opsional, Nama Lengkap, Jenis Kelamin L/P) |
+| Upload Excel | Upload file `.xlsx` untuk bulk import (kolom NIS, NISN, Nama Lengkap, L/P) |
+| Edit / Hapus | Edit data atau hapus siswa (soft delete) |
 
 ### 4.6 Menu Admin
 
@@ -110,7 +113,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 | Mapping guru ↔ mapel | Assign mapel ke guru |
 | Mapping guru ↔ kelas | Assign kelas ke guru (wali kelas) |
 | Tahun ajaran & semester | Kelola periode, set aktif |
-| View semua data | Pilih guru + mapel → lihat/edit kehadiran & nilai |
+| View semua data | Pilih guru + mapel → lihat/edit kehadiran & nilai (lengkap dengan NIS & NISN) |
 
 ---
 
@@ -144,6 +147,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 - **Environment**: Custom JSDOM with Node Web Standard APIs (Fetch, Request, Response, Headers)
 - **Test Directory**: `tests/`
 - **Coverage Suites**:
+  - `tests/lib/siswa.test.ts`: Validasi struktur data Siswa (NIS, NISN, Jenis Kelamin L/P), format template Excel impor, parsing Excel file dengan NISN & L/P, dan algoritma pencarian/filter siswa.
   - `tests/lib/utils.test.ts`: Utility formatting (`formatDate`, `formatShortDate`, `formatNumber`) & `cn`.
   - `tests/lib/excel.test.ts`: Template download, Excel export, and Excel file parser (`parseExcelFile`).
   - `tests/lib/soft-delete.test.ts`: Soft delete integrity verification, active records filtering logic & model structure.
@@ -163,4 +167,9 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 - **Dropdown Pemilihan Kelas**:
   - Seluruh opsi dropdown kelas (`<Select>`) menampilkan nama kelas secara langsung tanpa prefix "Kelas " (contoh: `"XI TKJ 3"`, `"X RPL 1"`, bukan `"Kelas XI TKJ 3"`).
   - Konsisten diterapkan di seluruh modul: Siswa, Kehadiran, Input Kehadiran, Nilai, Input Nilai, Admin Supervisi Data, dan Admin Mapping Guru/Wali Kelas.
+- **Identitas Siswa (NIS, NISN, & Jenis Kelamin)**:
+  - NIS ditampilkan sebagai identifier utama sekolah, NISN ditampilkan sebagai identitas nasional pendukung, dan Jenis Kelamin (`L` / `P`) sebagai penanda gender.
+  - Input NISN dan Jenis Kelamin bersifat opsional namun disertakan dalam template download, import Excel, tabel daftar siswa, pratinjau data, dan form modal siswa.
+
+
 

@@ -25,23 +25,40 @@ import { useConfirm } from '@/components/ui/ConfirmDialog';
 import { useAuth } from '@/hooks/useAuth';
 import { useRole } from '@/hooks/useRole';
 import { downloadExcelTemplate, parseExcelFile } from '@/lib/excel';
-import type { Siswa, Kelas, Semester, GuruKelas } from '@/lib/types';
+import type { Siswa, Kelas, Semester, GuruKelas, JenisKelamin } from '@/lib/types';
 
 interface ParsedExcelRow {
   NIS?: string | number;
+  NISN?: string | number;
   'Nama Lengkap'?: string;
+  'L/P'?: string;
+  'Jenis Kelamin'?: string;
+  JK?: string;
   nis?: string | number;
+  nisn?: string | number;
   nama?: string;
   nama_lengkap?: string;
+  jenis_kelamin?: string;
+  jk?: string;
+  gender?: string;
   [key: string]: unknown;
 }
 
 interface ParsedSiswa {
   nis: string;
+  nisn?: string;
   nama: string;
+  jenis_kelamin?: JenisKelamin;
   isValid: boolean;
   error?: string;
 }
+
+const parseGender = (rawVal: unknown): JenisKelamin | undefined => {
+  const val = String(rawVal || '').trim().toUpperCase();
+  if (val === 'L' || val === 'LAKI-LAKI' || val === 'LAKI' || val === 'PRIA' || val === 'M' || val === 'MALE') return 'L';
+  if (val === 'P' || val === 'PEREMPUAN' || val === 'WANITA' || val === 'F' || val === 'FEMALE') return 'P';
+  return undefined;
+};
 
 export default function SiswaPage() {
   const supabase = useMemo(() => createClient(), []);
@@ -62,7 +79,9 @@ export default function SiswaPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSiswa, setEditingSiswa] = useState<Siswa | null>(null);
   const [nis, setNis] = useState('');
+  const [nisn, setNisn] = useState('');
   const [nama, setNama] = useState('');
+  const [jenisKelamin, setJenisKelamin] = useState<JenisKelamin | ''>('');
   const [submitting, setSubmitting] = useState(false);
 
   // Modal: Import Excel
@@ -156,7 +175,10 @@ export default function SiswaPage() {
     const q = searchQuery.toLowerCase().trim();
     if (!q) return siswaList;
     return siswaList.filter(
-      (s) => s.nama.toLowerCase().includes(q) || s.nis.toLowerCase().includes(q)
+      (s) =>
+        s.nama.toLowerCase().includes(q) ||
+        s.nis.toLowerCase().includes(q) ||
+        (s.nisn && s.nisn.toLowerCase().includes(q))
     );
   }, [siswaList, searchQuery]);
 
@@ -165,11 +187,15 @@ export default function SiswaPage() {
     if (siswa) {
       setEditingSiswa(siswa);
       setNis(siswa.nis);
+      setNisn(siswa.nisn || '');
       setNama(siswa.nama);
+      setJenisKelamin(siswa.jenis_kelamin || '');
     } else {
       setEditingSiswa(null);
       setNis('');
+      setNisn('');
       setNama('');
+      setJenisKelamin('');
     }
     setIsModalOpen(true);
   };
@@ -186,7 +212,9 @@ export default function SiswaPage() {
           .from('siswa')
           .update({
             nis: nis.trim(),
+            nisn: nisn.trim() || null,
             nama: nama.trim(),
+            jenis_kelamin: jenisKelamin || null,
             updated_at: new Date().toISOString(),
           })
           .eq('id', editingSiswa.id);
@@ -196,7 +224,9 @@ export default function SiswaPage() {
       } else {
         const { error } = await supabase.from('siswa').insert({
           nis: nis.trim(),
+          nisn: nisn.trim() || null,
           nama: nama.trim(),
+          jenis_kelamin: jenisKelamin || null,
           kelas_id: selectedKelasId,
           semester_id: activeSemester.id,
         });
@@ -243,11 +273,11 @@ export default function SiswaPage() {
 
   // Download template Excel
   const handleDownloadTemplate = () => {
-    const headers = ['NIS', 'Nama Lengkap'];
+    const headers = ['NIS', 'NISN', 'Nama Lengkap', 'L/P'];
     const sampleRows = [
-      ['1001', 'Ahmad Dani Pratama'],
-      ['1002', 'Bunga Citra Lestari'],
-      ['1003', 'Citra Kirana Dewi'],
+      ['1001', '0012345678', 'Ahmad Dani Pratama', 'L'],
+      ['1002', '0012345679', 'Bunga Citra Lestari', 'P'],
+      ['1003', '0012345680', 'Citra Kirana Dewi', 'P'],
     ];
     downloadExcelTemplate('Template_Impor_Siswa.xlsx', headers, sampleRows);
     toastInfo('Mengunduh Template', 'File template Excel berhasil diunduh.');
@@ -263,12 +293,23 @@ export default function SiswaPage() {
       const rows = await parseExcelFile<ParsedExcelRow>(file);
       const parsed: ParsedSiswa[] = rows.map((row) => {
         const nisVal = String(row['NIS'] || row['nis'] || '').trim();
+        const nisnVal = String(row['NISN'] || row['nisn'] || '').trim();
         const namaVal = String(row['Nama Lengkap'] || row['nama_lengkap'] || row['nama'] || '').trim();
+        const rawJk =
+          row['L/P'] ??
+          row['Jenis Kelamin'] ??
+          row['JK'] ??
+          row['jenis_kelamin'] ??
+          row['jk'] ??
+          row['gender'];
+        const jkVal = parseGender(rawJk);
 
         const isValid = Boolean(nisVal && namaVal);
         return {
           nis: nisVal,
+          nisn: nisnVal || undefined,
           nama: namaVal,
+          jenis_kelamin: jkVal,
           isValid,
           error: !nisVal ? 'NIS kosong' : !namaVal ? 'Nama kosong' : undefined,
         };
@@ -294,7 +335,9 @@ export default function SiswaPage() {
     try {
       const insertPayload = validRows.map((r) => ({
         nis: r.nis,
+        nisn: r.nisn || null,
         nama: r.nama,
+        jenis_kelamin: r.jenis_kelamin || null,
         kelas_id: selectedKelasId,
         semester_id: activeSemester.id,
         updated_at: new Date().toISOString(),
@@ -376,9 +419,9 @@ export default function SiswaPage() {
           </div>
         </div>
 
-        <div className="w-full sm:w-72">
+        <div className="w-full sm:w-80">
           <Input
-            placeholder="Cari berdasarkan Nama atau NIS..."
+            placeholder="Cari berdasarkan Nama, NIS, atau NISN..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             leftIcon={<Search className="w-4 h-4 text-slate-400" />}
@@ -390,18 +433,20 @@ export default function SiswaPage() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-16">No</TableHead>
-            <TableHead className="w-36">NIS</TableHead>
+            <TableHead className="w-14">No</TableHead>
+            <TableHead className="w-28">NIS</TableHead>
+            <TableHead className="w-32">NISN</TableHead>
             <TableHead>Nama Lengkap</TableHead>
+            <TableHead className="w-20 text-center">L/P</TableHead>
             <TableHead className="text-right">Aksi</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {loading ? (
-            <TableEmpty colSpan={4} message="Memuat data siswa..." />
+            <TableEmpty colSpan={6} message="Memuat data siswa..." />
           ) : filteredSiswa.length === 0 ? (
             <TableEmpty
-              colSpan={4}
+              colSpan={6}
               message={
                 searchQuery
                   ? `Tidak ada siswa yang cocok dengan "${searchQuery}".`
@@ -415,8 +460,26 @@ export default function SiswaPage() {
                 <TableCell className="font-mono text-xs font-semibold text-slate-700">
                   {item.nis}
                 </TableCell>
+                <TableCell className="font-mono text-xs text-slate-600">
+                  {item.nisn || '-'}
+                </TableCell>
                 <TableCell>
                   <span className="font-semibold text-slate-900">{item.nama}</span>
+                </TableCell>
+                <TableCell className="text-center">
+                  {item.jenis_kelamin ? (
+                    <span
+                      className={`inline-flex items-center justify-center px-2 py-0.5 rounded-md text-xs font-bold ${
+                        item.jenis_kelamin === 'L'
+                          ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                          : 'bg-pink-50 text-pink-700 border border-pink-200'
+                      }`}
+                    >
+                      {item.jenis_kelamin}
+                    </span>
+                  ) : (
+                    <span className="text-slate-300">-</span>
+                  )}
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-1">
@@ -457,7 +520,15 @@ export default function SiswaPage() {
             value={nis}
             onChange={(e) => setNis(e.target.value)}
             required
-            helperText="Nomor Induk Siswa unik."
+            helperText="Nomor Induk Siswa unik di sekolah."
+          />
+
+          <Input
+            label="Nomor Induk Siswa Nasional (NISN)"
+            placeholder="Contoh: 0012345678"
+            value={nisn}
+            onChange={(e) => setNisn(e.target.value)}
+            helperText="Opsional (10 digit nomor induk nasional)."
           />
 
           <Input
@@ -466,6 +537,18 @@ export default function SiswaPage() {
             value={nama}
             onChange={(e) => setNama(e.target.value)}
             required
+          />
+
+          <Select
+            label="Jenis Kelamin"
+            value={jenisKelamin}
+            onChange={(e) => setJenisKelamin(e.target.value as JenisKelamin | '')}
+            options={[
+              { value: '', label: 'Pilih Jenis Kelamin (Opsional)' },
+              { value: 'L', label: 'Laki-laki (L)' },
+              { value: 'P', label: 'Perempuan (P)' },
+            ]}
+            helperText="Opsional (L / P)."
           />
 
           <div className="flex justify-end gap-2 pt-4">
@@ -496,7 +579,7 @@ export default function SiswaPage() {
             <div>
               <p className="text-xs font-semibold text-slate-800">1. Unduh Format Template Excel</p>
               <p className="text-[11px] text-slate-500 mt-0.5">
-                Pastikan format kolom sesuai (kolom <code>NIS</code> dan <code>Nama Lengkap</code>).
+                Pastikan format kolom sesuai (kolom <code>NIS</code>, <code>NISN</code>, <code>Nama Lengkap</code>, dan <code>L/P</code>).
               </p>
             </div>
             <Button
@@ -543,8 +626,10 @@ export default function SiswaPage() {
                   <thead className="bg-slate-100 sticky top-0 text-slate-700 font-semibold border-b">
                     <tr>
                       <th className="p-2 w-10">Status</th>
-                      <th className="p-2 w-28">NIS</th>
+                      <th className="p-2 w-20">NIS</th>
+                      <th className="p-2 w-24">NISN</th>
                       <th className="p-2">Nama Lengkap</th>
+                      <th className="p-2 w-16 text-center">L/P</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -560,7 +645,9 @@ export default function SiswaPage() {
                           )}
                         </td>
                         <td className="p-2 font-mono font-medium">{item.nis || '-'}</td>
+                        <td className="p-2 font-mono font-medium text-slate-600">{item.nisn || '-'}</td>
                         <td className="p-2">{item.nama || '-'}</td>
+                        <td className="p-2 text-center font-bold text-slate-700">{item.jenis_kelamin || '-'}</td>
                       </tr>
                     ))}
                   </tbody>

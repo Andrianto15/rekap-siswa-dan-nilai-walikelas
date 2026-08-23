@@ -579,6 +579,7 @@ export default function InputNilaiPage() {
               <tr>
                 <th className="p-3 w-12 text-center">No</th>
                 <th className="p-3 w-28">NIS</th>
+                <th className="p-3 w-32">NISN</th>
                 <th className="p-3 min-w-[160px]">Nama Siswa</th>
                 {komponenList.map((comp) => (
                   <th key={comp.id} className="p-3 text-center min-w-[100px]">
@@ -595,13 +596,13 @@ export default function InputNilaiPage() {
             <tbody className="divide-y divide-slate-100">
               {loading ? (
                 <tr>
-                  <td colSpan={komponenList.length + 5} className="py-12 text-center text-slate-400">
+                  <td colSpan={komponenList.length + 6} className="py-12 text-center text-slate-400">
                     Memuat matriks nilai...
                   </td>
                 </tr>
               ) : siswaList.length === 0 ? (
                 <tr>
-                  <td colSpan={komponenList.length + 5} className="py-12 text-center text-slate-400">
+                  <td colSpan={komponenList.length + 6} className="py-12 text-center text-slate-400">
                     Belum ada siswa di kelas ini.
                   </td>
                 </tr>
@@ -614,7 +615,8 @@ export default function InputNilaiPage() {
                   return (
                     <tr key={siswa.id} className="hover:bg-slate-50/50 transition">
                       <td className="p-3 text-center font-semibold text-slate-400">{idx + 1}</td>
-                      <td className="p-3 font-mono font-medium text-slate-600">{siswa.nis}</td>
+                      <td className="p-3 font-mono font-medium text-slate-700 text-xs">{siswa.nis}</td>
+                      <td className="p-3 font-mono font-medium text-slate-500 text-xs">{siswa.nisn || '-'}</td>
                       <td className="p-3 font-bold text-slate-900">{siswa.nama}</td>
 
                       {/* Component score inputs */}

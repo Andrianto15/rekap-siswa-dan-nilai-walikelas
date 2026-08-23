@@ -215,10 +215,11 @@ export default function RekapKehadiranPage() {
         ? `Bulan_${selectedMonth}_${selectedYear}`
         : `Semester_${activeSemester?.tipe || 'Ganjil'}`;
 
-    const headers = ['No', 'NIS', 'Nama Siswa', 'Sakit (S)', 'Izin (I)', 'Alpa (A)', 'Total Absen'];
+    const headers = ['No', 'NIS', 'NISN', 'Nama Siswa', 'Sakit (S)', 'Izin (I)', 'Alpa (A)', 'Total Absen'];
     const rows = rekapData.map((item, idx) => [
       idx + 1,
       item.siswa.nis,
+      item.siswa.nisn || '-',
       item.siswa.nama,
       item.sakit,
       item.izin,
@@ -405,7 +406,8 @@ export default function RekapKehadiranPage() {
         <TableHeader>
           <TableRow>
             <TableHead className="w-14">No</TableHead>
-            <TableHead className="w-32">NIS</TableHead>
+            <TableHead className="w-28">NIS</TableHead>
+            <TableHead className="w-32">NISN</TableHead>
             <TableHead>Nama Siswa</TableHead>
             <TableHead className="text-center w-24">Sakit (S)</TableHead>
             <TableHead className="text-center w-24">Izin (I)</TableHead>
@@ -416,15 +418,18 @@ export default function RekapKehadiranPage() {
         </TableHeader>
         <TableBody>
           {loading ? (
-            <TableEmpty colSpan={8} message="Memuat rekap kehadiran..." />
+            <TableEmpty colSpan={9} message="Memuat rekap kehadiran..." />
           ) : rekapData.length === 0 ? (
-            <TableEmpty colSpan={8} message="Belum ada data siswa di kelas ini." />
+            <TableEmpty colSpan={9} message="Belum ada data siswa di kelas ini." />
           ) : (
             rekapData.map((item, index) => (
               <TableRow key={item.siswa.id}>
                 <TableCell className="font-semibold text-slate-400">{index + 1}</TableCell>
                 <TableCell className="font-mono text-xs font-semibold text-slate-700">
                   {item.siswa.nis}
+                </TableCell>
+                <TableCell className="font-mono text-xs text-slate-600">
+                  {item.siswa.nisn || '-'}
                 </TableCell>
                 <TableCell>
                   <span className="font-semibold text-slate-900">{item.siswa.nama}</span>
@@ -456,13 +461,11 @@ export default function RekapKehadiranPage() {
                     <span className="text-slate-300">-</span>
                   )}
                 </TableCell>
-                <TableCell className="text-center">
+                <TableCell className="text-center font-bold text-slate-800">
                   {item.totalAbsen > 0 ? (
-                    <span className="font-bold text-slate-900 bg-slate-100 px-2.5 py-1 rounded-lg">
-                      {item.totalAbsen} hari
-                    </span>
+                    `${item.totalAbsen} hari`
                   ) : (
-                    <span className="text-emerald-600 font-medium text-xs">100% Hadir</span>
+                    <span className="text-emerald-600 font-normal text-xs">100% Hadir</span>
                   )}
                 </TableCell>
                 <TableCell className="text-right">
@@ -470,7 +473,7 @@ export default function RekapKehadiranPage() {
                     type="button"
                     onClick={() => openStudentDetail(item.siswa)}
                     className="p-1.5 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-slate-100 transition cursor-pointer"
-                    title="Lihat Detail Ketidakhadiran"
+                    title="Lihat Riwayat Ketidakhadiran"
                   >
                     <Eye className="w-4 h-4" />
                   </button>
@@ -486,7 +489,7 @@ export default function RekapKehadiranPage() {
         isOpen={detailModalOpen}
         onClose={() => setDetailModalOpen(false)}
         title={`Riwayat Ketidakhadiran — ${selectedSiswaForDetail?.nama || ''}`}
-        description={`NIS: ${selectedSiswaForDetail?.nis || '-'} • Semester ${activeSemester?.tipe || ''}`}
+        description={`NIS: ${selectedSiswaForDetail?.nis || '-'}${selectedSiswaForDetail?.nisn ? ` • NISN: ${selectedSiswaForDetail.nisn}` : ''} • Semester ${activeSemester?.tipe || ''}`}
       >
         <div className="space-y-4">
           {studentDetailAbsences.length === 0 ? (

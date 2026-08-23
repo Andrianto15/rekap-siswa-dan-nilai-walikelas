@@ -295,7 +295,7 @@ export default function RekapNilaiPage() {
     const currentMapel = mapelList.find((m) => m.id === selectedMapelId)?.nama || 'Mapel';
 
     const compHeaders = komponenList.map((c) => c.nama);
-    const headers = ['Peringkat', 'NIS', 'Nama Siswa', ...compHeaders, 'Rata-Rata', 'Nilai Akhir', 'Predikat'];
+    const headers = ['Peringkat', 'NIS', 'NISN', 'Nama Siswa', ...compHeaders, 'Rata-Rata', 'Nilai Akhir', 'Predikat'];
 
     const rows = rankedData.map((item) => {
       const compScores = komponenList.map((c) => item.nilaiKomponen[c.id] ?? '-');
@@ -304,6 +304,7 @@ export default function RekapNilaiPage() {
       return [
         item.ranking || '-',
         item.siswa.nis,
+        item.siswa.nisn || '-',
         item.siswa.nama,
         ...compScores,
         item.rataRata > 0 ? item.rataRata : '-',
@@ -480,6 +481,7 @@ export default function RekapNilaiPage() {
           <TableRow>
             <TableHead className="w-20 text-center">Peringkat</TableHead>
             <TableHead className="w-28">NIS</TableHead>
+            <TableHead className="w-32">NISN</TableHead>
             <TableHead>Nama Siswa</TableHead>
             {komponenList.map((comp) => (
               <TableHead key={comp.id} className="text-center">
@@ -493,9 +495,9 @@ export default function RekapNilaiPage() {
         </TableHeader>
         <TableBody>
           {loading ? (
-            <TableEmpty colSpan={komponenList.length + 6} message="Memuat rekap nilai..." />
+            <TableEmpty colSpan={komponenList.length + 7} message="Memuat rekap nilai..." />
           ) : rankedData.length === 0 ? (
-            <TableEmpty colSpan={komponenList.length + 6} message="Belum ada siswa di kelas ini." />
+            <TableEmpty colSpan={komponenList.length + 7} message="Belum ada siswa di kelas ini." />
           ) : (
             rankedData.map((item) => {
               const predikat = item.nilaiAkhir > 0 ? getPredikat(item.nilaiAkhir) : null;
@@ -524,6 +526,9 @@ export default function RekapNilaiPage() {
                   </TableCell>
                   <TableCell className="font-mono text-xs font-semibold text-slate-700">
                     {item.siswa.nis}
+                  </TableCell>
+                  <TableCell className="font-mono text-xs text-slate-600">
+                    {item.siswa.nisn || '-'}
                   </TableCell>
                   <TableCell>
                     <span className="font-semibold text-slate-900">{item.siswa.nama}</span>

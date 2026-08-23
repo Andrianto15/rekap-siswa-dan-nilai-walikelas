@@ -510,7 +510,9 @@ export default function InputKehadiranPage() {
                       <span className="font-semibold text-slate-400 text-xs w-6">{idx + 1}.</span>
                       <div>
                         <p className="text-sm font-bold text-slate-900">{siswa.nama}</p>
-                        <p className="text-xs font-mono text-slate-400">NIS: {siswa.nis}</p>
+                        <p className="text-xs font-mono text-slate-400">
+                          NIS: {siswa.nis}{siswa.nisn ? ` • NISN: ${siswa.nisn}` : ''}
+                        </p>
                       </div>
                     </div>
 
@@ -615,8 +617,11 @@ export default function InputKehadiranPage() {
                 ) : (
                   siswaList.map((siswa) => (
                     <tr key={siswa.id} className="hover:bg-slate-50/50">
-                      <td className="p-2.5 text-left font-semibold text-slate-900 sticky left-0 bg-white z-10 border-r truncate max-w-[160px]">
-                        {siswa.nama}
+                      <td className="p-2.5 text-left sticky left-0 bg-white z-10 border-r max-w-[200px]">
+                        <div className="font-semibold text-slate-900 truncate">{siswa.nama}</div>
+                        <div className="text-[10px] font-mono text-slate-400 truncate">
+                          NIS: {siswa.nis}{siswa.nisn ? ` • NISN: ${siswa.nisn}` : ''}
+                        </div>
                       </td>
                       {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((d) => {
                         const dateStr = `${gridYear}-${String(gridMonth).padStart(2, '0')}-${String(d).padStart(2, '0')}`;

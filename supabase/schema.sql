@@ -117,6 +117,8 @@ create table if not exists public.siswa (
   id uuid primary key default gen_random_uuid(),
   nama text not null,
   nis text not null,
+  nisn text null,
+  jenis_kelamin text null check (jenis_kelamin in ('L', 'P')),
   kelas_id uuid not null references public.kelas(id) on delete cascade,
   semester_id uuid not null references public.semester(id) on delete cascade,
   created_at timestamptz default now(),
