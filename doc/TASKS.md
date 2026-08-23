@@ -56,16 +56,16 @@ Breakdown task untuk development. Diurutkan berdasarkan dependency — kerjakan 
 
 ## Phase 4: Guru — Kelola Siswa
 
-- [ ] **T-026** — Guru: Daftar siswa (`/siswa`)
+- [x] **T-026** — Guru: Daftar siswa (`/siswa`)
   - List siswa di kelas guru (semester aktif)
   - Search
-- [ ] **T-027** — Guru: Tambah siswa (form input satu per satu)
-- [ ] **T-028** — Guru: Edit & hapus siswa (soft delete)
-- [ ] **T-029** — Guru: Upload siswa via Excel
+- [x] **T-027** — Guru: Tambah siswa (form input satu per satu)
+- [x] **T-028** — Guru: Edit & hapus siswa (soft delete)
+- [x] **T-029** — Guru: Upload siswa via Excel
   - Template Excel download
   - Parse & validate
   - Bulk insert
-- [ ] **T-030** — Build `lib/excel.ts` helper (import & export shared logic)
+- [x] **T-030** — Build `lib/excel.ts` helper (import & export shared logic)
 
 ---
 
