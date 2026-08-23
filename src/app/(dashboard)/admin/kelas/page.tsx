@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/Table';
 import { useToast } from '@/components/ui/Toast';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 import type { Kelas } from '@/lib/types';
 
 interface KelasWithCount extends Kelas {
@@ -17,6 +18,7 @@ interface KelasWithCount extends Kelas {
 export default function KelasAdminPage() {
   const supabase = createClient();
   const { success: toastSuccess, error: toastError } = useToast();
+  const confirm = useConfirm();
 
   const [kelasList, setKelasList] = useState<KelasWithCount[]>([]);
   const [loading, setLoading] = useState(true);
@@ -108,7 +110,13 @@ export default function KelasAdminPage() {
   };
 
   const handleDeleteKelas = async (id: string, nama: string) => {
-    if (!confirm(`Hapus kelas ${nama}? Seluruh data siswa dan riwayat di kelas ini akan terhapus.`)) return;
+    const isConfirmed = await confirm({
+      title: 'Hapus Kelas',
+      message: `Hapus kelas ${nama}? Seluruh data siswa dan riwayat di kelas ini akan terhapus.`,
+      confirmText: 'Hapus Kelas',
+      variant: 'danger',
+    });
+    if (!isConfirmed) return;
 
     try {
       const { error } = await supabase.from('kelas').delete().eq('id', id);

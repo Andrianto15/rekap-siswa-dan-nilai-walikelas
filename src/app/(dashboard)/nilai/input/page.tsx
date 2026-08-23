@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { useToast } from '@/components/ui/Toast';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 import { useAuth } from '@/hooks/useAuth';
 import { useRole } from '@/hooks/useRole';
 import { formatNumber } from '@/lib/utils';
@@ -29,6 +30,7 @@ export default function InputNilaiPage() {
   const { user } = useAuth();
   const { isAdmin } = useRole();
   const { success: toastSuccess, error: toastError, info: toastInfo } = useToast();
+  const confirm = useConfirm();
 
   const [activeSemester, setActiveSemester] = useState<Semester | null>(null);
   const [kelasList, setKelasList] = useState<Kelas[]>([]);
@@ -423,7 +425,13 @@ export default function InputNilaiPage() {
 
   // Delete Component
   const handleDeleteComponent = async (id: string, name: string) => {
-    if (!confirm(`Hapus komponen "${name}"? Seluruh nilai terkait komponen ini akan dihapus.`)) return;
+    const isConfirmed = await confirm({
+      title: 'Hapus Komponen Nilai',
+      message: `Hapus komponen "${name}"? Seluruh nilai terkait komponen ini akan dihapus.`,
+      confirmText: 'Hapus Komponen',
+      variant: 'danger',
+    });
+    if (!isConfirmed) return;
 
     try {
       const { error } = await supabase.from('komponen_nilai').delete().eq('id', id);

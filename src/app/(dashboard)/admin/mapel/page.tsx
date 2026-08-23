@@ -8,11 +8,13 @@ import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/Table';
 import { useToast } from '@/components/ui/Toast';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 import type { Mapel } from '@/lib/types';
 
 export default function MapelAdminPage() {
   const supabase = createClient();
   const { success: toastSuccess, error: toastError } = useToast();
+  const confirm = useConfirm();
 
   const [mapelList, setMapelList] = useState<Mapel[]>([]);
   const [loading, setLoading] = useState(true);
@@ -86,7 +88,13 @@ export default function MapelAdminPage() {
   };
 
   const handleDeleteMapel = async (id: string, nama: string) => {
-    if (!confirm(`Hapus mata pelajaran ${nama}? Seluruh data nilai terkait mapel ini akan terhapus.`)) return;
+    const isConfirmed = await confirm({
+      title: 'Hapus Mata Pelajaran',
+      message: `Hapus mata pelajaran ${nama}? Seluruh data nilai terkait mapel ini akan terhapus.`,
+      confirmText: 'Hapus Mapel',
+      variant: 'danger',
+    });
+    if (!isConfirmed) return;
 
     try {
       const { error } = await supabase.from('mapel').delete().eq('id', id);

@@ -9,6 +9,7 @@ import { Modal } from '@/components/ui/Modal';
 import { Badge } from '@/components/ui/Badge';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/Table';
 import { useToast } from '@/components/ui/Toast';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 import { formatDate } from '@/lib/utils';
 import type { Profile, Role } from '@/lib/types';
 
@@ -18,6 +19,7 @@ interface UserItem extends Profile {
 
 export default function UsersAdminPage() {
   const { success: toastSuccess, error: toastError } = useToast();
+  const confirm = useConfirm();
 
   const [users, setUsers] = useState<UserItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -110,7 +112,13 @@ export default function UsersAdminPage() {
   };
 
   const handleDeleteUser = async (id: string, name: string) => {
-    if (!confirm(`Hapus akun pengguna "${name}"? Tindakan ini tidak dapat dibatalkan.`)) return;
+    const isConfirmed = await confirm({
+      title: 'Hapus Pengguna',
+      message: `Hapus akun pengguna "${name}"? Tindakan ini tidak dapat dibatalkan.`,
+      confirmText: 'Hapus Pengguna',
+      variant: 'danger',
+    });
+    if (!isConfirmed) return;
 
     try {
       const res = await fetch(`/api/admin/users/${id}`, {

@@ -21,6 +21,7 @@ import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/Table';
 import { useToast } from '@/components/ui/Toast';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 import { useAuth } from '@/hooks/useAuth';
 import { useRole } from '@/hooks/useRole';
 import { downloadExcelTemplate, parseExcelFile } from '@/lib/excel';
@@ -47,6 +48,7 @@ export default function SiswaPage() {
   const { user } = useAuth();
   const { isAdmin } = useRole();
   const { success: toastSuccess, error: toastError, info: toastInfo } = useToast();
+  const confirm = useConfirm();
 
   const [activeSemester, setActiveSemester] = useState<Semester | null>(null);
   const [kelasList, setKelasList] = useState<Kelas[]>([]);
@@ -210,7 +212,13 @@ export default function SiswaPage() {
 
   // Soft delete student
   const handleDeleteSiswa = async (id: string, studentName: string) => {
-    if (!confirm(`Hapus data siswa "${studentName}"? Siswa ini akan dinonaktifkan.`)) return;
+    const isConfirmed = await confirm({
+      title: 'Hapus Siswa',
+      message: `Hapus data siswa "${studentName}"? Siswa ini akan dinonaktifkan.`,
+      confirmText: 'Hapus Siswa',
+      variant: 'danger',
+    });
+    if (!isConfirmed) return;
 
     try {
       const { error } = await supabase

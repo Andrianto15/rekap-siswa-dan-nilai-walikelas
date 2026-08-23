@@ -9,6 +9,7 @@ import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { Badge } from '@/components/ui/Badge';
 import { useToast } from '@/components/ui/Toast';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 import type { TahunAjaran, Semester } from '@/lib/types';
 
 interface TahunAjaranWithSemesters extends TahunAjaran {
@@ -18,6 +19,7 @@ interface TahunAjaranWithSemesters extends TahunAjaran {
 export default function PeriodeAdminPage() {
   const supabase = createClient();
   const { success: toastSuccess, error: toastError } = useToast();
+  const confirm = useConfirm();
 
   const [periodes, setPeriodes] = useState<TahunAjaranWithSemesters[]>([]);
   const [loading, setLoading] = useState(true);
@@ -135,7 +137,13 @@ export default function PeriodeAdminPage() {
 
   // Delete Tahun Ajaran
   const handleDeleteTahun = async (tahunId: string) => {
-    if (!confirm('Hapus tahun ajaran ini beserta semua semester di dalamnya?')) return;
+    const isConfirmed = await confirm({
+      title: 'Hapus Tahun Ajaran',
+      message: 'Hapus tahun ajaran ini beserta semua semester di dalamnya? Data tidak dapat dipulihkan.',
+      confirmText: 'Hapus Tahun Ajaran',
+      variant: 'danger',
+    });
+    if (!isConfirmed) return;
     try {
       const { error } = await supabase.from('tahun_ajaran').delete().eq('id', tahunId);
       if (error) throw error;
@@ -198,7 +206,13 @@ export default function PeriodeAdminPage() {
 
   // Delete Semester
   const handleDeleteSemester = async (semesterId: string) => {
-    if (!confirm('Hapus semester ini?')) return;
+    const isConfirmed = await confirm({
+      title: 'Hapus Semester',
+      message: 'Hapus semester ini? Riwayat data terkait semester ini mungkin terpengaruh.',
+      confirmText: 'Hapus Semester',
+      variant: 'danger',
+    });
+    if (!isConfirmed) return;
     try {
       const { error } = await supabase.from('semester').delete().eq('id', semesterId);
       if (error) throw error;

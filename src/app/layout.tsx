@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { ToastProvider } from '@/components/ui/Toast';
+import { ConfirmProvider } from '@/components/ui/ConfirmDialog';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -32,7 +33,9 @@ export default function RootLayout({
   return (
     <html lang="id" className={inter.variable}>
       <body className="min-h-screen bg-slate-50 text-slate-900 font-sans antialiased selection:bg-blue-500 selection:text-white">
-        <ToastProvider>{children}</ToastProvider>
+        <ConfirmProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </ConfirmProvider>
       </body>
     </html>
   );

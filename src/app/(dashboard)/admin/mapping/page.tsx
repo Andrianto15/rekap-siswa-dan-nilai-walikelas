@@ -8,11 +8,13 @@ import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableEmpty } from '@/components/ui/Table';
 import { useToast } from '@/components/ui/Toast';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 import type { Profile, Kelas, Mapel, Semester, GuruKelas, GuruMapel } from '@/lib/types';
 
 export default function MappingAdminPage() {
   const supabase = createClient();
   const { success: toastSuccess, error: toastError } = useToast();
+  const confirm = useConfirm();
 
   const [activeTab, setActiveTab] = useState<'wali' | 'mapel'>('wali');
   const [activeSemester, setActiveSemester] = useState<Semester | null>(null);
@@ -153,7 +155,13 @@ export default function MappingAdminPage() {
 
   // Delete Wali Kelas Mapping
   const handleDeleteWali = async (id: string) => {
-    if (!confirm('Hapus penugasan wali kelas ini?')) return;
+    const isConfirmed = await confirm({
+      title: 'Hapus Penugasan Wali Kelas',
+      message: 'Hapus penugasan wali kelas ini? Guru tidak akan lagi memiliki akses sebagai wali kelas untuk kelas tersebut.',
+      confirmText: 'Hapus Penugasan',
+      variant: 'danger',
+    });
+    if (!isConfirmed) return;
     try {
       const { error } = await supabase.from('guru_kelas').delete().eq('id', id);
       if (error) throw error;
@@ -193,7 +201,13 @@ export default function MappingAdminPage() {
 
   // Delete Guru Mapel Mapping
   const handleDeleteMapel = async (id: string) => {
-    if (!confirm('Hapus penugasan mata pelajaran ini?')) return;
+    const isConfirmed = await confirm({
+      title: 'Hapus Penugasan Guru Mapel',
+      message: 'Hapus penugasan mata pelajaran ini? Guru tidak akan lagi memiliki akses input nilai untuk mapel tersebut.',
+      confirmText: 'Hapus Penugasan',
+      variant: 'danger',
+    });
+    if (!isConfirmed) return;
     try {
       const { error } = await supabase.from('guru_mapel').delete().eq('id', id);
       if (error) throw error;
