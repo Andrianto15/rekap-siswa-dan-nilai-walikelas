@@ -134,3 +134,21 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 - Integrasi Dapodik
 - PWA / offline mode
 - Chat / komunikasi guru-siswa
+
+---
+
+## 7. Testing Strategy & Quality Assurance
+
+- **Framework**: Jest + React Testing Library (`@testing-library/react`)
+- **Environment**: Custom JSDOM with Node Web Standard APIs (Fetch, Request, Response, Headers)
+- **Test Directory**: `tests/`
+- **Coverage Suites**:
+  - `tests/lib/utils.test.ts`: Utility formatting (`formatDate`, `formatShortDate`, `formatNumber`) & `cn`.
+  - `tests/lib/excel.test.ts`: Template download, Excel export, and Excel file parser (`parseExcelFile`).
+  - `tests/hooks/useRole.test.ts` & `tests/hooks/useAuth.test.ts`: Role resolution, session state management & sign out.
+  - `tests/lib/supabase/supabase.test.ts`: Browser and server Supabase client instantiation.
+  - `tests/lib/supabase/middleware.test.ts`: Authentication guarding, admin role authorization, and route redirection.
+  - `tests/api/admin-users.test.ts` & `tests/api/admin-users-id.test.ts`: User management API endpoints (auth, validation, CRUD responses).
+  - `tests/components/ui.test.tsx`: UI primitives (`Button`, `Badge`, `Input`, `Select`, `Modal`, `ConfirmDialog`, `Toast`, `Table`).
+- **Command**: `npm test` / `npm run test:coverage`
+

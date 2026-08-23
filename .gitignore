@@ -7,6 +7,7 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
+.swc
 
 # testing
 /coverage
@@ -48,4 +49,3 @@ next-env.d.ts
 
 # AI
 AGENTS.md
-CLAUDE.md

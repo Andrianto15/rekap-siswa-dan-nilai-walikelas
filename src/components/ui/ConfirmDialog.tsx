@@ -2,7 +2,6 @@
 
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import { AlertTriangle, Trash2, AlertCircle, Info, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { Button } from './Button';
 
 export type ConfirmVariant = 'danger' | 'warning' | 'primary';
