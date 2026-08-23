@@ -120,7 +120,7 @@ Breakdown task untuk development. Diurutkan berdasarkan dependency — kerjakan 
 
 ## Phase 8: Admin — View & Edit Semua Data
 
-- [ ] **T-044** — Admin: View/edit data guru lain (`/admin/data`)
+- [x] **T-044** — Admin: View/edit data guru lain (`/admin/data`)
   - Pilih guru & mapel
   - Tampilkan kehadiran & nilai (reuse komponen Phase 5 & 6)
   - Bisa edit langsung
