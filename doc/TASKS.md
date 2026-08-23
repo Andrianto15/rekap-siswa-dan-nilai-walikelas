@@ -36,18 +36,18 @@ Breakdown task untuk development. Diurutkan berdasarkan dependency — kerjakan 
 
 ## Phase 3: Admin — Master Data
 
-- [ ] **T-021** — Admin: Kelola tahun ajaran & semester (`/admin/periode`)
+- [x] **T-021** — Admin: Kelola tahun ajaran & semester (`/admin/periode`)
   - CRUD tahun ajaran
   - CRUD semester per tahun ajaran
   - Set aktif
-- [ ] **T-022** — Admin: Kelola kelas (`/admin/kelas`)
+- [x] **T-022** — Admin: Kelola kelas (`/admin/kelas`)
   - CRUD kelas
-- [ ] **T-023** — Admin: Kelola mata pelajaran (`/admin/mapel`)
+- [x] **T-023** — Admin: Kelola mata pelajaran (`/admin/mapel`)
   - CRUD mapel
-- [ ] **T-024** — Admin: Kelola user (`/admin/users`)
+- [x] **T-024** — Admin: Kelola user (`/admin/users`)
   - Create user (via Supabase Admin API)
   - List, edit role, delete user
-- [ ] **T-025** — Admin: Mapping guru ↔ kelas & guru ↔ mapel (`/admin/mapping`)
+- [x] **T-025** — Admin: Mapping guru ↔ kelas & guru ↔ mapel (`/admin/mapping`)
   - Assign guru sebagai wali kelas
   - Assign mapel ke guru
   - View current mappings
