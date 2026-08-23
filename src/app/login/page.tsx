@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useToast } from '@/components/ui/Toast';
 
+import packageJson from '../../../package.json';
+
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -112,9 +114,12 @@ function LoginForm() {
         </div>
       </form>
 
-      <div className="mt-8 pt-6 border-t border-slate-100 text-center">
-        <p className="text-xs text-slate-400">
-          Sistem Informasi Rekap Wali Kelas & Guru Mapel
+      <div className="mt-8 pt-6 border-t border-slate-100 text-center space-y-1.5">
+        <p className="text-xs text-slate-500">
+          Sistem Informasi Rekap Wali Kelas &amp; Guru Mapel
+        </p>
+        <p className="text-[11px] text-slate-400">
+          v{packageJson.version} &bull; &copy; 2026 - {new Date().getFullYear()}
         </p>
       </div>
     </div>
