@@ -37,5 +37,23 @@
 7. **`tests/components/ui.test.tsx`**:
    - Pengujian fungsionalitas dan interaksi komponen UI: `Button`, `Badge`, `Input`, `Select`, `Modal`, `ConfirmDialog`, `Toast`, dan `Table`.
 
+### Implementasi Universal Soft Delete
+- **Database Schema & Migrations**:
+  - Menambahkan kolom `deleted_at timestamptz null` ke seluruh 12 tabel Supabase (`profiles`, `tahun_ajaran`, `semester`, `kelas`, `mapel`, `guru_kelas`, `guru_mapel`, `siswa`, `kehadiran`, `komponen_nilai`, `nilai`, `nilai_akhir`).
+  - Menyesuaikan unique constraints pada database menjadi Partial Unique Indexes dengan `WHERE deleted_at IS NULL` untuk mendukung re-insert data yang telah di-soft-delete tanpa konflik constraint.
+  - Menambahkan file migration `supabase/migrations/20260823000002_add_soft_delete_to_all_tables.sql` dan memperbarui `supabase/schema.sql`.
+- **TypeScript Types**:
+  - Menambahkan field `deleted_at?: string | null` ke seluruh entity types di `src/lib/types.ts`.
+- **API & Server Logic**:
+  - Memperbarui handler DELETE di `src/app/api/admin/users/[id]/route.ts` menjadi soft delete pada tabel `profiles` (`deleted_at = now()`).
+  - Menambahkan filter `.is('deleted_at', null)` pada `src/app/api/admin/users/route.ts` dan `src/lib/supabase/middleware.ts`.
+- **Frontend Pages & Handlers**:
+  - Mengubah seluruh query `select` untuk memfilter data aktif (`.is('deleted_at', null)`) pada halaman Admin (`admin/kelas`, `admin/mapel`, `admin/periode`, `admin/mapping`, `admin/data`), Guru (`siswa`, `kehadiran`, `kehadiran/input`, `nilai`, `nilai/input`), serta `dashboard` dan `login`.
+  - Mengubah operasi penghapusan data pada komponen UI (kelas, mapel, tahun ajaran, semester, mapping guru, komponen nilai, presensi harian & bulanan) dari hard delete (`.delete()`) menjadi soft delete (`.update({ deleted_at: new Date().toISOString() })`).
+- **Unit Testing Soft Delete**:
+  - Menambahkan test suite baru `tests/lib/soft-delete.test.ts` untuk memvalidasi pemfilteran data aktif dan struktur integritas soft delete.
+  - Memperbarui test suites `tests/api/admin-users.test.ts`, `tests/api/admin-users-id.test.ts`, `tests/hooks/useAuth.test.ts`, dan `tests/lib/supabase/middleware.test.ts` untuk mendukung chaining `.is('deleted_at', null)`.
+  - Memastikan seluruh unit test lulus 100% (63 passing tests).
+
 ### Pembaruan Dokumentasi
-- Memperbarui `doc/PRD.md` dengan menambahkan section strategi pengujian dan daftar cakupan test suite.
+- Memperbarui `doc/PRD.md` dengan section Non-Functional Requirements & Data Safety untuk dokumentasi soft delete dan cakupan unit testing `tests/lib/soft-delete.test.ts`.

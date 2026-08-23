@@ -62,6 +62,7 @@ export default function AdminViewAllDataPage() {
         .from('semester')
         .select(`*, tahun_ajaran (*)`)
         .eq('is_active', true)
+        .is('deleted_at', null)
         .single();
 
       if (semData) {
@@ -72,6 +73,7 @@ export default function AdminViewAllDataPage() {
       const { data: profData } = await supabase
         .from('profiles')
         .select('*')
+        .is('deleted_at', null)
         .order('full_name', { ascending: true });
 
       if (profData && profData.length > 0) {
@@ -80,7 +82,11 @@ export default function AdminViewAllDataPage() {
       }
 
       // 3. Fetch all classes for grading filter
-      const { data: kData } = await supabase.from('kelas').select('*').order('nama', { ascending: true });
+      const { data: kData } = await supabase
+        .from('kelas')
+        .select('*')
+        .is('deleted_at', null)
+        .order('nama', { ascending: true });
       if (kData && kData.length > 0) {
         setGradingClasses(kData);
         setSelectedGradingKelasId(kData[0].id);
@@ -102,6 +108,7 @@ export default function AdminViewAllDataPage() {
         .select(`*, kelas (*)`)
         .eq('guru_id', selectedTeacherId)
         .eq('semester_id', activeSemester.id)
+        .is('deleted_at', null)
         .single();
 
       if (wkData && (wkData as unknown as GuruKelas).kelas) {
@@ -127,7 +134,8 @@ export default function AdminViewAllDataPage() {
             .from('kehadiran')
             .select('*')
             .eq('semester_id', activeSemester.id)
-            .in('siswa_id', sIds);
+            .in('siswa_id', sIds)
+            .is('deleted_at', null);
 
           setAttendanceRecords((attData || []) as unknown as Kehadiran[]);
         } else {
@@ -144,7 +152,8 @@ export default function AdminViewAllDataPage() {
         .from('guru_mapel')
         .select(`*, mapel (*)`)
         .eq('guru_id', selectedTeacherId)
-        .eq('semester_id', activeSemester.id);
+        .eq('semester_id', activeSemester.id)
+        .is('deleted_at', null);
 
       if (gmData && gmData.length > 0) {
         const mapels = gmData
@@ -176,6 +185,7 @@ export default function AdminViewAllDataPage() {
         .select('*')
         .eq('mapel_id', selectedMapelId)
         .eq('semester_id', activeSemester.id)
+        .is('deleted_at', null)
         .order('urutan', { ascending: true });
 
       setKomponenList(compData || []);
@@ -200,7 +210,8 @@ export default function AdminViewAllDataPage() {
           .from('nilai')
           .select('*')
           .eq('semester_id', activeSemester.id)
-          .in('siswa_id', sIds);
+          .in('siswa_id', sIds)
+          .is('deleted_at', null);
 
         setNilaiList((nData || []) as unknown as Nilai[]);
 
@@ -210,7 +221,8 @@ export default function AdminViewAllDataPage() {
           .select('*')
           .eq('mapel_id', selectedMapelId)
           .eq('semester_id', activeSemester.id)
-          .in('siswa_id', sIds);
+          .in('siswa_id', sIds)
+          .is('deleted_at', null);
 
         setNilaiAkhirList((naData || []) as unknown as NilaiAkhir[]);
       } else {

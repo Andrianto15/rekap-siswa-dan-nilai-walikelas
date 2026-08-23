@@ -114,14 +114,14 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 
 ---
 
-## 5. Non-Functional Requirements
+## 5. Non-Functional Requirements & Data Safety
 
 | Aspek | Target |
 |-------|--------|
 | **Responsive** | Mobile-first, usable di 360px+ |
 | **Performance** | First load < 3s di 3G |
 | **Auth** | Row Level Security (RLS) di Supabase |
-| **Data safety** | Soft delete untuk data penting |
+| **Data Safety & Soft Delete** | Universal soft delete (`deleted_at timestamptz null`) pada seluruh tabel database (`profiles`, `tahun_ajaran`, `semester`, `kelas`, `mapel`, `guru_kelas`, `guru_mapel`, `siswa`, `kehadiran`, `komponen_nilai`, `nilai`, `nilai_akhir`). Seluruh query select memfilter `deleted_at is null`, dan operasi delete melakukan update timestamp. Partial unique index digunakan untuk record aktif. |
 | **Browser** | Chrome, Safari, Firefox (latest 2 versions) |
 
 ---
@@ -145,10 +145,11 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 - **Coverage Suites**:
   - `tests/lib/utils.test.ts`: Utility formatting (`formatDate`, `formatShortDate`, `formatNumber`) & `cn`.
   - `tests/lib/excel.test.ts`: Template download, Excel export, and Excel file parser (`parseExcelFile`).
+  - `tests/lib/soft-delete.test.ts`: Soft delete integrity verification, active records filtering logic & model structure.
   - `tests/hooks/useRole.test.ts` & `tests/hooks/useAuth.test.ts`: Role resolution, session state management & sign out.
   - `tests/lib/supabase/supabase.test.ts`: Browser and server Supabase client instantiation.
   - `tests/lib/supabase/middleware.test.ts`: Authentication guarding, admin role authorization, and route redirection.
-  - `tests/api/admin-users.test.ts` & `tests/api/admin-users-id.test.ts`: User management API endpoints (auth, validation, CRUD responses).
+  - `tests/api/admin-users.test.ts` & `tests/api/admin-users-id.test.ts`: User management API endpoints (auth, validation, soft-delete & CRUD responses).
   - `tests/components/ui.test.tsx`: UI primitives (`Button`, `Badge`, `Input`, `Select`, `Modal`, `ConfirmDialog`, `Toast`, `Table`).
 - **Command**: `npm test` / `npm run test:coverage`
 

@@ -44,6 +44,7 @@ export default function PeriodeAdminPage() {
       const { data: tahunData, error: tahunError } = await supabase
         .from('tahun_ajaran')
         .select('*')
+        .is('deleted_at', null)
         .order('created_at', { ascending: false });
 
       if (tahunError) throw tahunError;
@@ -51,6 +52,7 @@ export default function PeriodeAdminPage() {
       const { data: semData, error: semError } = await supabase
         .from('semester')
         .select('*')
+        .is('deleted_at', null)
         .order('tipe', { ascending: true });
 
       if (semError) throw semError;
@@ -145,7 +147,10 @@ export default function PeriodeAdminPage() {
     });
     if (!isConfirmed) return;
     try {
-      const { error } = await supabase.from('tahun_ajaran').delete().eq('id', tahunId);
+      const { error } = await supabase
+        .from('tahun_ajaran')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', tahunId);
       if (error) throw error;
       toastSuccess('Berhasil', 'Tahun ajaran berhasil dihapus');
       fetchPeriodes();
@@ -214,7 +219,10 @@ export default function PeriodeAdminPage() {
     });
     if (!isConfirmed) return;
     try {
-      const { error } = await supabase.from('semester').delete().eq('id', semesterId);
+      const { error } = await supabase
+        .from('semester')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', semesterId);
       if (error) throw error;
       toastSuccess('Berhasil', 'Semester berhasil dihapus');
       fetchPeriodes();

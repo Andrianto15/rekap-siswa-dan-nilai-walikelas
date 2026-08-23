@@ -20,8 +20,10 @@ describe('API /api/admin/users/[id]', () => {
       from: jest.fn().mockReturnValue({
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
-            single: jest.fn().mockResolvedValue({
-              data: { role: 'admin' },
+            is: jest.fn().mockReturnValue({
+              single: jest.fn().mockResolvedValue({
+                data: { role: 'admin' },
+              }),
             }),
           }),
         }),
@@ -32,22 +34,21 @@ describe('API /api/admin/users/[id]', () => {
       from: jest.fn().mockReturnValue({
         update: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
-            select: jest.fn().mockReturnValue({
-              single: jest.fn().mockResolvedValue({
-                data: { id: 'target-user-1', full_name: 'Updated Name', role: 'admin' },
-                error: null,
+            is: jest.fn().mockReturnValue({
+              select: jest.fn().mockReturnValue({
+                single: jest.fn().mockResolvedValue({
+                  data: { id: 'target-user-1', full_name: 'Updated Name', role: 'admin' },
+                  error: null,
+                }),
               }),
             }),
+            error: null,
           }),
-        }),
-        delete: jest.fn().mockReturnValue({
-          eq: jest.fn().mockResolvedValue({ error: null }),
         }),
       }),
       auth: {
         admin: {
           updateUserById: jest.fn().mockResolvedValue({ data: {}, error: null }),
-          deleteUser: jest.fn().mockResolvedValue({ data: {}, error: null }),
         },
       },
     };
@@ -103,7 +104,7 @@ describe('API /api/admin/users/[id]', () => {
       expect(json.error).toBe('Tidak dapat menghapus akun Anda sendiri');
     });
 
-    it('should successfully delete target user', async () => {
+    it('should successfully soft-delete target user profile', async () => {
       const req = new Request('http://localhost/api/admin/users/target-user-1', {
         method: 'DELETE',
       });
@@ -114,7 +115,12 @@ describe('API /api/admin/users/[id]', () => {
 
       expect(response.status).toBe(200);
       expect(json.success).toBe(true);
-      expect(mockAdminClient.auth.admin.deleteUser).toHaveBeenCalledWith('target-user-1');
+      expect(mockAdminClient.from).toHaveBeenCalledWith('profiles');
+      expect(mockAdminClient.from().update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          deleted_at: expect.any(String),
+        })
+      );
     });
   });
 });

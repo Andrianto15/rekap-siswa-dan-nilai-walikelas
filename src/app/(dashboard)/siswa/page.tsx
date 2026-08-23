@@ -79,6 +79,7 @@ export default function SiswaPage() {
         .from('semester')
         .select(`*, tahun_ajaran (*)`)
         .eq('is_active', true)
+        .is('deleted_at', null)
         .single();
 
       if (semData) {
@@ -88,6 +89,7 @@ export default function SiswaPage() {
         const { data: kData } = await supabase
           .from('kelas')
           .select('*')
+          .is('deleted_at', null)
           .order('nama', { ascending: true });
 
         if (kData) setKelasList(kData);
@@ -99,6 +101,7 @@ export default function SiswaPage() {
             .select('*')
             .eq('guru_id', user.id)
             .eq('semester_id', semData.id)
+            .is('deleted_at', null)
             .single();
 
           if (guruKelasData) {

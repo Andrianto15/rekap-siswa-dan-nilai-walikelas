@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 jest.mock('@/lib/supabase/client');
 
 describe('useAuth hook', () => {
-  let mockSupabase: Record<string, unknown>;
+  let mockSupabase: Record<string, any>;
   let authStateCallback: ((event: string, session: unknown) => void) | null = null;
   const mockUnsubscribe = jest.fn();
 
@@ -40,13 +40,15 @@ describe('useAuth hook', () => {
       from: jest.fn().mockReturnValue({
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
-            single: jest.fn().mockResolvedValue({
-              data: {
-                id: 'user-1',
-                full_name: 'Teacher One Profile',
-                role: 'guru',
-              },
-              error: null,
+            is: jest.fn().mockReturnValue({
+              single: jest.fn().mockResolvedValue({
+                data: {
+                  id: 'user-1',
+                  full_name: 'Teacher One Profile',
+                  role: 'guru',
+                },
+                error: null,
+              }),
             }),
           }),
         }),
@@ -82,9 +84,11 @@ describe('useAuth hook', () => {
     mockSupabase.from.mockReturnValue({
       select: jest.fn().mockReturnValue({
         eq: jest.fn().mockReturnValue({
-          single: jest.fn().mockResolvedValue({
-            data: null,
-            error: new Error('Profile not found'),
+          is: jest.fn().mockReturnValue({
+            single: jest.fn().mockResolvedValue({
+              data: null,
+              error: new Error('Profile not found'),
+            }),
           }),
         }),
       }),

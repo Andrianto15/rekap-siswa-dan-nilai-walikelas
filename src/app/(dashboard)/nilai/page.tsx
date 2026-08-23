@@ -53,17 +53,26 @@ export default function RekapNilaiPage() {
         .from('semester')
         .select(`*, tahun_ajaran (*)`)
         .eq('is_active', true)
+        .is('deleted_at', null)
         .single();
 
       if (semData) {
         setActiveSemester(semData as unknown as Semester);
 
         // Fetch Kelas
-        const { data: kData } = await supabase.from('kelas').select('*').order('nama', { ascending: true });
+        const { data: kData } = await supabase
+          .from('kelas')
+          .select('*')
+          .is('deleted_at', null)
+          .order('nama', { ascending: true });
         if (kData) setKelasList(kData);
 
         // Fetch Mapel
-        const { data: mData } = await supabase.from('mapel').select('*').order('nama', { ascending: true });
+        const { data: mData } = await supabase
+          .from('mapel')
+          .select('*')
+          .is('deleted_at', null)
+          .order('nama', { ascending: true });
         if (mData) setMapelList(mData);
 
         if (user && !isAdmin) {
@@ -72,6 +81,7 @@ export default function RekapNilaiPage() {
             .select('*')
             .eq('guru_id', user.id)
             .eq('semester_id', semData.id)
+            .is('deleted_at', null)
             .single();
 
           if (guruKelasData) {
@@ -85,6 +95,7 @@ export default function RekapNilaiPage() {
             .select('*')
             .eq('guru_id', user.id)
             .eq('semester_id', semData.id)
+            .is('deleted_at', null)
             .limit(1)
             .single();
 
@@ -112,6 +123,7 @@ export default function RekapNilaiPage() {
         .select('*')
         .eq('mapel_id', selectedMapelId)
         .eq('semester_id', activeSemester.id)
+        .is('deleted_at', null)
         .order('urutan', { ascending: true });
 
       if (error) throw error;
@@ -148,7 +160,8 @@ export default function RekapNilaiPage() {
           .from('nilai')
           .select('*')
           .eq('semester_id', activeSemester.id)
-          .in('siswa_id', studentIds);
+          .in('siswa_id', studentIds)
+          .is('deleted_at', null);
 
         if (nError) throw nError;
         setNilaiList((nData || []) as unknown as Nilai[]);
@@ -159,7 +172,8 @@ export default function RekapNilaiPage() {
           .select('*')
           .eq('mapel_id', selectedMapelId)
           .eq('semester_id', activeSemester.id)
-          .in('siswa_id', studentIds);
+          .in('siswa_id', studentIds)
+          .is('deleted_at', null);
 
         if (naError) throw naError;
         setNilaiAkhirList((naData || []) as unknown as NilaiAkhir[]);

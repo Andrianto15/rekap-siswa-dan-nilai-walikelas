@@ -20,8 +20,10 @@ describe('Supabase Middleware updateSession', () => {
       from: jest.fn().mockReturnValue({
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
-            single: jest.fn().mockResolvedValue({
-              data: { role: 'guru' },
+            is: jest.fn().mockReturnValue({
+              single: jest.fn().mockResolvedValue({
+                data: { role: 'guru' },
+              }),
             }),
           }),
         }),
@@ -84,8 +86,10 @@ describe('Supabase Middleware updateSession', () => {
     mockSupabase.from.mockReturnValue({
       select: jest.fn().mockReturnValue({
         eq: jest.fn().mockReturnValue({
-          single: jest.fn().mockResolvedValue({
-            data: { role: 'guru' },
+          is: jest.fn().mockReturnValue({
+            single: jest.fn().mockResolvedValue({
+              data: { role: 'guru' },
+            }),
           }),
         }),
       }),
@@ -105,8 +109,10 @@ describe('Supabase Middleware updateSession', () => {
     mockSupabase.from.mockReturnValue({
       select: jest.fn().mockReturnValue({
         eq: jest.fn().mockReturnValue({
-          single: jest.fn().mockResolvedValue({
-            data: { role: 'admin' },
+          is: jest.fn().mockReturnValue({
+            single: jest.fn().mockResolvedValue({
+              data: { role: 'admin' },
+            }),
           }),
         }),
       }),

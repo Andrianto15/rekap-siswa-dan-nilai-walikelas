@@ -38,6 +38,7 @@ export default function KelasAdminPage() {
           *,
           siswa (count)
         `)
+        .is('deleted_at', null)
         .order('nama', { ascending: true });
 
       if (error) throw error;
@@ -119,7 +120,10 @@ export default function KelasAdminPage() {
     if (!isConfirmed) return;
 
     try {
-      const { error } = await supabase.from('kelas').delete().eq('id', id);
+      const { error } = await supabase
+        .from('kelas')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', id);
       if (error) throw error;
       toastSuccess('Berhasil', `Kelas ${nama} berhasil dihapus`);
       fetchKelas();

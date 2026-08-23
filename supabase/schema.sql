@@ -13,7 +13,8 @@ create table if not exists public.profiles (
   full_name text not null,
   role text not null default 'guru' check (role in ('admin', 'guru')),
   created_at timestamptz default now(),
-  updated_at timestamptz default now()
+  updated_at timestamptz default now(),
+  deleted_at timestamptz null
 );
 
 -- Trigger to auto-create profile when user signs up in Supabase Auth
@@ -44,10 +45,12 @@ create trigger on_auth_user_created
 -- ------------------------------------------------------------------------------
 create table if not exists public.tahun_ajaran (
   id uuid primary key default gen_random_uuid(),
-  nama text not null unique,
+  nama text not null,
   is_active boolean not null default false,
-  created_at timestamptz default now()
+  created_at timestamptz default now(),
+  deleted_at timestamptz null
 );
+create unique index if not exists uq_tahun_ajaran_nama on public.tahun_ajaran (nama) where deleted_at is null;
 
 create table if not exists public.semester (
   id uuid primary key default gen_random_uuid(),
@@ -55,23 +58,28 @@ create table if not exists public.semester (
   tipe text not null check (tipe in ('ganjil', 'genap')),
   is_active boolean not null default false,
   created_at timestamptz default now(),
-  constraint uq_semester_tahun_tipe unique (tahun_ajaran_id, tipe)
+  deleted_at timestamptz null
 );
+create unique index if not exists uq_semester_tahun_tipe on public.semester (tahun_ajaran_id, tipe) where deleted_at is null;
 
 -- ------------------------------------------------------------------------------
 -- 3. Kelas & Mata Pelajaran (Mapel)
 -- ------------------------------------------------------------------------------
 create table if not exists public.kelas (
   id uuid primary key default gen_random_uuid(),
-  nama text not null unique,
-  created_at timestamptz default now()
+  nama text not null,
+  created_at timestamptz default now(),
+  deleted_at timestamptz null
 );
+create unique index if not exists uq_kelas_nama on public.kelas (nama) where deleted_at is null;
 
 create table if not exists public.mapel (
   id uuid primary key default gen_random_uuid(),
-  nama text not null unique,
-  created_at timestamptz default now()
+  nama text not null,
+  created_at timestamptz default now(),
+  deleted_at timestamptz null
 );
+create unique index if not exists uq_mapel_nama on public.mapel (nama) where deleted_at is null;
 
 -- ------------------------------------------------------------------------------
 -- 4. Mapping Guru ↔ Kelas & Guru ↔ Mapel
@@ -82,8 +90,9 @@ create table if not exists public.guru_kelas (
   kelas_id uuid not null references public.kelas(id) on delete cascade,
   semester_id uuid not null references public.semester(id) on delete cascade,
   created_at timestamptz default now(),
-  constraint uq_guru_kelas unique (guru_id, semester_id)
+  deleted_at timestamptz null
 );
+create unique index if not exists uq_guru_kelas on public.guru_kelas (guru_id, semester_id) where deleted_at is null;
 
 create table if not exists public.guru_mapel (
   id uuid primary key default gen_random_uuid(),
@@ -91,8 +100,9 @@ create table if not exists public.guru_mapel (
   mapel_id uuid not null references public.mapel(id) on delete cascade,
   semester_id uuid not null references public.semester(id) on delete cascade,
   created_at timestamptz default now(),
-  constraint uq_guru_mapel unique (guru_id, mapel_id, semester_id)
+  deleted_at timestamptz null
 );
+create unique index if not exists uq_guru_mapel on public.guru_mapel (guru_id, mapel_id, semester_id) where deleted_at is null;
 
 -- ------------------------------------------------------------------------------
 -- 5. Siswa (with Soft Delete)
@@ -104,9 +114,9 @@ create table if not exists public.siswa (
   kelas_id uuid not null references public.kelas(id) on delete cascade,
   semester_id uuid not null references public.semester(id) on delete cascade,
   created_at timestamptz default now(),
-  deleted_at timestamptz null,
-  constraint uq_siswa_nis_semester unique (nis, semester_id)
+  deleted_at timestamptz null
 );
+create unique index if not exists uq_siswa_nis_semester on public.siswa (nis, semester_id) where deleted_at is null;
 
 -- ------------------------------------------------------------------------------
 -- 6. Kehadiran (Absence-Only: S = Sakit, I = Izin, A = Alpa)
@@ -119,8 +129,9 @@ create table if not exists public.kehadiran (
   status text not null check (status in ('S', 'I', 'A')),
   created_at timestamptz default now(),
   updated_at timestamptz default now(),
-  constraint uq_kehadiran_siswa_tanggal unique (siswa_id, tanggal)
+  deleted_at timestamptz null
 );
+create unique index if not exists uq_kehadiran_siswa_tanggal on public.kehadiran (siswa_id, tanggal) where deleted_at is null;
 
 -- ------------------------------------------------------------------------------
 -- 7. Komponen Nilai, Nilai, & Nilai Akhir
@@ -133,8 +144,9 @@ create table if not exists public.komponen_nilai (
   nama text not null,
   urutan int not null default 1 check (urutan between 1 and 5),
   created_at timestamptz default now(),
-  constraint uq_komponen_nilai_urutan unique (mapel_id, guru_id, semester_id, urutan)
+  deleted_at timestamptz null
 );
+create unique index if not exists uq_komponen_nilai_urutan on public.komponen_nilai (mapel_id, guru_id, semester_id, urutan) where deleted_at is null;
 
 create table if not exists public.nilai (
   id uuid primary key default gen_random_uuid(),
@@ -144,8 +156,9 @@ create table if not exists public.nilai (
   nilai numeric not null check (nilai >= 0 and nilai <= 100),
   created_at timestamptz default now(),
   updated_at timestamptz default now(),
-  constraint uq_nilai_siswa_komponen unique (siswa_id, komponen_nilai_id)
+  deleted_at timestamptz null
 );
+create unique index if not exists uq_nilai_siswa_komponen on public.nilai (siswa_id, komponen_nilai_id) where deleted_at is null;
 
 create table if not exists public.nilai_akhir (
   id uuid primary key default gen_random_uuid(),
@@ -157,8 +170,9 @@ create table if not exists public.nilai_akhir (
   nilai_akhir numeric not null default 0,
   created_at timestamptz default now(),
   updated_at timestamptz default now(),
-  constraint uq_nilai_akhir_siswa_mapel_semester unique (siswa_id, mapel_id, semester_id)
+  deleted_at timestamptz null
 );
+create unique index if not exists uq_nilai_akhir_siswa_mapel_semester on public.nilai_akhir (siswa_id, mapel_id, semester_id) where deleted_at is null;
 
 -- ------------------------------------------------------------------------------
 -- 8. Row Level Security (RLS) Policies

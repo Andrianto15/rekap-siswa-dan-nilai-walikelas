@@ -51,6 +51,7 @@ export default function MappingAdminPage() {
           *,
           tahun_ajaran (*)
         `)
+        .is('deleted_at', null)
         .order('created_at', { ascending: false });
 
       if (semData && semData.length > 0) {
@@ -64,15 +65,24 @@ export default function MappingAdminPage() {
       const { data: guruData } = await supabase
         .from('profiles')
         .select('*')
+        .is('deleted_at', null)
         .order('full_name', { ascending: true });
       if (guruData) setGurus(guruData);
 
       // Kelas
-      const { data: kData } = await supabase.from('kelas').select('*').order('nama', { ascending: true });
+      const { data: kData } = await supabase
+        .from('kelas')
+        .select('*')
+        .is('deleted_at', null)
+        .order('nama', { ascending: true });
       if (kData) setKelasList(kData);
 
       // Mapel
-      const { data: mData } = await supabase.from('mapel').select('*').order('nama', { ascending: true });
+      const { data: mData } = await supabase
+        .from('mapel')
+        .select('*')
+        .is('deleted_at', null)
+        .order('nama', { ascending: true });
       if (mData) setMapelList(mData);
     } catch (err: unknown) {
       toastError('Gagal Mengambil Metadata', (err as Error).message);
@@ -92,7 +102,8 @@ export default function MappingAdminPage() {
           guru:profiles (*),
           kelas:kelas (*)
         `)
-        .eq('semester_id', semId);
+        .eq('semester_id', semId)
+        .is('deleted_at', null);
 
       if (waliError) throw waliError;
       setWaliMappings((waliData || []) as unknown as GuruKelas[]);
@@ -105,7 +116,8 @@ export default function MappingAdminPage() {
           guru:profiles (*),
           mapel:mapel (*)
         `)
-        .eq('semester_id', semId);
+        .eq('semester_id', semId)
+        .is('deleted_at', null);
 
       if (mapelError) throw mapelError;
       setMapelMappings((mapelData || []) as unknown as GuruMapel[]);
@@ -138,6 +150,7 @@ export default function MappingAdminPage() {
           guru_id: selectedGuruIdWali,
           kelas_id: selectedKelasId,
           semester_id: selectedSemesterId,
+          deleted_at: null,
         },
         { onConflict: 'guru_id,semester_id' }
       );
@@ -163,7 +176,10 @@ export default function MappingAdminPage() {
     });
     if (!isConfirmed) return;
     try {
-      const { error } = await supabase.from('guru_kelas').delete().eq('id', id);
+      const { error } = await supabase
+        .from('guru_kelas')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', id);
       if (error) throw error;
       toastSuccess('Berhasil', 'Penugasan wali kelas dihapus');
       fetchMappings(selectedSemesterId);
@@ -184,6 +200,7 @@ export default function MappingAdminPage() {
           guru_id: selectedGuruIdMapel,
           mapel_id: selectedMapelId,
           semester_id: selectedSemesterId,
+          deleted_at: null,
         },
         { onConflict: 'guru_id,mapel_id,semester_id' }
       );
@@ -209,7 +226,10 @@ export default function MappingAdminPage() {
     });
     if (!isConfirmed) return;
     try {
-      const { error } = await supabase.from('guru_mapel').delete().eq('id', id);
+      const { error } = await supabase
+        .from('guru_mapel')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', id);
       if (error) throw error;
       toastSuccess('Berhasil', 'Penugasan guru mapel dihapus');
       fetchMappings(selectedSemesterId);

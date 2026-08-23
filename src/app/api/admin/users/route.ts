@@ -17,6 +17,7 @@ export async function GET() {
       .from('profiles')
       .select('role')
       .eq('id', user.id)
+      .is('deleted_at', null)
       .single();
 
     if (currentProfile?.role !== 'admin') {
@@ -27,6 +28,7 @@ export async function GET() {
     const { data: profiles, error: profileError } = await supabaseAdmin
       .from('profiles')
       .select('*')
+      .is('deleted_at', null)
       .order('created_at', { ascending: false });
 
     if (profileError) {
@@ -67,6 +69,7 @@ export async function POST(request: Request) {
       .from('profiles')
       .select('role')
       .eq('id', user.id)
+      .is('deleted_at', null)
       .single();
 
     if (currentProfile?.role !== 'admin') {

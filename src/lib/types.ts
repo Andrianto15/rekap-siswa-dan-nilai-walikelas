@@ -10,6 +10,7 @@ export interface Profile {
   role: Role;
   created_at?: string;
   updated_at?: string;
+  deleted_at?: string | null;
 }
 
 export interface TahunAjaran {
@@ -17,6 +18,7 @@ export interface TahunAjaran {
   nama: string;
   is_active: boolean;
   created_at?: string;
+  deleted_at?: string | null;
 }
 
 export interface Semester {
@@ -25,6 +27,7 @@ export interface Semester {
   tipe: SemesterTipe;
   is_active: boolean;
   created_at?: string;
+  deleted_at?: string | null;
   tahun_ajaran?: TahunAjaran;
 }
 
@@ -32,12 +35,14 @@ export interface Kelas {
   id: string;
   nama: string;
   created_at?: string;
+  deleted_at?: string | null;
 }
 
 export interface Mapel {
   id: string;
   nama: string;
   created_at?: string;
+  deleted_at?: string | null;
 }
 
 export interface GuruKelas {
@@ -46,6 +51,7 @@ export interface GuruKelas {
   kelas_id: string;
   semester_id: string;
   created_at?: string;
+  deleted_at?: string | null;
   guru?: Profile;
   kelas?: Kelas;
   semester?: Semester;
@@ -57,6 +63,7 @@ export interface GuruMapel {
   mapel_id: string;
   semester_id: string;
   created_at?: string;
+  deleted_at?: string | null;
   guru?: Profile;
   mapel?: Mapel;
   semester?: Semester;
@@ -81,6 +88,7 @@ export interface Kehadiran {
   status: KehadiranStatus;
   created_at?: string;
   updated_at?: string;
+  deleted_at?: string | null;
   siswa?: Siswa;
 }
 
@@ -92,6 +100,7 @@ export interface KomponenNilai {
   nama: string;
   urutan: number;
   created_at?: string;
+  deleted_at?: string | null;
 }
 
 export interface Nilai {
@@ -102,6 +111,7 @@ export interface Nilai {
   nilai: number;
   created_at?: string;
   updated_at?: string;
+  deleted_at?: string | null;
   komponen?: KomponenNilai;
 }
 
@@ -115,6 +125,7 @@ export interface NilaiAkhir {
   nilai_akhir: number;
   created_at?: string;
   updated_at?: string;
+  deleted_at?: string | null;
   siswa?: Siswa;
   mapel?: Mapel;
 }

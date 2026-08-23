@@ -63,12 +63,17 @@ export default function RekapKehadiranPage() {
         .from('semester')
         .select(`*, tahun_ajaran (*)`)
         .eq('is_active', true)
+        .is('deleted_at', null)
         .single();
 
       if (semData) {
         setActiveSemester(semData as unknown as Semester);
 
-        const { data: kData } = await supabase.from('kelas').select('*').order('nama', { ascending: true });
+        const { data: kData } = await supabase
+          .from('kelas')
+          .select('*')
+          .is('deleted_at', null)
+          .order('nama', { ascending: true });
         if (kData) setKelasList(kData);
 
         if (user && !isAdmin) {
@@ -77,6 +82,7 @@ export default function RekapKehadiranPage() {
             .select('*')
             .eq('guru_id', user.id)
             .eq('semester_id', semData.id)
+            .is('deleted_at', null)
             .single();
 
           if (guruKelasData) {
@@ -118,7 +124,8 @@ export default function RekapKehadiranPage() {
           .from('kehadiran')
           .select('*, siswa:siswa(*)')
           .eq('semester_id', activeSemester.id)
-          .in('siswa_id', sIds);
+          .in('siswa_id', sIds)
+          .is('deleted_at', null);
 
         // If monthly filter applied
         if (viewMode === 'bulan') {
@@ -186,6 +193,7 @@ export default function RekapKehadiranPage() {
         .select('*')
         .eq('siswa_id', siswa.id)
         .eq('semester_id', activeSemester?.id || '')
+        .is('deleted_at', null)
         .order('tanggal', { ascending: false });
 
       setStudentDetailAbsences((data || []) as unknown as Kehadiran[]);

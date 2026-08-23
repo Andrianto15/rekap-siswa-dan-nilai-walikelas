@@ -21,6 +21,7 @@ export async function PUT(
       .from('profiles')
       .select('role')
       .eq('id', user.id)
+      .is('deleted_at', null)
       .single();
 
     if (currentProfile?.role !== 'admin') {
@@ -43,6 +44,7 @@ export async function PUT(
       .from('profiles')
       .update(updateData)
       .eq('id', id)
+      .is('deleted_at', null)
       .select()
       .single();
 
@@ -75,7 +77,7 @@ export async function PUT(
   }
 }
 
-// DELETE: Delete user from auth and cascade to profile
+// DELETE: Soft delete user profile
 export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -100,6 +102,7 @@ export async function DELETE(
       .from('profiles')
       .select('role')
       .eq('id', user.id)
+      .is('deleted_at', null)
       .single();
 
     if (currentProfile?.role !== 'admin') {
@@ -108,12 +111,14 @@ export async function DELETE(
 
     const supabaseAdmin = await createAdminClient();
 
-    // Delete user from auth (will cascade delete profile)
-    const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(id);
+    // Soft delete profile
+    const { error: deleteError } = await supabaseAdmin
+      .from('profiles')
+      .update({ deleted_at: new Date().toISOString() })
+      .eq('id', id);
 
     if (deleteError) {
-      // If auth delete fails or user doesn't exist in auth, delete directly from profile table
-      await supabaseAdmin.from('profiles').delete().eq('id', id);
+      return NextResponse.json({ error: deleteError.message }, { status: 400 });
     }
 
     return NextResponse.json({ success: true, message: 'User berhasil dihapus' });

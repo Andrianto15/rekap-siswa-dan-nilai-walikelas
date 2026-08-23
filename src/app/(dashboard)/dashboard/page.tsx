@@ -63,6 +63,7 @@ export default function DashboardPage() {
         .from('semester')
         .select(`*, tahun_ajaran (*)`)
         .eq('is_active', true)
+        .is('deleted_at', null)
         .single();
 
       if (semData) {
@@ -71,10 +72,10 @@ export default function DashboardPage() {
         if (isAdmin) {
           // Admin Stats
           const [kRes, gRes, sRes, mRes] = await Promise.all([
-            supabase.from('kelas').select('id', { count: 'exact', head: true }),
-            supabase.from('profiles').select('id', { count: 'exact', head: true }),
+            supabase.from('kelas').select('id', { count: 'exact', head: true }).is('deleted_at', null),
+            supabase.from('profiles').select('id', { count: 'exact', head: true }).is('deleted_at', null),
             supabase.from('siswa').select('id', { count: 'exact', head: true }).eq('semester_id', semData.id).is('deleted_at', null),
-            supabase.from('mapel').select('id', { count: 'exact', head: true }),
+            supabase.from('mapel').select('id', { count: 'exact', head: true }).is('deleted_at', null),
           ]);
 
           setAdminStats({
@@ -93,6 +94,7 @@ export default function DashboardPage() {
             .select(`*, kelas (*)`)
             .eq('guru_id', user.id)
             .eq('semester_id', semData.id)
+            .is('deleted_at', null)
             .single();
 
           if (wkData && (wkData as unknown as GuruKelas).kelas) {
@@ -125,7 +127,8 @@ export default function DashboardPage() {
                 .eq('semester_id', semData.id)
                 .gte('tanggal', startDate)
                 .lte('tanggal', endDate)
-                .in('siswa_id', sIds);
+                .in('siswa_id', sIds)
+                .is('deleted_at', null);
 
               const records = (attData || []) as unknown as Kehadiran[];
               setMonthlyAbsences({
@@ -141,7 +144,8 @@ export default function DashboardPage() {
             .from('guru_mapel')
             .select(`*, mapel (*)`)
             .eq('guru_id', user.id)
-            .eq('semester_id', semData.id);
+            .eq('semester_id', semData.id)
+            .is('deleted_at', null);
 
           if (gmData) {
             const mapels = gmData

@@ -17,6 +17,7 @@ export function useAuth() {
         .from('profiles')
         .select('*')
         .eq('id', currentUser.id)
+        .is('deleted_at', null)
         .single();
 
       if (profileData) {

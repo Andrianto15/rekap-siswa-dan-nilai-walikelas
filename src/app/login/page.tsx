@@ -44,6 +44,7 @@ function LoginForm() {
           .from('profiles')
           .select('role')
           .eq('id', data.user.id)
+          .is('deleted_at', null)
           .single();
 
         toastSuccess('Berhasil Masuk', 'Selamat datang kembali!');

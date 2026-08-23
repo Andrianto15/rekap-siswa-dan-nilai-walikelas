@@ -58,12 +58,17 @@ export default function InputKehadiranPage() {
         .from('semester')
         .select(`*, tahun_ajaran (*)`)
         .eq('is_active', true)
+        .is('deleted_at', null)
         .single();
 
       if (semData) {
         setActiveSemester(semData as unknown as Semester);
 
-        const { data: kData } = await supabase.from('kelas').select('*').order('nama', { ascending: true });
+        const { data: kData } = await supabase
+          .from('kelas')
+          .select('*')
+          .is('deleted_at', null)
+          .order('nama', { ascending: true });
         if (kData) setKelasList(kData);
 
         if (user && !isAdmin) {
@@ -72,6 +77,7 @@ export default function InputKehadiranPage() {
             .select('*')
             .eq('guru_id', user.id)
             .eq('semester_id', semData.id)
+            .is('deleted_at', null)
             .single();
 
           if (guruKelasData) {
@@ -119,7 +125,8 @@ export default function InputKehadiranPage() {
         .from('kehadiran')
         .select('*')
         .eq('tanggal', selectedDate)
-        .in('siswa_id', siswaIds);
+        .in('siswa_id', siswaIds)
+        .is('deleted_at', null);
 
       if (error) throw error;
 
@@ -153,7 +160,8 @@ export default function InputKehadiranPage() {
         .select('*')
         .gte('tanggal', startDate)
         .lte('tanggal', endDate)
-        .in('siswa_id', siswaIds);
+        .in('siswa_id', siswaIds)
+        .is('deleted_at', null);
 
       if (error) throw error;
 
@@ -212,12 +220,13 @@ export default function InputKehadiranPage() {
     try {
       const siswaIds = siswaList.map((s) => s.id);
 
-      // 1. Delete existing records for this day and these students
+      // 1. Soft delete existing records for this day and these students
       await supabase
         .from('kehadiran')
-        .delete()
+        .update({ deleted_at: new Date().toISOString() })
         .eq('tanggal', selectedDate)
-        .in('siswa_id', siswaIds);
+        .in('siswa_id', siswaIds)
+        .is('deleted_at', null);
 
       // 2. Prepare absence rows only (S, I, A)
       const absenceRows: { siswa_id: string; semester_id: string; tanggal: string; status: KehadiranStatus }[] = [];
@@ -275,13 +284,14 @@ export default function InputKehadiranPage() {
       const startDate = `${gridYear}-${String(gridMonth).padStart(2, '0')}-01`;
       const endDate = `${gridYear}-${String(gridMonth).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
 
-      // 1. Delete all records for this month and students
+      // 1. Soft delete all records for this month and students
       await supabase
         .from('kehadiran')
-        .delete()
+        .update({ deleted_at: new Date().toISOString() })
         .gte('tanggal', startDate)
         .lte('tanggal', endDate)
-        .in('siswa_id', siswaIds);
+        .in('siswa_id', siswaIds)
+        .is('deleted_at', null);
 
       // 2. Prepare absence rows
       const absenceRows: { siswa_id: string; semester_id: string; tanggal: string; status: KehadiranStatus }[] = [];

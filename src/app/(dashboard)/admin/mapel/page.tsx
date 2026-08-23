@@ -31,6 +31,7 @@ export default function MapelAdminPage() {
       const { data, error } = await supabase
         .from('mapel')
         .select('*')
+        .is('deleted_at', null)
         .order('nama', { ascending: true });
 
       if (error) throw error;
@@ -97,7 +98,10 @@ export default function MapelAdminPage() {
     if (!isConfirmed) return;
 
     try {
-      const { error } = await supabase.from('mapel').delete().eq('id', id);
+      const { error } = await supabase
+        .from('mapel')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', id);
       if (error) throw error;
       toastSuccess('Berhasil', `Mata pelajaran ${nama} berhasil dihapus`);
       fetchMapel();

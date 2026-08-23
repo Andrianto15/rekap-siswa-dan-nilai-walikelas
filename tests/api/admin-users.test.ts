@@ -20,8 +20,10 @@ describe('API /api/admin/users', () => {
       from: jest.fn().mockReturnValue({
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
-            single: jest.fn().mockResolvedValue({
-              data: { role: 'admin' },
+            is: jest.fn().mockReturnValue({
+              single: jest.fn().mockResolvedValue({
+                data: { role: 'admin' },
+              }),
             }),
           }),
         }),
@@ -31,11 +33,13 @@ describe('API /api/admin/users', () => {
     mockAdminClient = {
       from: jest.fn().mockReturnValue({
         select: jest.fn().mockReturnValue({
-          order: jest.fn().mockResolvedValue({
-            data: [
-              { id: 'u1', full_name: 'Guru 1', role: 'guru', created_at: '2026-01-01' },
-            ],
-            error: null,
+          is: jest.fn().mockReturnValue({
+            order: jest.fn().mockResolvedValue({
+              data: [
+                { id: 'u1', full_name: 'Guru 1', role: 'guru', created_at: '2026-01-01' },
+              ],
+              error: null,
+            }),
           }),
         }),
         upsert: jest.fn().mockReturnValue({
@@ -83,8 +87,10 @@ describe('API /api/admin/users', () => {
       mockUserClient.from.mockReturnValue({
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
-            single: jest.fn().mockResolvedValue({
-              data: { role: 'guru' },
+            is: jest.fn().mockReturnValue({
+              single: jest.fn().mockResolvedValue({
+                data: { role: 'guru' },
+              }),
             }),
           }),
         }),
