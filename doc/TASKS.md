@@ -110,7 +110,7 @@ Breakdown task untuk development. Diurutkan berdasarkan dependency — kerjakan 
 
 ## Phase 7: Dashboard
 
-- [ ] **T-043** — Guru: Dashboard (`/dashboard`)
+- [x] **T-043** — Guru: Dashboard (`/dashboard`)
   - Summary kehadiran bulan ini (S, I, A count)
   - Total siswa
   - Quick action cards (ke input kehadiran, input nilai)
