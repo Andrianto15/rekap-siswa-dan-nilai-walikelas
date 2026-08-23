@@ -71,20 +71,20 @@ Breakdown task untuk development. Diurutkan berdasarkan dependency — kerjakan 
 
 ## Phase 5: Guru — Kehadiran
 
-- [ ] **T-031** — Guru: Input kehadiran per tanggal (`/kehadiran/input`)
+- [x] **T-031** — Guru: Input kehadiran per tanggal (`/kehadiran/input`)
   - Pilih tanggal → tampilkan semua siswa → toggle S/I/A
   - Auto-save atau save button
-- [ ] **T-032** — Guru: Input kehadiran per bulan (grid view)
+- [x] **T-032** — Guru: Input kehadiran per bulan (grid view)
   - Grid: rows = siswa, columns = tanggal
   - Click cell → cycle S/I/A/kosong
-- [ ] **T-033** — Guru: Rekap kehadiran per bulan (`/kehadiran`)
+- [x] **T-033** — Guru: Rekap kehadiran per bulan (`/kehadiran`)
   - Tabel semua siswa × S, I, A count
   - Filter bulan
-- [ ] **T-034** — Guru: Rekap kehadiran keseluruhan (semester)
+- [x] **T-034** — Guru: Rekap kehadiran keseluruhan (semester)
   - Total S, I, A per siswa
-- [ ] **T-035** — Guru: Rekap kehadiran per siswa (detail per bulan)
+- [x] **T-035** — Guru: Rekap kehadiran per siswa (detail per bulan)
   - Klik siswa → lihat breakdown per bulan
-- [ ] **T-036** — Guru: Download rekap kehadiran ke Excel
+- [x] **T-036** — Guru: Download rekap kehadiran ke Excel
 
 ---
 
