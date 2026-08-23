@@ -90,21 +90,21 @@ Breakdown task untuk development. Diurutkan berdasarkan dependency — kerjakan 
 
 ## Phase 6: Guru — Nilai
 
-- [ ] **T-037** — Guru: Setup komponen nilai per mapel
+- [x] **T-037** — Guru: Setup komponen nilai per mapel
   - Buat/edit nama komponen (max 5)
   - Atur urutan
-- [ ] **T-038** — Guru: Input nilai (`/nilai/input`)
+- [x] **T-038** — Guru: Input nilai (`/nilai/input`)
   - Pilih mapel → tabel siswa × komponen → input nilai
   - Auto-calculate rata-rata
-- [ ] **T-039** — Guru: Rekap nilai (`/nilai`)
+- [x] **T-039** — Guru: Rekap nilai (`/nilai`)
   - Tabel semua siswa + komponen + rata-rata
   - Filter per mapel
-- [ ] **T-040** — Guru: Nilai akhir (editable)
+- [x] **T-040** — Guru: Nilai akhir (editable)
   - Default = rata-rata komponen
   - Bisa override manual
-- [ ] **T-041** — Guru: Ranking berdasarkan nilai akhir
+- [x] **T-041** — Guru: Ranking berdasarkan nilai akhir
   - List siswa 1-N ordered by nilai akhir
-- [ ] **T-042** — Guru: Download rekap nilai ke Excel
+- [x] **T-042** — Guru: Download rekap nilai ke Excel
 
 ---
 
