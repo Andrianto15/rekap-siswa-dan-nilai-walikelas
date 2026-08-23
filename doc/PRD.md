@@ -124,7 +124,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 | **Responsive** | Mobile-first, usable di 360px+ |
 | **Performance** | First load < 3s di 3G |
 | **Auth** | Row Level Security (RLS) di Supabase |
-| **Data Safety & Soft Delete** | Universal soft delete (`deleted_at timestamptz null`) pada seluruh tabel database (`profiles`, `tahun_ajaran`, `semester`, `kelas`, `mapel`, `guru_kelas`, `guru_mapel`, `siswa`, `kehadiran`, `komponen_nilai`, `nilai`, `nilai_akhir`). Seluruh query select memfilter `deleted_at is null`, dan operasi delete melakukan update timestamp. Partial unique index digunakan untuk record aktif. |
+| **Data Safety & Soft Delete** | Universal soft delete (`deleted_at timestamptz null`) pada seluruh tabel database (`profiles`, `tahun_ajaran`, `semester`, `kelas`, `mapel`, `guru_kelas`, `guru_mapel`, `siswa`, `kehadiran`, `komponen_nilai`, `nilai`, `nilai_akhir`). Seluruh query select memfilter `deleted_at is null`, dan operasi delete melakukan update timestamp. Partial unique index digunakan untuk record aktif (`where deleted_at is null`). Operasi upsert (impor siswa, mapping guru, input nilai) dipartisi menjadi query eksisting + bulk insert data baru / update data lama untuk kompatibilitas PostgreSQL partial unique indexes tanpa error `42P10`. |
 | **Audit Timestamps** | Universal audit columns (`created_at timestamptz default now()` & `updated_at timestamptz default now()`) pada seluruh 12 tabel database. `created_at` diisi sekali saat insert, dan `updated_at` diperbarui otomatis oleh trigger PostgreSQL (`handle_updated_at()`) dan layer aplikasi pada setiap update/mutasi. |
 | **Browser** | Chrome, Safari, Firefox (latest 2 versions) |
 
@@ -147,7 +147,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 - **Environment**: Custom JSDOM with Node Web Standard APIs (Fetch, Request, Response, Headers)
 - **Test Directory**: `tests/`
 - **Coverage Suites**:
-  - `tests/lib/siswa.test.ts`: Validasi struktur data Siswa (NIS, NISN, Jenis Kelamin L/P), format template Excel impor, parsing Excel file dengan NISN & L/P, dan algoritma pencarian/filter siswa.
+  - `tests/lib/siswa.test.ts`: Validasi struktur data Siswa (NIS, NISN, Jenis Kelamin L/P), format template Excel impor, parsing Excel file dengan NISN & L/P, algoritma pencarian/filter siswa, serta partisi aman operasi import (`partitionSiswaImport`) untuk pencegahan error conflict partial index.
   - `tests/lib/utils.test.ts`: Utility formatting (`formatDate`, `formatShortDate`, `formatNumber`) & `cn`.
   - `tests/lib/excel.test.ts`: Template download, Excel export, and Excel file parser (`parseExcelFile`).
   - `tests/lib/soft-delete.test.ts`: Soft delete integrity verification, active records filtering logic & model structure.

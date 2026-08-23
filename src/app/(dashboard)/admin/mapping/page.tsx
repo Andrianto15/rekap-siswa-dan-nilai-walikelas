@@ -145,18 +145,37 @@ export default function MappingAdminPage() {
     setSubmittingWali(true);
 
     try {
-      const { error } = await supabase.from('guru_kelas').upsert(
-        {
+      const { data: existing, error: fetchErr } = await supabase
+        .from('guru_kelas')
+        .select('id')
+        .eq('guru_id', selectedGuruIdWali)
+        .eq('semester_id', selectedSemesterId)
+        .maybeSingle();
+
+      if (fetchErr) throw fetchErr;
+
+      let saveError;
+      if (existing) {
+        const { error } = await supabase
+          .from('guru_kelas')
+          .update({
+            kelas_id: selectedKelasId,
+            deleted_at: null,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', existing.id);
+        saveError = error;
+      } else {
+        const { error } = await supabase.from('guru_kelas').insert({
           guru_id: selectedGuruIdWali,
           kelas_id: selectedKelasId,
           semester_id: selectedSemesterId,
-          deleted_at: null,
           updated_at: new Date().toISOString(),
-        },
-        { onConflict: 'guru_id,semester_id' }
-      );
+        });
+        saveError = error;
+      }
 
-      if (error) throw error;
+      if (saveError) throw saveError;
       toastSuccess('Berhasil', 'Penetapan Wali Kelas berhasil disimpan');
       setIsWaliModalOpen(false);
       fetchMappings(selectedSemesterId);
@@ -199,18 +218,37 @@ export default function MappingAdminPage() {
     setSubmittingMapel(true);
 
     try {
-      const { error } = await supabase.from('guru_mapel').upsert(
-        {
+      const { data: existing, error: fetchErr } = await supabase
+        .from('guru_mapel')
+        .select('id')
+        .eq('guru_id', selectedGuruIdMapel)
+        .eq('mapel_id', selectedMapelId)
+        .eq('semester_id', selectedSemesterId)
+        .maybeSingle();
+
+      if (fetchErr) throw fetchErr;
+
+      let saveError;
+      if (existing) {
+        const { error } = await supabase
+          .from('guru_mapel')
+          .update({
+            deleted_at: null,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', existing.id);
+        saveError = error;
+      } else {
+        const { error } = await supabase.from('guru_mapel').insert({
           guru_id: selectedGuruIdMapel,
           mapel_id: selectedMapelId,
           semester_id: selectedSemesterId,
-          deleted_at: null,
           updated_at: new Date().toISOString(),
-        },
-        { onConflict: 'guru_id,mapel_id,semester_id' }
-      );
+        });
+        saveError = error;
+      }
 
-      if (error) throw error;
+      if (saveError) throw saveError;
       toastSuccess('Berhasil', 'Penugasan Guru Mata Pelajaran berhasil disimpan');
       setIsMapelModalOpen(false);
       fetchMappings(selectedSemesterId);

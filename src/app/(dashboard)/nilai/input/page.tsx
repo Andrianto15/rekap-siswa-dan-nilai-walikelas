@@ -333,13 +333,61 @@ export default function InputNilaiPage() {
         });
       });
 
-      // Upsert nilai
+      // Save / Update nilai
       if (nilaiRows.length > 0) {
-        const { error: nilaiError } = await supabase
+        const { data: existingNilai, error: fetchNilaiErr } = await supabase
           .from('nilai')
-          .upsert(nilaiRows, { onConflict: 'siswa_id,komponen_nilai_id' });
+          .select('id, siswa_id, komponen_nilai_id')
+          .in('siswa_id', studentIds)
+          .in('komponen_nilai_id', compIds);
 
-        if (nilaiError) throw nilaiError;
+        if (fetchNilaiErr) throw fetchNilaiErr;
+
+        const existingNilaiMap = new Map(
+          (existingNilai || []).map((n) => [`${n.siswa_id}_${n.komponen_nilai_id}`, n.id])
+        );
+
+        const nilaiToInsert: {
+          siswa_id: string;
+          komponen_nilai_id: string;
+          semester_id: string;
+          nilai: number;
+          created_at: string;
+          updated_at: string;
+        }[] = [];
+        const nilaiUpdatePromises: Promise<{ error: unknown }>[] = [];
+
+        nilaiRows.forEach((row) => {
+          const key = `${row.siswa_id}_${row.komponen_nilai_id}`;
+          const existingId = existingNilaiMap.get(key);
+          if (existingId) {
+            nilaiUpdatePromises.push(
+              supabase
+                .from('nilai')
+                .update({
+                  nilai: row.nilai,
+                  deleted_at: null,
+                  updated_at: row.updated_at,
+                })
+                .eq('id', existingId) as unknown as Promise<{ error: unknown }>
+            );
+          } else {
+            nilaiToInsert.push({
+              ...row,
+              created_at: row.updated_at,
+            });
+          }
+        });
+
+        if (nilaiToInsert.length > 0) {
+          const { error: insertNilaiErr } = await supabase.from('nilai').insert(nilaiToInsert);
+          if (insertNilaiErr) throw insertNilaiErr;
+        }
+        if (nilaiUpdatePromises.length > 0) {
+          const results = await Promise.all(nilaiUpdatePromises);
+          const firstErr = results.find((r) => r.error)?.error;
+          if (firstErr) throw firstErr;
+        }
       }
 
       // 2. Prepare final scores payload
@@ -370,13 +418,62 @@ export default function InputNilaiPage() {
         }
       });
 
-      // Upsert nilai_akhir
+      // Save / Update nilai_akhir
       if (nilaiAkhirRows.length > 0) {
-        const { error: naError } = await supabase
+        const { data: existingNA, error: fetchNAErr } = await supabase
           .from('nilai_akhir')
-          .upsert(nilaiAkhirRows, { onConflict: 'siswa_id,mapel_id,semester_id' });
+          .select('id, siswa_id')
+          .in('siswa_id', studentIds)
+          .eq('mapel_id', selectedMapelId)
+          .eq('semester_id', activeSemester.id);
 
-        if (naError) throw naError;
+        if (fetchNAErr) throw fetchNAErr;
+
+        const existingNAMap = new Map((existingNA || []).map((na) => [na.siswa_id, na.id]));
+        const naToInsert: {
+          siswa_id: string;
+          mapel_id: string;
+          guru_id: string;
+          semester_id: string;
+          rata_rata: number;
+          nilai_akhir: number;
+          created_at: string;
+          updated_at: string;
+        }[] = [];
+        const naUpdatePromises: Promise<{ error: unknown }>[] = [];
+
+        nilaiAkhirRows.forEach((row) => {
+          const existingId = existingNAMap.get(row.siswa_id);
+          if (existingId) {
+            naUpdatePromises.push(
+              supabase
+                .from('nilai_akhir')
+                .update({
+                  guru_id: row.guru_id,
+                  rata_rata: row.rata_rata,
+                  nilai_akhir: row.nilai_akhir,
+                  deleted_at: null,
+                  updated_at: row.updated_at,
+                })
+                .eq('id', existingId) as unknown as Promise<{ error: unknown }>
+            );
+          } else {
+            naToInsert.push({
+              ...row,
+              created_at: row.updated_at,
+            });
+          }
+        });
+
+        if (naToInsert.length > 0) {
+          const { error: insertNAErr } = await supabase.from('nilai_akhir').insert(naToInsert);
+          if (insertNAErr) throw insertNAErr;
+        }
+        if (naUpdatePromises.length > 0) {
+          const naResults = await Promise.all(naUpdatePromises);
+          const firstErr = naResults.find((r) => r.error)?.error;
+          if (firstErr) throw firstErr;
+        }
       }
 
       toastSuccess('Berhasil Disimpan', 'Nilai komponen dan nilai akhir berhasil disimpan.');

@@ -1,13 +1,7 @@
 import type { Siswa, JenisKelamin } from '@/lib/types';
 import { downloadExcelTemplate, parseExcelFile } from '@/lib/excel';
+import { parseGender, partitionSiswaImport } from '@/lib/siswa';
 import * as XLSX from 'xlsx';
-
-const parseGender = (rawVal: unknown): JenisKelamin | undefined => {
-  const val = String(rawVal || '').trim().toUpperCase();
-  if (val === 'L' || val === 'LAKI-LAKI' || val === 'LAKI' || val === 'PRIA' || val === 'M' || val === 'MALE') return 'L';
-  if (val === 'P' || val === 'PEREMPUAN' || val === 'WANITA' || val === 'F' || val === 'FEMALE') return 'P';
-  return undefined;
-};
 
 describe('Siswa, NISN, & Jenis Kelamin Domain Logic', () => {
   let appendChildSpy: jest.SpyInstance;
@@ -139,6 +133,72 @@ describe('Siswa, NISN, & Jenis Kelamin Domain Logic', () => {
     });
   });
 
+  describe('partitionSiswaImport (Safe Upsert without PostgREST onConflict 42P10)', () => {
+    it('should partition new students into toInsert and existing students into toUpdate', () => {
+      const rawRows = [
+        { nis: '1001', nisn: '001', nama: 'Siswa Satu', jenis_kelamin: 'L' as const },
+        { nis: '1002', nisn: '002', nama: 'Siswa Dua', jenis_kelamin: 'P' as const },
+        { nis: '1003', nisn: null, nama: 'Siswa Tiga Baru', jenis_kelamin: 'L' as const },
+      ];
+
+      const existingRecords = [
+        { id: 'uuid-1', nis: '1001' },
+        { id: 'uuid-2', nis: '1002' },
+      ];
+
+      const timestamp = '2026-08-23T12:00:00.000Z';
+      const result = partitionSiswaImport(rawRows, existingRecords, 'kelas-1', 'sem-1', timestamp);
+
+      expect(result.toInsert).toHaveLength(1);
+      expect(result.toInsert[0]).toEqual({
+        nis: '1003',
+        nisn: null,
+        nama: 'Siswa Tiga Baru',
+        jenis_kelamin: 'L',
+        kelas_id: 'kelas-1',
+        semester_id: 'sem-1',
+        created_at: timestamp,
+        updated_at: timestamp,
+      });
+
+      expect(result.toUpdate).toHaveLength(2);
+      expect(result.toUpdate[0]).toEqual({
+        id: 'uuid-1',
+        nisn: '001',
+        nama: 'Siswa Satu',
+        jenis_kelamin: 'L',
+        kelas_id: 'kelas-1',
+        deleted_at: null,
+        updated_at: timestamp,
+      });
+      expect(result.toUpdate[1].id).toBe('uuid-2');
+      expect(result.toUpdate[1].deleted_at).toBeNull();
+    });
+
+    it('should handle all new students', () => {
+      const rawRows = [
+        { nis: '2001', nama: 'Siswa Baru A' },
+        { nis: '2002', nama: 'Siswa Baru B' },
+      ];
+
+      const result = partitionSiswaImport(rawRows, [], 'kelas-2', 'sem-1');
+      expect(result.toInsert).toHaveLength(2);
+      expect(result.toUpdate).toHaveLength(0);
+    });
+
+    it('should handle all existing students and ensure deleted_at is reset to null (restoration)', () => {
+      const rawRows = [
+        { nis: '1001', nama: 'Siswa Ex' },
+      ];
+      const existing = [{ id: 'uuid-ex', nis: '1001' }];
+
+      const result = partitionSiswaImport(rawRows, existing, 'kelas-1', 'sem-1');
+      expect(result.toInsert).toHaveLength(0);
+      expect(result.toUpdate).toHaveLength(1);
+      expect(result.toUpdate[0].deleted_at).toBeNull();
+    });
+  });
+
   describe('Search & Filter with NISN', () => {
     const sampleStudents: Siswa[] = [
       { id: '1', nama: 'Ahmad Dani', nis: '1001', nisn: '0011223344', jenis_kelamin: 'L', kelas_id: 'k1', semester_id: 'sem1' },
@@ -181,3 +241,4 @@ describe('Siswa, NISN, & Jenis Kelamin Domain Logic', () => {
     });
   });
 });
+

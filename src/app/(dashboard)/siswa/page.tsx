@@ -25,6 +25,7 @@ import { useConfirm } from '@/components/ui/ConfirmDialog';
 import { useAuth } from '@/hooks/useAuth';
 import { useRole } from '@/hooks/useRole';
 import { downloadExcelTemplate, parseExcelFile } from '@/lib/excel';
+import { parseGender, partitionSiswaImport } from '@/lib/siswa';
 import type { Siswa, Kelas, Semester, GuruKelas, JenisKelamin } from '@/lib/types';
 
 interface ParsedExcelRow {
@@ -52,13 +53,6 @@ interface ParsedSiswa {
   isValid: boolean;
   error?: string;
 }
-
-const parseGender = (rawVal: unknown): JenisKelamin | undefined => {
-  const val = String(rawVal || '').trim().toUpperCase();
-  if (val === 'L' || val === 'LAKI-LAKI' || val === 'LAKI' || val === 'PRIA' || val === 'M' || val === 'MALE') return 'L';
-  if (val === 'P' || val === 'PEREMPUAN' || val === 'WANITA' || val === 'F' || val === 'FEMALE') return 'P';
-  return undefined;
-};
 
 export default function SiswaPage() {
   const supabase = useMemo(() => createClient(), []);
@@ -322,7 +316,7 @@ export default function SiswaPage() {
     }
   };
 
-  // Confirm bulk insert from parsed Excel
+  // Confirm bulk insert / update from parsed Excel
   const handleImportExcel = async () => {
     if (!parsedList.length || !selectedKelasId || !activeSemester) return;
     const validRows = parsedList.filter((r) => r.isValid);
@@ -333,21 +327,47 @@ export default function SiswaPage() {
 
     setImporting(true);
     try {
-      const insertPayload = validRows.map((r) => ({
-        nis: r.nis,
-        nisn: r.nisn || null,
-        nama: r.nama,
-        jenis_kelamin: r.jenis_kelamin || null,
-        kelas_id: selectedKelasId,
-        semester_id: activeSemester.id,
-        updated_at: new Date().toISOString(),
-      }));
+      const nisList = validRows.map((r) => r.nis);
 
-      const { error } = await supabase
+      // Fetch existing records (including soft-deleted) to determine insert vs update
+      const { data: existingRecords, error: fetchErr } = await supabase
         .from('siswa')
-        .upsert(insertPayload, { onConflict: 'nis,semester_id' });
+        .select('id, nis')
+        .eq('semester_id', activeSemester.id)
+        .in('nis', nisList);
 
-      if (error) throw error;
+      if (fetchErr) throw fetchErr;
+
+      const { toInsert, toUpdate } = partitionSiswaImport(
+        validRows,
+        existingRecords || [],
+        selectedKelasId,
+        activeSemester.id
+      );
+
+      if (toInsert.length > 0) {
+        const { error: insertErr } = await supabase.from('siswa').insert(toInsert);
+        if (insertErr) throw insertErr;
+      }
+
+      if (toUpdate.length > 0) {
+        const updatePromises = toUpdate.map((item) =>
+          supabase
+            .from('siswa')
+            .update({
+              nisn: item.nisn,
+              nama: item.nama,
+              jenis_kelamin: item.jenis_kelamin,
+              kelas_id: item.kelas_id,
+              deleted_at: item.deleted_at,
+              updated_at: item.updated_at,
+            })
+            .eq('id', item.id)
+        );
+        const results = await Promise.all(updatePromises);
+        const firstErr = results.find((r) => r.error)?.error;
+        if (firstErr) throw firstErr;
+      }
 
       toastSuccess('Impor Berhasil', `${validRows.length} siswa berhasil dimasukkan ke kelas.`);
       setIsExcelModalOpen(false);

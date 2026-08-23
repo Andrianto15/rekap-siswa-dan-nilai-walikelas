@@ -127,4 +127,23 @@
 - **PRD**:
   - Menyinkronkan `doc/PRD.md` dengan entitas NIS, NISN, Jenis Kelamin L/P, alur upload/import, serta cakupan QA testing.
 
+---
+
+## Versi 0.3.7 (Perbaikan Error 42P10 pada Impor Excel Siswa & Mutasi Upsert)
+### Resolusi Konflik Partial Unique Index PostgreSQL (Error 42P10)
+- **Root Cause**:
+  - PostgreSQL mengembalikan error `42P10: there is no unique or exclusion constraint matching the ON CONFLICT specification` ketika PostgREST mengeksekusi `.upsert(..., { onConflict })` pada tabel yang telah beralih ke partial unique index (`WHERE deleted_at IS NULL`).
+- **Modul Siswa & Impor Excel (`src/app/(dashboard)/siswa/page.tsx` & `src/lib/siswa.ts`)**:
+  - Membuat helper function `partitionSiswaImport` di `src/lib/siswa.ts` untuk mempartisi data baris excel berdasarkan pencarian data eksisting (`nis` & `semester_id`).
+  - Data siswa baru dimasukkan melalui bulk `.insert()`, sedangkan data siswa eksisting (termasuk yang sebelumnya di-soft-delete) diperbarui melalui `.update()` dengan mengembalikan `deleted_at: null` dan memperbarui `updated_at`.
+- **Modul Admin Mapping (`src/app/(dashboard)/admin/mapping/page.tsx`)**:
+  - Mengganti `.upsert()` pada `guru_kelas` dan `guru_mapel` dengan query pemeriksaan ID eksisting sebelum melakukan `.insert()` atau `.update()`.
+- **Modul Input Nilai (`src/app/(dashboard)/nilai/input/page.tsx`)**:
+  - Mengganti `.upsert()` pada tabel `nilai` dan `nilai_akhir` dengan query pemeriksaan ID eksisting sebelum mempartisi ke batch `.insert()` dan per-item `.update()`.
+- **Unit Testing & QA**:
+  - Menambahkan test suite `partitionSiswaImport` pada `tests/lib/siswa.test.ts` (mencakup partisi insert/update, pemulihan data soft-deleted, dan penanganan timestamp).
+  - Seluruh 13 test suites (79 unit tests) lulus 100%.
+- **PRD & Dokumentasi**:
+  - Memperbarui `doc/PRD.md` section Data Safety & QA Strategy.
+
 
