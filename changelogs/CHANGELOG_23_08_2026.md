@@ -1,7 +1,6 @@
 # Changelog — 23-08-2026
 
-## Summary Perubahan
-
+## Versi 0.3.2
 ### Setup & Konfigurasi Unit Testing (Jest)
 - Mengonfigurasi Jest framework dengan `@testing-library/react`, `@testing-library/jest-dom`, dan custom JSDOM environment (`jest.custom-env.js`) yang memfasilitasi Web Standard APIs (Fetch, Request, Response, Headers) untuk Next.js server components/routes.
 - Menambahkan scripts pada `package.json`:
@@ -37,6 +36,9 @@
 7. **`tests/components/ui.test.tsx`**:
    - Pengujian fungsionalitas dan interaksi komponen UI: `Button`, `Badge`, `Input`, `Select`, `Modal`, `ConfirmDialog`, `Toast`, dan `Table`.
 
+---
+
+## Versi 0.3.3
 ### Implementasi Universal Soft Delete
 - **Database Schema & Migrations**:
   - Menambahkan kolom `deleted_at timestamptz null` ke seluruh 12 tabel Supabase (`profiles`, `tahun_ajaran`, `semester`, `kelas`, `mapel`, `guru_kelas`, `guru_mapel`, `siswa`, `kehadiran`, `komponen_nilai`, `nilai`, `nilai_akhir`).
@@ -55,6 +57,9 @@
   - Memperbarui test suites `tests/api/admin-users.test.ts`, `tests/api/admin-users-id.test.ts`, `tests/hooks/useAuth.test.ts`, dan `tests/lib/supabase/middleware.test.ts` untuk mendukung chaining `.is('deleted_at', null)`.
   - Memastikan seluruh unit test lulus 100% (63 passing tests).
 
+---
+
+## Versi 0.3.4
 ### Implementasi Universal updated_at & Trigger Mutasi
 - **Database Schema & Migrations**:
   - Menambahkan kolom `updated_at timestamptz default now()` ke 8 tabel yang belum memiliki kolom tersebut (`tahun_ajaran`, `semester`, `kelas`, `mapel`, `guru_kelas`, `guru_mapel`, `siswa`, `komponen_nilai`).
@@ -69,6 +74,25 @@
 - **Unit Testing**:
   - Menambahkan test suite baru `tests/lib/timestamps.test.ts` untuk memverifikasi immutability `created_at`, pembaruan nilai `updated_at` pada saat mutasi/soft-delete, serta kelengkapan timestamp pada seluruh model.
   - Memastikan seluruh 11 test suites lulus 100% (66 tests passed).
+- **Pembaruan Dokumentasi**:
+  - Memperbarui `doc/PRD.md` dengan section Audit Timestamps dan penambahan cakupan test suite `tests/lib/timestamps.test.ts`.
 
-### Pembaruan Dokumentasi
-- Memperbarui `doc/PRD.md` dengan section Audit Timestamps dan penambahan cakupan test suite `tests/lib/timestamps.test.ts`.
+---
+
+## Versi 0.3.5
+### Standardisasi Format Label Dropdown Pilih Kelas
+- **Frontend / UI Components**:
+  - Menghapus prefix `"Kelas "` pada seluruh opsi dropdown pemilihan kelas (`<Select>`), sehingga menampilkan nama kelas secara langsung (misal: `"XI TKJ 3"`, `"X RPL 1"`).
+  - Diperbarui pada 7 halaman komponen:
+    1. `src/app/(dashboard)/siswa/page.tsx`: filter siswa per kelas.
+    2. `src/app/(dashboard)/kehadiran/page.tsx`: filter rekap presensi kelas.
+    3. `src/app/(dashboard)/kehadiran/input/page.tsx`: selector kelas pada input presensi harian & bulanan.
+    4. `src/app/(dashboard)/nilai/page.tsx`: filter rekap nilai siswa.
+    5. `src/app/(dashboard)/nilai/input/page.tsx`: selector kelas pada input penilaian siswa.
+    6. `src/app/(dashboard)/admin/data/page.tsx`: filter kelas pada supervisi penilaian guru.
+    7. `src/app/(dashboard)/admin/mapping/page.tsx`: modal dropdown penugasan wali kelas ke rombel.
+- **Unit Testing & QA**:
+  - Menambahkan test suite baru `tests/components/kelas-dropdown.test.tsx` untuk memastikan nama kelas di-render langsung tanpa prefix redundant `"Kelas "`.
+  - Seluruh 12 test suites lulus 100% (67 tests passed).
+- **PRD & Dokumentasi**:
+  - Menambahkan standar UI/UX form controls untuk dropdown kelas pada `doc/PRD.md`.

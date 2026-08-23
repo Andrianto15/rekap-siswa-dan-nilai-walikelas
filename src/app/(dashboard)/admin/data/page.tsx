@@ -587,7 +587,7 @@ export default function AdminViewAllDataPage() {
                     onChange={(e) => setSelectedGradingKelasId(e.target.value)}
                     options={gradingClasses.map((k) => ({
                       value: k.id,
-                      label: `Kelas ${k.nama}`,
+                      label: k.nama,
                     }))}
                   />
                 </div>

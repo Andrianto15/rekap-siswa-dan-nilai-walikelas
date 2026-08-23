@@ -328,7 +328,7 @@ export default function RekapKehadiranPage() {
               onChange={(e) => setSelectedKelasId(e.target.value)}
               options={kelasList.map((k) => ({
                 value: k.id,
-                label: `Kelas ${k.nama}`,
+                label: k.nama,
               }))}
             />
           </div>

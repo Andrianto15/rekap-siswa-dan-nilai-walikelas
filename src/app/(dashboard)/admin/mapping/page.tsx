@@ -472,7 +472,7 @@ export default function MappingAdminPage() {
             required
             options={kelasList.map((k) => ({
               value: k.id,
-              label: `Kelas ${k.nama}`,
+              label: k.nama,
             }))}
           />
 
