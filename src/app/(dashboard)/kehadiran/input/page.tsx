@@ -231,10 +231,10 @@ export default function InputKehadiranPage() {
         .in('siswa_id', siswaIds)
         .is('deleted_at', null);
 
-      // 2. Prepare absence rows only (S, I, A)
+      // 2. Prepare absence rows only (S, I, A, D)
       const absenceRows: { siswa_id: string; semester_id: string; tanggal: string; status: KehadiranStatus }[] = [];
       Object.entries(dailyStatusMap).forEach(([siswaId, status]) => {
-        if (status && ['S', 'I', 'A'].includes(status)) {
+        if (status && ['S', 'I', 'A', 'D'].includes(status)) {
           absenceRows.push({
             siswa_id: siswaId,
             semester_id: activeSemester.id,
@@ -259,7 +259,7 @@ export default function InputKehadiranPage() {
     }
   };
 
-  // Grid cell cycle: Hadir (null) -> S -> I -> A -> Hadir (null)
+  // Grid cell cycle: Hadir (null) -> S -> I -> A -> D -> Hadir (null)
   const handleCycleGridCell = (siswaId: string, day: number) => {
     const dateStr = `${gridYear}-${String(gridMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     const key = `${siswaId}_${dateStr}`;
@@ -269,7 +269,8 @@ export default function InputKehadiranPage() {
     if (current === null) next = 'S';
     else if (current === 'S') next = 'I';
     else if (current === 'I') next = 'A';
-    else if (current === 'A') next = null;
+    else if (current === 'A') next = 'D';
+    else if (current === 'D') next = null;
 
     setGridStatusMap((prev) => ({
       ...prev,
@@ -302,7 +303,7 @@ export default function InputKehadiranPage() {
       // 2. Prepare absence rows
       const absenceRows: { siswa_id: string; semester_id: string; tanggal: string; status: KehadiranStatus }[] = [];
       Object.entries(gridStatusMap).forEach(([key, status]) => {
-        if (status && ['S', 'I', 'A'].includes(status)) {
+        if (status && ['S', 'I', 'A', 'D'].includes(status)) {
           const [sId, date] = key.split('_');
           if (date && date.startsWith(`${gridYear}-${String(gridMonth).padStart(2, '0')}`)) {
             absenceRows.push({
@@ -350,7 +351,7 @@ export default function InputKehadiranPage() {
               <h1 className="text-xl font-bold text-slate-900">Input Kehadiran Siswa</h1>
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              Catat absensi ketidakhadiran (Sakit, Izin, Alpa) harian atau bulanan.
+              Catat absensi ketidakhadiran (Sakit, Izin, Alpa, Dispen) harian atau bulanan.
             </p>
           </div>
         </div>
@@ -486,7 +487,7 @@ export default function InputKehadiranPage() {
               Daftar Siswa ({siswaList.length})
             </span>
             <span className="text-[11px] text-slate-500">
-              Klik status untuk mengubah (S = Sakit, I = Izin, A = Alpa, H = Hadir)
+              Klik status untuk mengubah (S = Sakit, I = Izin, A = Alpa, D = Dispen, H = Hadir)
             </span>
           </div>
 
@@ -517,7 +518,7 @@ export default function InputKehadiranPage() {
                     </div>
 
                     {/* Radio-like toggle buttons */}
-                    <div className="flex items-center gap-1.5 self-end sm:self-auto">
+                    <div className="flex flex-wrap items-center gap-1.5 self-end sm:self-auto">
                       <button
                         type="button"
                         onClick={() => handleDailyStatusChange(siswa.id, null)}
@@ -562,6 +563,17 @@ export default function InputKehadiranPage() {
                       >
                         Alpa (A)
                       </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDailyStatusChange(siswa.id, 'D')}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer border ${
+                          currentStatus === 'D'
+                            ? 'bg-purple-600 text-white border-purple-600 shadow-xs'
+                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                        }`}
+                      >
+                        Dispen (D)
+                      </button>
                     </div>
                   </div>
                 );
@@ -584,6 +596,7 @@ export default function InputKehadiranPage() {
               <Badge variant="sakit" size="sm">S</Badge>
               <Badge variant="izin" size="sm">I</Badge>
               <Badge variant="alpa" size="sm">A</Badge>
+              <Badge variant="dispen" size="sm">D</Badge>
             </div>
           </div>
 
@@ -639,6 +652,8 @@ export default function InputKehadiranPage() {
                                 ? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
                                 : status === 'A'
                                 ? 'bg-rose-100 text-rose-800 hover:bg-rose-200'
+                                : status === 'D'
+                                ? 'bg-purple-100 text-purple-800 hover:bg-purple-200'
                                 : 'hover:bg-slate-100 text-slate-300'
                             }`}
                             title={`Klik untuk ubah presensi (${siswa.nama}, Tanggal ${d})`}

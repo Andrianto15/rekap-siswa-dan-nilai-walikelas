@@ -2,7 +2,7 @@ export type Role = 'admin' | 'guru';
 
 export type SemesterTipe = 'ganjil' | 'genap';
 
-export type KehadiranStatus = 'S' | 'I' | 'A';
+export type KehadiranStatus = 'S' | 'I' | 'A' | 'D';
 
 export interface Profile {
   id: string;
@@ -148,6 +148,7 @@ export interface RekapKehadiranSiswa {
   sakit: number;
   izin: number;
   alpa: number;
+  dispen: number;
   totalAbsen: number;
 }
 

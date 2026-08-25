@@ -257,12 +257,14 @@ export default function AdminViewAllDataPage() {
       const sakit = records.filter((r) => r.status === 'S').length;
       const izin = records.filter((r) => r.status === 'I').length;
       const alpa = records.filter((r) => r.status === 'A').length;
+      const dispen = records.filter((r) => r.status === 'D').length;
       return {
         siswa,
         sakit,
         izin,
         alpa,
-        totalAbsen: sakit + izin + alpa,
+        dispen,
+        totalAbsen: sakit + izin + alpa + dispen,
       };
     });
   }, [attendanceStudents, attendanceRecords]);
@@ -316,7 +318,7 @@ export default function AdminViewAllDataPage() {
     const currentTeacher = teachers.find((t) => t.id === selectedTeacherId)?.full_name || 'Guru';
     const currentKelas = teacherWaliKelas?.nama || 'Kelas';
 
-    const headers = ['No', 'NIS', 'NISN', 'Nama Siswa', 'Sakit', 'Izin', 'Alpa', 'Total Absen'];
+    const headers = ['No', 'NIS', 'NISN', 'Nama Siswa', 'Sakit', 'Izin', 'Alpa', 'Dispen', 'Total Absen'];
     const rows = rekapKehadiran.map((item, idx) => [
       idx + 1,
       item.siswa.nis,
@@ -325,6 +327,7 @@ export default function AdminViewAllDataPage() {
       item.sakit,
       item.izin,
       item.alpa,
+      item.dispen,
       item.totalAbsen,
     ]);
 
@@ -527,16 +530,17 @@ export default function AdminViewAllDataPage() {
                 <TableHead className="text-center w-24">Sakit</TableHead>
                 <TableHead className="text-center w-24">Izin</TableHead>
                 <TableHead className="text-center w-24">Alpa</TableHead>
+                <TableHead className="text-center w-24">Dispen</TableHead>
                 <TableHead className="text-center w-28">Total Absen</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableEmpty colSpan={8} message="Memuat presensi..." />
+                <TableEmpty colSpan={9} message="Memuat presensi..." />
               ) : !teacherWaliKelas ? (
-                <TableEmpty colSpan={8} message="Guru ini tidak ditugaskan sebagai wali kelas di semester aktif." />
+                <TableEmpty colSpan={9} message="Guru ini tidak ditugaskan sebagai wali kelas di semester aktif." />
               ) : rekapKehadiran.length === 0 ? (
-                <TableEmpty colSpan={8} message="Belum ada siswa di kelas ini." />
+                <TableEmpty colSpan={9} message="Belum ada siswa di kelas ini." />
               ) : (
                 rekapKehadiran.map((item, idx) => (
                   <TableRow key={item.siswa.id}>
@@ -552,6 +556,9 @@ export default function AdminViewAllDataPage() {
                     </TableCell>
                     <TableCell className="text-center">
                       {item.alpa > 0 ? <Badge variant="alpa">{item.alpa}</Badge> : '-'}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {item.dispen > 0 ? <Badge variant="dispen">{item.dispen}</Badge> : '-'}
                     </TableCell>
                     <TableCell className="text-center font-bold">
                       {item.totalAbsen > 0 ? `${item.totalAbsen} hari` : <span className="text-emerald-600 font-normal text-xs">100% Hadir</span>}
