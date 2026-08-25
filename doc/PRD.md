@@ -33,7 +33,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 - Satu guru = **satu kelas** (wali kelas).
 - Siswa terdaftar di satu kelas per tahun ajaran.
 - Identitas siswa memuat **NIS** (Nomor Induk Siswa, wajib), **NISN** (Nomor Induk Siswa Nasional, opsional), dan **Jenis Kelamin** (`L`/`P`, opsional).
-- Input siswa bisa **satu per satu** atau **upload file Excel** dengan template kolom `NIS`, `NISN`, `Nama Lengkap`, dan `L/P`.
+- Input siswa bisa **satu per satu** atau **upload file Excel** dengan template kolom `NISN`, `NIS`, `Nama Lengkap`, dan `L/P`.
 
 ### 3.3 Mata Pelajaran
 
@@ -98,9 +98,9 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 
 | Fitur | Deskripsi |
 |-------|-----------|
-| Daftar siswa | List siswa di kelas guru dengan kolom NIS, NISN, Nama, dan L/P |
+| Daftar siswa | List siswa di kelas guru dengan kolom NISN, NIS, Nama, dan L/P |
 | Tambah siswa | Form input satu per satu (NIS, NISN opsional, Nama Lengkap, Jenis Kelamin L/P) |
-| Upload Excel | Upload file `.xlsx` untuk bulk import (kolom NIS, NISN, Nama Lengkap, L/P) |
+| Upload Excel | Upload file `.xlsx` untuk bulk import (kolom NISN, NIS, Nama Lengkap, L/P) |
 | Edit / Hapus | Edit data atau hapus siswa (soft delete) |
 
 ### 4.6 Menu Admin
@@ -159,6 +159,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - `tests/components/ui.test.tsx`: UI primitives (`Button`, `Badge`, `Input`, `Select`, `Modal`, `ConfirmDialog`, `Toast`, `Table`).
   - `tests/components/kelas-dropdown.test.tsx`: Verifikasi format label dropdown pemilih kelas langsung menggunakan nama kelas tanpa redundant prefix "Kelas ".
   - `tests/components/kelas-table.test.tsx`: Verifikasi rendering tabel kelas menampilkan nama kelas ("Kelas [nama]") tanpa badge redundan.
+  - `tests/components/siswa-table.test.tsx`: Verifikasi rendering tabel siswa dan pratinjau impor Excel dengan urutan kolom NISN sebelum NIS.
 - **Command**: `npm test` / `npm run test:coverage`
 
 ---
@@ -171,7 +172,8 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - Seluruh opsi dropdown kelas (`<Select>`) menampilkan nama kelas secara langsung tanpa prefix "Kelas " (contoh: `"XI TKJ 3"`, `"X RPL 1"`, bukan `"Kelas XI TKJ 3"`).
   - Konsisten diterapkan di seluruh modul: Siswa, Kehadiran, Input Kehadiran, Nilai, Input Nilai, Admin Supervisi Data, dan Admin Mapping Guru/Wali Kelas.
 - **Identitas Siswa (NIS, NISN, & Jenis Kelamin)**:
-  - NIS ditampilkan sebagai identifier utama sekolah, NISN ditampilkan sebagai identitas nasional pendukung, dan Jenis Kelamin (`L` / `P`) sebagai penanda gender.
+  - Urutan kolom pada tabel daftar siswa menampilkan **NISN** terlebih dahulu sebelum **NIS** (`No` → `NISN` → `NIS` → `Nama Lengkap` → `L/P` → `Aksi`).
+  - Template unduhan Excel dan tabel pratinjau data hasil unggah file menggunakan urutan kolom **NISN**, **NIS**, **Nama Lengkap**, dan **L/P**.
   - Input NISN dan Jenis Kelamin bersifat opsional namun disertakan dalam template download, import Excel, tabel daftar siswa, pratinjau data, dan form modal siswa.
 
 

@@ -1,4 +1,4 @@
-import type { Siswa, JenisKelamin } from '@/lib/types';
+import type { Siswa } from '@/lib/types';
 import { downloadExcelTemplate, parseExcelFile } from '@/lib/excel';
 import { parseGender, partitionSiswaImport } from '@/lib/siswa';
 import * as XLSX from 'xlsx';
@@ -56,12 +56,12 @@ describe('Siswa, NISN, & Jenis Kelamin Domain Logic', () => {
   });
 
   describe('Excel Template with NISN & L/P', () => {
-    it('should generate student import template with NIS, NISN, Nama Lengkap, and L/P headers', () => {
-      const headers = ['NIS', 'NISN', 'Nama Lengkap', 'L/P'];
+    it('should generate student import template with NISN, NIS, Nama Lengkap, and L/P headers', () => {
+      const headers = ['NISN', 'NIS', 'Nama Lengkap', 'L/P'];
       const sampleRows = [
-        ['1001', '0012345678', 'Ahmad Dani Pratama', 'L'],
-        ['1002', '0012345679', 'Bunga Citra Lestari', 'P'],
-        ['1003', '0012345680', 'Citra Kirana Dewi', 'P'],
+        ['0012345678', '1001', 'Ahmad Dani Pratama', 'L'],
+        ['0012345679', '1002', 'Bunga Citra Lestari', 'P'],
+        ['0012345680', '1003', 'Citra Kirana Dewi', 'P'],
       ];
 
       downloadExcelTemplate('Template_Impor_Siswa.xlsx', headers, sampleRows);

@@ -267,11 +267,11 @@ export default function SiswaPage() {
 
   // Download template Excel
   const handleDownloadTemplate = () => {
-    const headers = ['NIS', 'NISN', 'Nama Lengkap', 'L/P'];
+    const headers = ['NISN', 'NIS', 'Nama Lengkap', 'L/P'];
     const sampleRows = [
-      ['1001', '0012345678', 'Ahmad Dani Pratama', 'L'],
-      ['1002', '0012345679', 'Bunga Citra Lestari', 'P'],
-      ['1003', '0012345680', 'Citra Kirana Dewi', 'P'],
+      ['0012345678', '1001', 'Ahmad Dani Pratama', 'L'],
+      ['0012345679', '1002', 'Bunga Citra Lestari', 'P'],
+      ['0012345680', '1003', 'Citra Kirana Dewi', 'P'],
     ];
     downloadExcelTemplate('Template_Impor_Siswa.xlsx', headers, sampleRows);
     toastInfo('Mengunduh Template', 'File template Excel berhasil diunduh.');
@@ -454,8 +454,8 @@ export default function SiswaPage() {
         <TableHeader>
           <TableRow>
             <TableHead className="w-14">No</TableHead>
-            <TableHead className="w-28">NIS</TableHead>
             <TableHead className="w-32">NISN</TableHead>
+            <TableHead className="w-28">NIS</TableHead>
             <TableHead>Nama Lengkap</TableHead>
             <TableHead className="w-20 text-center">L/P</TableHead>
             <TableHead className="text-right">Aksi</TableHead>
@@ -477,11 +477,11 @@ export default function SiswaPage() {
             filteredSiswa.map((item, index) => (
               <TableRow key={item.id}>
                 <TableCell className="font-semibold text-slate-400">{index + 1}</TableCell>
-                <TableCell className="font-mono text-xs font-semibold text-slate-700">
-                  {item.nis}
-                </TableCell>
                 <TableCell className="font-mono text-xs text-slate-600">
                   {item.nisn || '-'}
+                </TableCell>
+                <TableCell className="font-mono text-xs font-semibold text-slate-700">
+                  {item.nis}
                 </TableCell>
                 <TableCell>
                   <span className="font-semibold text-slate-900">{item.nama}</span>
@@ -599,7 +599,7 @@ export default function SiswaPage() {
             <div>
               <p className="text-xs font-semibold text-slate-800">1. Unduh Format Template Excel</p>
               <p className="text-[11px] text-slate-500 mt-0.5">
-                Pastikan format kolom sesuai (kolom <code>NIS</code>, <code>NISN</code>, <code>Nama Lengkap</code>, dan <code>L/P</code>).
+                Pastikan format kolom sesuai (kolom <code>NISN</code>, <code>NIS</code>, <code>Nama Lengkap</code>, dan <code>L/P</code>).
               </p>
             </div>
             <Button
@@ -646,8 +646,8 @@ export default function SiswaPage() {
                   <thead className="bg-slate-100 sticky top-0 text-slate-700 font-semibold border-b">
                     <tr>
                       <th className="p-2 w-10">Status</th>
-                      <th className="p-2 w-20">NIS</th>
                       <th className="p-2 w-24">NISN</th>
+                      <th className="p-2 w-20">NIS</th>
                       <th className="p-2">Nama Lengkap</th>
                       <th className="p-2 w-16 text-center">L/P</th>
                     </tr>
@@ -664,8 +664,8 @@ export default function SiswaPage() {
                             </span>
                           )}
                         </td>
-                        <td className="p-2 font-mono font-medium">{item.nis || '-'}</td>
                         <td className="p-2 font-mono font-medium text-slate-600">{item.nisn || '-'}</td>
+                        <td className="p-2 font-mono font-medium">{item.nis || '-'}</td>
                         <td className="p-2">{item.nama || '-'}</td>
                         <td className="p-2 text-center font-bold text-slate-700">{item.jenis_kelamin || '-'}</td>
                       </tr>
