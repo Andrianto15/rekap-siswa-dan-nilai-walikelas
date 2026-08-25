@@ -158,12 +158,15 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - `tests/api/admin-users.test.ts` & `tests/api/admin-users-id.test.ts`: User management API endpoints (auth, validation, soft-delete & CRUD responses).
   - `tests/components/ui.test.tsx`: UI primitives (`Button`, `Badge`, `Input`, `Select`, `Modal`, `ConfirmDialog`, `Toast`, `Table`).
   - `tests/components/kelas-dropdown.test.tsx`: Verifikasi format label dropdown pemilih kelas langsung menggunakan nama kelas tanpa redundant prefix "Kelas ".
+  - `tests/components/kelas-table.test.tsx`: Verifikasi rendering tabel kelas menampilkan nama kelas ("Kelas [nama]") tanpa badge redundan.
 - **Command**: `npm test` / `npm run test:coverage`
 
 ---
 
 ## 8. UI/UX Standards & Form Controls
 
+- **Tabel Kelola Kelas (Admin)**:
+  - Kolom Nama Kelas pada tabel Kelola Kelas (`/admin/kelas`) hanya menampilkan teks nama kelas (`"Kelas [nama]"`) tanpa kotak badge nama kelas ganda/redundan di sampingnya.
 - **Dropdown Pemilihan Kelas**:
   - Seluruh opsi dropdown kelas (`<Select>`) menampilkan nama kelas secara langsung tanpa prefix "Kelas " (contoh: `"XI TKJ 3"`, `"X RPL 1"`, bukan `"Kelas XI TKJ 3"`).
   - Konsisten diterapkan di seluruh modul: Siswa, Kehadiran, Input Kehadiran, Nilai, Input Nilai, Admin Supervisi Data, dan Admin Mapping Guru/Wali Kelas.
