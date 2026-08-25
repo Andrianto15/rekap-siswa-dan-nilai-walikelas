@@ -84,20 +84,20 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 | Sub-menu Kehadiran Keseluruhan | Rekap & input kehadiran harian umum seluruh siswa tanpa memandang mata pelajaran. |
 | Input per tanggal | Pilih tanggal → tampilkan semua siswa → centang S/I/A/D |
 | Input per bulan | Pilih bulan → grid siswa × tanggal → isi S/I/A/D |
-| Rekap per bulan | Tabel semua siswa, kolom: NIS, NISN, Nama, S, I, A, D count per bulan |
-| Rekap keseluruhan | Tabel semua siswa, kolom: NIS, NISN, Nama, total S, I, A, D semester ini |
-| Rekap per siswa | Detail riwayat ketidakhadiran per siswa sesuai sub-menu aktif (menampilkan NIS & NISN) |
-| Download Excel | Export rekap ke file `.xlsx` lengkap dengan judul sub-menu/mapel, NIS, dan NISN |
+| Rekap per bulan | Tabel semua siswa, kolom: NISN, NIS, Nama, S, I, A, D count per bulan |
+| Rekap keseluruhan | Tabel semua siswa, kolom: NISN, NIS, Nama, total S, I, A, D semester ini |
+| Rekap per siswa | Detail riwayat ketidakhadiran per siswa sesuai sub-menu aktif (menampilkan NISN & NIS) |
+| Download Excel | Export rekap ke file `.xlsx` lengkap dengan judul sub-menu/mapel, NISN, dan NIS |
 
 ### 4.4 Menu Nilai (Guru)
 
 | Fitur | Deskripsi |
 |-------|-----------|
-| Input nilai | Pilih mapel → tabel siswa (NIS, NISN, Nama) × komponen nilai → isi nilai |
-| Rekap nilai | Tabel semua siswa + komponen + rata-rata per mapel + NIS & NISN + info absensi per mapel (S, I, A, D) |
+| Input nilai | Pilih mapel → tabel siswa (NISN, NIS, Nama) × komponen nilai → isi nilai |
+| Rekap nilai | Tabel semua siswa + komponen + rata-rata per mapel + NISN & NIS + info absensi per mapel (S, I, A, D) |
 | Nilai akhir | Tabel nilai akhir (rata-rata) per siswa, editable |
 | Ranking | Urutan siswa 1-N berdasarkan nilai akhir |
-| Download Excel | Export rekap nilai ke file `.xlsx` lengkap dengan komponen, rata-rata, nilai akhir, predikat, dan statistik absensi per mapel |
+| Download Excel | Export rekap nilai ke file `.xlsx` lengkap dengan urutan NISN, NIS, komponen, rata-rata, nilai akhir, predikat, dan statistik absensi per mapel |
 
 ### 4.5 Menu Siswa (Guru)
 
@@ -167,6 +167,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - `tests/components/kelas-dropdown.test.tsx`: Verifikasi format label dropdown pemilih kelas langsung menggunakan nama kelas tanpa redundant prefix "Kelas ".
   - `tests/components/kelas-table.test.tsx`: Verifikasi rendering tabel kelas menampilkan nama kelas ("Kelas [nama]") tanpa badge redundan.
   - `tests/components/siswa-table.test.tsx`: Verifikasi rendering tabel siswa dan pratinjau impor Excel dengan urutan kolom NISN sebelum NIS.
+  - `tests/components/kehadiran-nilai-table.test.tsx`: Verifikasi rendering tabel Kehadiran, Rekap Nilai, dan Input Nilai dengan urutan kolom NISN sebelum NIS.
   - `tests/components/input-kehadiran.test.tsx`: Verifikasi status disabled/enabled tombol Simpan Presensi pada perubahan data, kondisi loading, dan ketiadaan data siswa.
 - **Command**: `npm test` / `npm run test:coverage`
 
@@ -187,8 +188,8 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - Seluruh opsi dropdown kelas (`<Select>`) menampilkan nama kelas secara langsung tanpa prefix "Kelas " (contoh: `"XI TKJ 3"`, `"X RPL 1"`, bukan `"Kelas XI TKJ 3"`).
   - Konsisten diterapkan di seluruh modul: Siswa, Kehadiran, Input Kehadiran, Nilai, Input Nilai, Admin Supervisi Data, dan Admin Mapping Guru/Wali Kelas.
 - **Identitas Siswa (NIS, NISN, & Jenis Kelamin)**:
-  - Urutan kolom pada tabel daftar siswa menampilkan **NISN** terlebih dahulu sebelum **NIS** (`No` → `NISN` → `NIS` → `Nama Lengkap` → `L/P` → `Aksi`).
-  - Template unduhan Excel dan tabel pratinjau data hasil unggah file menggunakan urutan kolom **NISN**, **NIS**, **Nama Lengkap**, dan **L/P**.
+  - Urutan kolom pada tabel daftar siswa (`/siswa`), tabel rekap kehadiran (`/kehadiran`), tabel rekap nilai (`/nilai`), dan tabel matriks input nilai (`/nilai/input`) menampilkan **NISN** terlebih dahulu sebelum **NIS** (`No` / `Peringkat` → `NISN` → `NIS` → `Nama Siswa` ...).
+  - Ekspor spreadsheet Excel dan pratinjau data impor menggunakan urutan kolom **NISN**, **NIS**, **Nama Lengkap**, dst.
   - Input NISN dan Jenis Kelamin bersifat opsional namun disertakan dalam template download, import Excel, tabel daftar siswa, pratinjau data, dan form modal siswa.
 - **Status Presensi Siswa**:
   - Pilihan status ketidakhadiran mencakup Sakit (S - Amber), Izin (I - Blue), Alfa (A - Rose), dan Dispen (D - Purple).

@@ -92,3 +92,22 @@
   - Seluruh 18 test suites lulus 100% (103 tests passed).
 - **PRD & Dokumentasi**:
   - Memperbarui `doc/PRD.md` menyelaraskan konsep data, fitur detail, dan standar UI/UX kehadiran dan nilai.
+
+## Versi 0.3.13
+### Penyesuaian Urutan Kolom NISN dan NIS pada Menu Kehadiran dan Nilai
+- **Rekap Kehadiran Siswa (`src/app/(dashboard)/kehadiran/page.tsx`)**:
+  - Menukar urutan kolom tabel utama Kehadiran menjadi NISN terlebih dahulu baru NIS (`No` → `NISN` → `NIS` → `Nama Siswa` ...).
+  - Menyelaraskan urutan header dan baris data file unduhan Excel menjadi `No`, `NISN`, `NIS`, `Nama Siswa`, dst.
+- **Rekap Nilai Siswa (`src/app/(dashboard)/nilai/page.tsx`)**:
+  - Menukar urutan kolom tabel Rekap Nilai menjadi NISN terlebih dahulu baru NIS (`Peringkat` → `NISN` → `NIS` → `Nama Siswa` ...).
+  - Menyelaraskan urutan header dan baris data file unduhan Excel Rekap Nilai (`Peringkat`, `NISN`, `NIS`, `Nama Siswa`, ...).
+- **Input Nilai Siswa (`src/app/(dashboard)/nilai/input/page.tsx`)**:
+  - Menukar urutan kolom tabel matriks input nilai menjadi `No` → `NISN` → `NIS` → `Nama Siswa` ...
+- **Supervisi Admin Data (`src/app/(dashboard)/admin/data/page.tsx`)**:
+  - Menukar urutan kolom tabel supervisi kehadiran dan rekap nilai serta ekspor spreadsheet Excel agar konsisten (`NISN` sebelum `NIS`).
+- **Unit Testing & QA**:
+  - Menambahkan test suite baru `tests/components/kehadiran-nilai-table.test.tsx` untuk memvalidasi rendering kolom NISN sebelum NIS pada tabel Kehadiran, Rekap Nilai, dan Input Nilai.
+  - Memastikan seluruh 19 test suites lulus 100% (106 tests passed).
+- **PRD & Dokumentasi**:
+  - Memperbarui `doc/PRD.md` menyelaraskan urutan kolom identitas siswa (`NISN` lalu `NIS`) pada tabel Kehadiran & Rekap Nilai, ekspor Excel, dan cakupan test suite.
+

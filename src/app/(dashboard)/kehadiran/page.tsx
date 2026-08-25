@@ -278,11 +278,11 @@ export default function RekapKehadiranPage() {
         ? `Bulan_${selectedMonth}_${selectedYear}`
         : `Semester_${activeSemester?.tipe || 'Ganjil'}`;
 
-    const headers = ['No', 'NIS', 'NISN', 'Nama Siswa', 'Sakit (S)', 'Izin (I)', 'Alpa (A)', 'Dispen (D)', 'Total Absen'];
+    const headers = ['No', 'NISN', 'NIS', 'Nama Siswa', 'Sakit (S)', 'Izin (I)', 'Alpa (A)', 'Dispen (D)', 'Total Absen'];
     const rows = rekapData.map((item, idx) => [
       idx + 1,
-      item.siswa.nis,
       item.siswa.nisn || '-',
+      item.siswa.nis,
       item.siswa.nama,
       item.sakit,
       item.izin,
@@ -550,8 +550,8 @@ export default function RekapKehadiranPage() {
         <TableHeader>
           <TableRow>
             <TableHead className="w-14">No</TableHead>
-            <TableHead className="w-28">NIS</TableHead>
             <TableHead className="w-32">NISN</TableHead>
+            <TableHead className="w-28">NIS</TableHead>
             <TableHead>Nama Siswa</TableHead>
             <TableHead className="text-center w-24">Sakit (S)</TableHead>
             <TableHead className="text-center w-24">Izin (I)</TableHead>
@@ -570,11 +570,11 @@ export default function RekapKehadiranPage() {
             rekapData.map((item, index) => (
               <TableRow key={item.siswa.id}>
                 <TableCell className="font-semibold text-slate-400">{index + 1}</TableCell>
-                <TableCell className="font-mono text-xs font-semibold text-slate-700">
-                  {item.siswa.nis}
-                </TableCell>
                 <TableCell className="font-mono text-xs text-slate-600">
                   {item.siswa.nisn || '-'}
+                </TableCell>
+                <TableCell className="font-mono text-xs font-semibold text-slate-700">
+                  {item.siswa.nis}
                 </TableCell>
                 <TableCell>
                   <span className="font-semibold text-slate-900">{item.siswa.nama}</span>
