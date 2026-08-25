@@ -165,13 +165,15 @@ export default function RekapKehadiranPage() {
       const sakit = records.filter((r) => r.status === 'S').length;
       const izin = records.filter((r) => r.status === 'I').length;
       const alpa = records.filter((r) => r.status === 'A').length;
-      const totalAbsen = sakit + izin + alpa;
+      const dispen = records.filter((r) => r.status === 'D').length;
+      const totalAbsen = sakit + izin + alpa + dispen;
 
       return {
         siswa,
         sakit,
         izin,
         alpa,
+        dispen,
         totalAbsen,
       };
     });
@@ -181,6 +183,7 @@ export default function RekapKehadiranPage() {
   const totalSakit = useMemo(() => rekapData.reduce((acc, r) => acc + r.sakit, 0), [rekapData]);
   const totalIzin = useMemo(() => rekapData.reduce((acc, r) => acc + r.izin, 0), [rekapData]);
   const totalAlpa = useMemo(() => rekapData.reduce((acc, r) => acc + r.alpa, 0), [rekapData]);
+  const totalDispen = useMemo(() => rekapData.reduce((acc, r) => acc + r.dispen, 0), [rekapData]);
 
   // Open detail breakdown modal for a student
   const openStudentDetail = async (siswa: Siswa) => {
@@ -215,7 +218,7 @@ export default function RekapKehadiranPage() {
         ? `Bulan_${selectedMonth}_${selectedYear}`
         : `Semester_${activeSemester?.tipe || 'Ganjil'}`;
 
-    const headers = ['No', 'NIS', 'NISN', 'Nama Siswa', 'Sakit (S)', 'Izin (I)', 'Alpa (A)', 'Total Absen'];
+    const headers = ['No', 'NIS', 'NISN', 'Nama Siswa', 'Sakit (S)', 'Izin (I)', 'Alpa (A)', 'Dispen (D)', 'Total Absen'];
     const rows = rekapData.map((item, idx) => [
       idx + 1,
       item.siswa.nis,
@@ -224,6 +227,7 @@ export default function RekapKehadiranPage() {
       item.sakit,
       item.izin,
       item.alpa,
+      item.dispen,
       item.totalAbsen,
     ]);
 
@@ -249,7 +253,7 @@ export default function RekapKehadiranPage() {
             <h1 className="text-xl font-bold text-slate-900">Rekap Kehadiran Siswa</h1>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            Rekapitulasi presensi ketidakhadiran (Sakit, Izin, Alpa) per bulan dan semester.
+            Rekapitulasi presensi ketidakhadiran (Sakit, Izin, Alpa, Dispen) per bulan dan semester.
           </p>
         </div>
 
@@ -277,7 +281,7 @@ export default function RekapKehadiranPage() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3.5">
           <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
             <UserCheck className="w-5 h-5" />
@@ -315,6 +319,16 @@ export default function RekapKehadiranPage() {
           <div>
             <p className="text-xs text-slate-500 font-medium">Total Alpa</p>
             <p className="text-lg font-bold text-rose-600">{totalAlpa}</p>
+          </div>
+        </div>
+
+        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+            D
+          </div>
+          <div>
+            <p className="text-xs text-slate-500 font-medium">Total Dispen</p>
+            <p className="text-lg font-bold text-purple-600">{totalDispen}</p>
           </div>
         </div>
       </div>
@@ -412,15 +426,16 @@ export default function RekapKehadiranPage() {
             <TableHead className="text-center w-24">Sakit (S)</TableHead>
             <TableHead className="text-center w-24">Izin (I)</TableHead>
             <TableHead className="text-center w-24">Alpa (A)</TableHead>
+            <TableHead className="text-center w-24">Dispen (D)</TableHead>
             <TableHead className="text-center w-28">Total Absen</TableHead>
             <TableHead className="text-right w-24">Aksi</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {loading ? (
-            <TableEmpty colSpan={9} message="Memuat rekap kehadiran..." />
+            <TableEmpty colSpan={10} message="Memuat rekap kehadiran..." />
           ) : rekapData.length === 0 ? (
-            <TableEmpty colSpan={9} message="Belum ada data siswa di kelas ini." />
+            <TableEmpty colSpan={10} message="Belum ada data siswa di kelas ini." />
           ) : (
             rekapData.map((item, index) => (
               <TableRow key={item.siswa.id}>
@@ -461,6 +476,15 @@ export default function RekapKehadiranPage() {
                     <span className="text-slate-300">-</span>
                   )}
                 </TableCell>
+                <TableCell className="text-center">
+                  {item.dispen > 0 ? (
+                    <span className="font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-md">
+                      {item.dispen}
+                    </span>
+                  ) : (
+                    <span className="text-slate-300">-</span>
+                  )}
+                </TableCell>
                 <TableCell className="text-center font-bold text-slate-800">
                   {item.totalAbsen > 0 ? (
                     `${item.totalAbsen} hari`
@@ -496,7 +520,7 @@ export default function RekapKehadiranPage() {
             <div className="p-8 text-center bg-slate-50 rounded-2xl text-slate-500 text-xs">
               <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
               <p className="font-semibold text-slate-800">Kehadiran Sempurna</p>
-              <p className="mt-0.5">Siswa ini tidak memiliki catatan ketidakhadiran (S/I/A) di semester ini.</p>
+              <p className="mt-0.5">Siswa ini tidak memiliki catatan ketidakhadiran (S/I/A/D) di semester ini.</p>
             </div>
           ) : (
             <div className="max-h-72 overflow-y-auto divide-y divide-slate-100 border border-slate-200 rounded-xl">
@@ -512,6 +536,7 @@ export default function RekapKehadiranPage() {
                     {record.status === 'S' && <Badge variant="sakit">Sakit</Badge>}
                     {record.status === 'I' && <Badge variant="izin">Izin</Badge>}
                     {record.status === 'A' && <Badge variant="alpa">Alpa</Badge>}
+                    {record.status === 'D' && <Badge variant="dispen">Dispen</Badge>}
                   </div>
                 </div>
               ))}

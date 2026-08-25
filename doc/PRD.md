@@ -43,7 +43,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 ### 3.4 Kehadiran
 
 - Tracking per **hari** per **siswa**.
-- Status: **Sakit (S)**, **Izin (I)**, **Alfa (A)**.
+- Status: **Sakit (S)**, **Izin (I)**, **Alfa (A)**, **Dispen (D)**.
 - Default = **Hadir** (jika tidak ada input, dianggap hadir).
 - Bisa input per tanggal atau per bulan.
 - View dan export menampilkan identitas lengkap siswa (NIS & NISN).
@@ -69,7 +69,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 
 ### 4.2 Dashboard Guru
 
-- Summary kehadiran bulan ini: total **S**, **I**, **A**.
+- Summary kehadiran bulan ini: total **S**, **I**, **A**, **D**.
 - Total siswa di kelas.
 - Quick action buttons ke input kehadiran & nilai.
 
@@ -77,10 +77,10 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 
 | Fitur | Deskripsi |
 |-------|-----------|
-| Input per tanggal | Pilih tanggal → tampilkan semua siswa → centang S/I/A |
-| Input per bulan | Pilih bulan → grid siswa × tanggal → isi S/I/A |
-| Rekap per bulan | Tabel semua siswa, kolom: NIS, NISN, Nama, S, I, A count per bulan |
-| Rekap keseluruhan | Tabel semua siswa, kolom: NIS, NISN, Nama, total S, I, A semester ini |
+| Input per tanggal | Pilih tanggal → tampilkan semua siswa → centang S/I/A/D |
+| Input per bulan | Pilih bulan → grid siswa × tanggal → isi S/I/A/D |
+| Rekap per bulan | Tabel semua siswa, kolom: NIS, NISN, Nama, S, I, A, D count per bulan |
+| Rekap keseluruhan | Tabel semua siswa, kolom: NIS, NISN, Nama, total S, I, A, D semester ini |
 | Rekap per siswa | Detail kehadiran per bulan untuk satu siswa (menampilkan NIS & NISN) |
 | Download Excel | Export rekap ke file `.xlsx` lengkap dengan kolom NIS dan NISN |
 
@@ -148,6 +148,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 - **Test Directory**: `tests/`
 - **Coverage Suites**:
   - `tests/lib/siswa.test.ts`: Validasi struktur data Siswa (NIS, NISN, Jenis Kelamin L/P), format template Excel impor, parsing Excel file dengan NISN & L/P, algoritma pencarian/filter siswa, serta partisi aman operasi import (`partitionSiswaImport`) untuk pencegahan error conflict partial index.
+  - `tests/lib/kehadiran.test.ts`: Validasi agregasi presensi ketidakhadiran (S, I, A, D), total ketidakhadiran, siklus transisi status grid bulanan, filtering penyimpanan absence-only, dan format kolom ekspor Excel.
   - `tests/lib/utils.test.ts`: Utility formatting (`formatDate`, `formatShortDate`, `formatNumber`) & `cn`.
   - `tests/lib/excel.test.ts`: Template download, Excel export, and Excel file parser (`parseExcelFile`).
   - `tests/lib/soft-delete.test.ts`: Soft delete integrity verification, active records filtering logic & model structure.
@@ -175,6 +176,9 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - Urutan kolom pada tabel daftar siswa menampilkan **NISN** terlebih dahulu sebelum **NIS** (`No` → `NISN` → `NIS` → `Nama Lengkap` → `L/P` → `Aksi`).
   - Template unduhan Excel dan tabel pratinjau data hasil unggah file menggunakan urutan kolom **NISN**, **NIS**, **Nama Lengkap**, dan **L/P**.
   - Input NISN dan Jenis Kelamin bersifat opsional namun disertakan dalam template download, import Excel, tabel daftar siswa, pratinjau data, dan form modal siswa.
+- **Status Presensi Siswa**:
+  - Pilihan status ketidakhadiran mencakup Sakit (S - Amber), Izin (I - Blue), Alfa (A - Rose), dan Dispen (D - Purple).
+  - Terintegrasi di input harian, matrix bulanan, rekap kehadiran, dashboard, supervisi admin, dan ekspor spreadsheet.
 
 
 

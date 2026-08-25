@@ -128,14 +128,14 @@ create table if not exists public.siswa (
 create unique index if not exists uq_siswa_nis_semester on public.siswa (nis, semester_id) where deleted_at is null;
 
 -- ------------------------------------------------------------------------------
--- 6. Kehadiran (Absence-Only: S = Sakit, I = Izin, A = Alpa)
+-- 6. Kehadiran (Absence-Only: S = Sakit, I = Izin, A = Alpa, D = Dispen)
 -- ------------------------------------------------------------------------------
 create table if not exists public.kehadiran (
   id uuid primary key default gen_random_uuid(),
   siswa_id uuid not null references public.siswa(id) on delete cascade,
   semester_id uuid not null references public.semester(id) on delete cascade,
   tanggal date not null,
-  status text not null check (status in ('S', 'I', 'A')),
+  status text not null check (status in ('S', 'I', 'A', 'D')),
   created_at timestamptz default now(),
   updated_at timestamptz default now(),
   deleted_at timestamptz null

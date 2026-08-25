@@ -24,3 +24,32 @@
 - **PRD & Dokumentasi**:
   - Memperbarui `doc/PRD.md` menyelaraskan urutan kolom siswa di tabel, template impor Excel, pratinjau, dan cakupan testing.
 
+## Versi 0.3.10
+### Penambahan Status Kehadiran Siswa Dispen (D)
+- **Database & Schema (`supabase/schema.sql`, `supabase/migrations/20260825000001_add_dispen_to_kehadiran_status.sql`)**:
+  - Memperbarui check constraint pada kolom `status` tabel `kehadiran` menjadi `check (status in ('S', 'I', 'A', 'D'))`.
+  - Menambahkan file migration SQL `20260825000001_add_dispen_to_kehadiran_status.sql`.
+- **Type Definitions (`src/lib/types.ts`)**:
+  - Menambahkan status `'D'` pada union type `KehadiranStatus` (`'S' | 'I' | 'A' | 'D'`).
+  - Menambahkan field `dispen: number;` pada interface `RekapKehadiranSiswa`.
+- **UI Components & Badges (`src/components/ui/Badge.tsx`)**:
+  - Menambahkan variant badge `dispen` dengan styling warna ungu (`bg-purple-100 text-purple-800 border border-purple-300 font-bold`).
+- **Input Kehadiran Siswa (`src/app/(dashboard)/kehadiran/input/page.tsx`)**:
+  - Menambahkan tombol pilihan status `Dispen (D)` pada mode input harian dengan styling ungu aktif (`bg-purple-600`).
+  - Menambahkan status `D` ke siklus rotasi klik cell mode matrix bulanan (`Hadir` → `S` → `I` → `A` → `D` → `Hadir`) beserta legenda badge dan warna sel ungu.
+  - Memperbarui mekanisme penyimpanan batch insert absence-only agar mencatat status `D`.
+- **Rekap Kehadiran Siswa (`src/app/(dashboard)/kehadiran/page.tsx`)**:
+  - Menambahkan kartu ringkasan *Total Dispen* dan menyesuaikan grid responsif mobile (`grid-cols-2 sm:grid-cols-3 lg:grid-cols-5`).
+  - Menambahkan kolom `Dispen (D)` pada tabel rekapitulasi kehadiran dan ekspor file Excel.
+  - Menambahkan badge `Dispen` pada modal riwayat detail ketidakhadiran siswa.
+- **Dashboard Guru & Supervisi Admin (`src/app/(dashboard)/dashboard/page.tsx`, `src/app/(dashboard)/admin/data/page.tsx`)**:
+  - Menambahkan kartu statistik presensi *Dispen (D)* pada dashboard guru/wali kelas.
+  - Menghitung agregasi `dispen` dan menambahkan kolom `Dispen` pada tabel supervisi admin dan ekspor Excel.
+- **Unit Testing & QA**:
+  - Menambahkan test suite baru `tests/lib/kehadiran.test.ts` (agregasi kehadiran S/I/A/D, siklus status, filtering absence-only, format baris ekspor Excel).
+  - Memperbarui `tests/components/ui.test.tsx` untuk menguji rendering badge variant `dispen`.
+  - Seluruh 16 test suites lulus 100% (87 tests passed).
+- **PRD & Dokumentasi**:
+  - Memperbarui `doc/PRD.md` menyelaraskan fitur kehadiran, ringkasan dashboard, standar status presensi, dan daftar test suite.
+
+
