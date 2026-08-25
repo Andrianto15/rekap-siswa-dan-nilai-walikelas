@@ -41,15 +41,17 @@ export default function InputKehadiranPage() {
   // Daily Mode States
   const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
   const [selectedDate, setSelectedDate] = useState<string>(todayStr);
-  // Map: siswa_id -> 'S' | 'I' | 'A' | null (null means Hadir)
+  // Map: siswa_id -> 'S' | 'I' | 'A' | 'D' | null (null means Hadir)
   const [dailyStatusMap, setDailyStatusMap] = useState<Record<string, KehadiranStatus | null>>({});
+  const [initialDailyStatusMap, setInitialDailyStatusMap] = useState<Record<string, KehadiranStatus | null>>({});
 
   // Grid Mode States
   const now = new Date();
   const [gridYear, setGridYear] = useState<number>(now.getFullYear());
   const [gridMonth, setGridMonth] = useState<number>(now.getMonth() + 1); // 1-12
-  // Map: `${siswa_id}_${dateStr}` -> 'S' | 'I' | 'A' | null
+  // Map: `${siswa_id}_${dateStr}` -> 'S' | 'I' | 'A' | 'D' | null
   const [gridStatusMap, setGridStatusMap] = useState<Record<string, KehadiranStatus | null>>({});
+  const [initialGridStatusMap, setInitialGridStatusMap] = useState<Record<string, KehadiranStatus | null>>({});
 
   // 1. Initial metadata
   const initData = useCallback(async () => {
@@ -138,6 +140,7 @@ export default function InputKehadiranPage() {
         map[row.siswa_id] = row.status as KehadiranStatus;
       });
       setDailyStatusMap(map);
+      setInitialDailyStatusMap(map);
     } catch (err: unknown) {
       toastError('Gagal Memuat Presensi Harian', (err as Error).message);
     }
@@ -171,6 +174,7 @@ export default function InputKehadiranPage() {
         map[key] = row.status as KehadiranStatus;
       });
       setGridStatusMap(map);
+      setInitialGridStatusMap(map);
     } catch (err: unknown) {
       toastError('Gagal Memuat Presensi Bulanan', (err as Error).message);
     }
@@ -193,6 +197,32 @@ export default function InputKehadiranPage() {
       fetchMonthlyAttendance();
     }
   }, [mode, fetchDailyAttendance, fetchMonthlyAttendance]);
+
+  // Check if there are unsaved changes
+  const hasDailyChanges = useMemo(() => {
+    if (!siswaList.length) return false;
+    return siswaList.some((s) => {
+      const current = dailyStatusMap[s.id] ?? null;
+      const initial = initialDailyStatusMap[s.id] ?? null;
+      return current !== initial;
+    });
+  }, [siswaList, dailyStatusMap, initialDailyStatusMap]);
+
+  const hasGridChanges = useMemo(() => {
+    if (!siswaList.length) return false;
+    for (const s of siswaList) {
+      for (let d = 1; d <= daysInMonth; d++) {
+        const dateStr = `${gridYear}-${String(gridMonth).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const key = `${s.id}_${dateStr}`;
+        const current = gridStatusMap[key] ?? null;
+        const initial = initialGridStatusMap[key] ?? null;
+        if (current !== initial) return true;
+      }
+    }
+    return false;
+  }, [siswaList, daysInMonth, gridYear, gridMonth, gridStatusMap, initialGridStatusMap]);
+
+  const hasChanges = mode === 'daily' ? hasDailyChanges : hasGridChanges;
 
   // Handle daily status toggle
   const handleDailyStatusChange = (siswaId: string, status: KehadiranStatus | null) => {
@@ -471,6 +501,7 @@ export default function InputKehadiranPage() {
             variant="primary"
             size="sm"
             isLoading={saving}
+            disabled={!hasChanges || loading || siswaList.length === 0}
             leftIcon={<Save className="w-4 h-4" />}
             onClick={mode === 'daily' ? handleSaveDaily : handleSaveGrid}
           >

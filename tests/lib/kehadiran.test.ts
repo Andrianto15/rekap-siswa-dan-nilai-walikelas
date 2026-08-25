@@ -224,4 +224,110 @@ describe('Kehadiran Business Logic & Status Processing', () => {
       expect(rows[0]).toEqual([1, '1001', '0011223344', 'Ahmad Dahlan', 1, 0, 0, 2, 3]);
     });
   });
+
+  describe('Attendance Change Detection (Dirty State)', () => {
+    function checkDailyChanges(
+      siswaList: Siswa[],
+      currentMap: Record<string, KehadiranStatus | null>,
+      initialMap: Record<string, KehadiranStatus | null>
+    ): boolean {
+      if (!siswaList.length) return false;
+      return siswaList.some((s) => {
+        const current = currentMap[s.id] ?? null;
+        const initial = initialMap[s.id] ?? null;
+        return current !== initial;
+      });
+    }
+
+    function checkGridChanges(
+      siswaList: Siswa[],
+      daysInMonth: number,
+      year: number,
+      month: number,
+      currentMap: Record<string, KehadiranStatus | null>,
+      initialMap: Record<string, KehadiranStatus | null>
+    ): boolean {
+      if (!siswaList.length) return false;
+      for (const s of siswaList) {
+        for (let d = 1; d <= daysInMonth; d++) {
+          const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+          const key = `${s.id}_${dateStr}`;
+          const current = currentMap[key] ?? null;
+          const initial = initialMap[key] ?? null;
+          if (current !== initial) return true;
+        }
+      }
+      return false;
+    }
+
+    it('should return false for daily mode when status has not changed', () => {
+      const initialMap: Record<string, KehadiranStatus | null> = {
+        'siswa-1': 'S',
+        'siswa-2': null,
+        'siswa-3': 'D',
+      };
+      const currentMap = { ...initialMap };
+
+      expect(checkDailyChanges(dummySiswa, currentMap, initialMap)).toBe(false);
+    });
+
+    it('should return true for daily mode when any student status changes', () => {
+      const initialMap: Record<string, KehadiranStatus | null> = {
+        'siswa-1': 'S',
+        'siswa-2': null,
+        'siswa-3': 'D',
+      };
+      const currentMap = {
+        ...initialMap,
+        'siswa-2': 'I' as KehadiranStatus,
+      };
+
+      expect(checkDailyChanges(dummySiswa, currentMap, initialMap)).toBe(true);
+    });
+
+    it('should return false for daily mode when modified status is reverted back to initial', () => {
+      const initialMap: Record<string, KehadiranStatus | null> = {
+        'siswa-1': 'S',
+        'siswa-2': null,
+        'siswa-3': 'D',
+      };
+      const currentMap = {
+        ...initialMap,
+        'siswa-1': 'A' as KehadiranStatus,
+      };
+      expect(checkDailyChanges(dummySiswa, currentMap, initialMap)).toBe(true);
+
+      // Revert back
+      currentMap['siswa-1'] = 'S';
+      expect(checkDailyChanges(dummySiswa, currentMap, initialMap)).toBe(false);
+    });
+
+    it('should return false for grid mode when matrix status has not changed', () => {
+      const initialMap: Record<string, KehadiranStatus | null> = {
+        'siswa-1_2026-08-01': 'S',
+        'siswa-2_2026-08-01': 'A',
+      };
+      const currentMap = { ...initialMap };
+
+      expect(checkGridChanges(dummySiswa, 31, 2026, 8, currentMap, initialMap)).toBe(false);
+    });
+
+    it('should return true for grid mode when a cell status is updated', () => {
+      const initialMap: Record<string, KehadiranStatus | null> = {
+        'siswa-1_2026-08-01': 'S',
+        'siswa-2_2026-08-01': 'A',
+      };
+      const currentMap = {
+        ...initialMap,
+        'siswa-3_2026-08-15': 'D' as KehadiranStatus,
+      };
+
+      expect(checkGridChanges(dummySiswa, 31, 2026, 8, currentMap, initialMap)).toBe(true);
+    });
+
+    it('should return false for empty student list', () => {
+      expect(checkDailyChanges([], {}, {})).toBe(false);
+      expect(checkGridChanges([], 31, 2026, 8, {}, {})).toBe(false);
+    });
+  });
 });

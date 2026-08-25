@@ -52,4 +52,19 @@
 - **PRD & Dokumentasi**:
   - Memperbarui `doc/PRD.md` menyelaraskan fitur kehadiran, ringkasan dashboard, standar status presensi, dan daftar test suite.
 
+## Versi 0.3.11
+### Disabled Tombol Simpan Presensi Saat Tidak Ada Perubahan Data
+- **Frontend / Input Kehadiran Siswa (`src/app/(dashboard)/kehadiran/input/page.tsx`)**:
+  - Menyimpan baseline status awal (`initialDailyStatusMap` & `initialGridStatusMap`) saat pemuatan presensi harian maupun grid bulanan.
+  - Mengimplementasikan deteksi perubahan (`hasChanges`) untuk membandingkan status terkini dengan nilai awal.
+  - Menonaktifkan (disable) tombol **Simpan Presensi** saat tidak ada perubahan data, saat sedang memuat data (`loading`), saat menyimpan (`saving`), atau ketika kelas belum memiliki siswa.
+  - Mengaktifkan (enable) tombol otomatis seketika pengguna melakukan perubahan status kehadiran siswa.
+- **Unit Testing & QA**:
+  - Menambahkan test suite baru `tests/components/input-kehadiran.test.tsx` untuk memvalidasi state tombol Simpan Presensi (`disabled`/`enabled`).
+  - Menambahkan pengujian logika dirty check (`hasDailyChanges` & `hasGridChanges`) pada `tests/lib/kehadiran.test.ts`.
+  - Seluruh 17 test suites lulus 100% (98 tests passed).
+- **PRD & Dokumentasi**:
+  - Memperbarui `doc/PRD.md` dengan standar perilaku form kontrol input kehadiran dan cakupan test suite.
+
+
 
