@@ -326,8 +326,8 @@ export default function RekapNilaiPage() {
     const compHeaders = komponenList.map((c) => c.nama);
     const headers = [
       'Peringkat',
-      'NIS',
       'NISN',
+      'NIS',
       'Nama Siswa',
       ...compHeaders,
       'Rata-Rata',
@@ -347,8 +347,8 @@ export default function RekapNilaiPage() {
 
       return [
         item.ranking || '-',
-        item.siswa.nis,
         item.siswa.nisn || '-',
+        item.siswa.nis,
         item.siswa.nama,
         ...compScores,
         item.rataRata > 0 ? item.rataRata : '-',
@@ -529,8 +529,8 @@ export default function RekapNilaiPage() {
         <TableHeader>
           <TableRow>
             <TableHead className="w-20 text-center">Peringkat</TableHead>
-            <TableHead className="w-28">NIS</TableHead>
             <TableHead className="w-32">NISN</TableHead>
+            <TableHead className="w-28">NIS</TableHead>
             <TableHead>Nama Siswa</TableHead>
             {komponenList.map((comp) => (
               <TableHead key={comp.id} className="text-center">
@@ -575,11 +575,11 @@ export default function RekapNilaiPage() {
                       <span className="text-slate-300">-</span>
                     )}
                   </TableCell>
-                  <TableCell className="font-mono text-xs font-semibold text-slate-700">
-                    {item.siswa.nis}
-                  </TableCell>
                   <TableCell className="font-mono text-xs text-slate-600">
                     {item.siswa.nisn || '-'}
+                  </TableCell>
+                  <TableCell className="font-mono text-xs font-semibold text-slate-700">
+                    {item.siswa.nis}
                   </TableCell>
                   <TableCell>
                     <span className="font-semibold text-slate-900">{item.siswa.nama}</span>
