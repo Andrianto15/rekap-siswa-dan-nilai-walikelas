@@ -22,7 +22,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useRole } from '@/hooks/useRole';
 import { exportToExcel } from '@/lib/excel';
 import { formatNumber } from '@/lib/utils';
-import type { Siswa, Kelas, Mapel, Semester, KomponenNilai, Nilai, NilaiAkhir, GuruKelas, GuruMapel, RekapNilaiSiswa } from '@/lib/types';
+import type { Siswa, Kelas, Mapel, Semester, KomponenNilai, Nilai, NilaiAkhir, Kehadiran, GuruKelas, GuruMapel, RekapNilaiSiswa } from '@/lib/types';
 
 export default function RekapNilaiPage() {
   const supabase = useMemo(() => createClient(), []);
@@ -41,6 +41,7 @@ export default function RekapNilaiPage() {
   const [komponenList, setKomponenList] = useState<KomponenNilai[]>([]);
   const [nilaiList, setNilaiList] = useState<Nilai[]>([]);
   const [nilaiAkhirList, setNilaiAkhirList] = useState<NilaiAkhir[]>([]);
+  const [attendanceRecords, setAttendanceRecords] = useState<Kehadiran[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Sorting mode: 'ranking' (highest final score first) or 'alphabetical' (by name)
@@ -133,7 +134,7 @@ export default function RekapNilaiPage() {
     }
   }, [supabase, selectedMapelId, activeSemester, toastError]);
 
-  // 3. Fetch grading and ranking records
+  // 3. Fetch grading, ranking, and subject attendance records
   const fetchGradingRecords = useCallback(async () => {
     if (!selectedKelasId || !selectedMapelId || !activeSemester) return;
     setLoading(true);
@@ -177,9 +178,22 @@ export default function RekapNilaiPage() {
 
         if (naError) throw naError;
         setNilaiAkhirList((naData || []) as unknown as NilaiAkhir[]);
+
+        // 3.4 Attendance for this subject
+        const { data: attData, error: attError } = await supabase
+          .from('kehadiran')
+          .select('*')
+          .eq('semester_id', activeSemester.id)
+          .eq('mapel_id', selectedMapelId)
+          .in('siswa_id', studentIds)
+          .is('deleted_at', null);
+
+        if (attError) throw attError;
+        setAttendanceRecords((attData || []) as unknown as Kehadiran[]);
       } else {
         setNilaiList([]);
         setNilaiAkhirList([]);
+        setAttendanceRecords([]);
       }
     } catch (err: unknown) {
       toastError('Gagal Memuat Rekap Nilai', (err as Error).message);
@@ -204,7 +218,7 @@ export default function RekapNilaiPage() {
     }
   }, [selectedKelasId, selectedMapelId, activeSemester, fetchGradingRecords]);
 
-  // Aggregate and rank data (T-041)
+  // Aggregate and rank data with subject attendance
   const rankedData: RekapNilaiSiswa[] = useMemo(() => {
     const rawList: RekapNilaiSiswa[] = siswaList.map((siswa) => {
       // Map component scores
@@ -232,11 +246,26 @@ export default function RekapNilaiPage() {
           ? finalScoreRecord.nilai_akhir
           : calculatedAvg;
 
+      // Calculate subject attendance
+      const studentAtt = attendanceRecords.filter((r) => r.siswa_id === siswa.id);
+      const sakit = studentAtt.filter((r) => r.status === 'S').length;
+      const izin = studentAtt.filter((r) => r.status === 'I').length;
+      const alpa = studentAtt.filter((r) => r.status === 'A').length;
+      const dispen = studentAtt.filter((r) => r.status === 'D').length;
+      const totalAbsen = sakit + izin + alpa + dispen;
+
       return {
         siswa,
         nilaiKomponen,
         rataRata: calculatedAvg,
         nilaiAkhir,
+        kehadiranMapel: {
+          sakit,
+          izin,
+          alpa,
+          dispen,
+          totalAbsen,
+        },
       };
     });
 
@@ -252,7 +281,7 @@ export default function RekapNilaiPage() {
     }
 
     return rankedWithPositions;
-  }, [siswaList, komponenList, nilaiList, nilaiAkhirList, sortMode]);
+  }, [siswaList, komponenList, nilaiList, nilaiAkhirList, attendanceRecords, sortMode]);
 
   // Statistics summaries
   const validScores = useMemo(
@@ -295,11 +324,26 @@ export default function RekapNilaiPage() {
     const currentMapel = mapelList.find((m) => m.id === selectedMapelId)?.nama || 'Mapel';
 
     const compHeaders = komponenList.map((c) => c.nama);
-    const headers = ['Peringkat', 'NIS', 'NISN', 'Nama Siswa', ...compHeaders, 'Rata-Rata', 'Nilai Akhir', 'Predikat'];
+    const headers = [
+      'Peringkat',
+      'NIS',
+      'NISN',
+      'Nama Siswa',
+      ...compHeaders,
+      'Rata-Rata',
+      'Nilai Akhir',
+      'Predikat',
+      'Sakit (S)',
+      'Izin (I)',
+      'Alpa (A)',
+      'Dispen (D)',
+      'Total Absen Mapel',
+    ];
 
     const rows = rankedData.map((item) => {
       const compScores = komponenList.map((c) => item.nilaiKomponen[c.id] ?? '-');
       const predikat = item.nilaiAkhir > 0 ? getPredikat(item.nilaiAkhir).label : '-';
+      const att = item.kehadiranMapel;
 
       return [
         item.ranking || '-',
@@ -310,6 +354,11 @@ export default function RekapNilaiPage() {
         item.rataRata > 0 ? item.rataRata : '-',
         item.nilaiAkhir > 0 ? item.nilaiAkhir : '-',
         predikat,
+        att ? att.sakit : 0,
+        att ? att.izin : 0,
+        att ? att.alpa : 0,
+        att ? att.dispen : 0,
+        att ? att.totalAbsen : 0,
       ];
     });
 
@@ -335,7 +384,7 @@ export default function RekapNilaiPage() {
             <h1 className="text-xl font-bold text-slate-900">Rekap Nilai & Ranking</h1>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            Rekapitulasi perolehan nilai, ranking siswa, dan pencapaian kompetensi.
+            Rekapitulasi perolehan nilai, ranking siswa, dan absensi per mata pelajaran.
           </p>
         </div>
 
@@ -491,16 +540,18 @@ export default function RekapNilaiPage() {
             <TableHead className="text-center w-28 bg-slate-100/60">Rata-Rata</TableHead>
             <TableHead className="text-center w-28 bg-blue-50/60 text-blue-900">Nilai Akhir</TableHead>
             <TableHead className="text-center w-36">Predikat</TableHead>
+            <TableHead className="text-center w-36 bg-amber-50/40 text-amber-900">Absensi Mapel</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {loading ? (
-            <TableEmpty colSpan={komponenList.length + 7} message="Memuat rekap nilai..." />
+            <TableEmpty colSpan={komponenList.length + 8} message="Memuat rekap nilai..." />
           ) : rankedData.length === 0 ? (
-            <TableEmpty colSpan={komponenList.length + 7} message="Belum ada siswa di kelas ini." />
+            <TableEmpty colSpan={komponenList.length + 8} message="Belum ada siswa di kelas ini." />
           ) : (
             rankedData.map((item) => {
               const predikat = item.nilaiAkhir > 0 ? getPredikat(item.nilaiAkhir) : null;
+              const att = item.kehadiranMapel;
 
               return (
                 <TableRow key={item.siswa.id}>
@@ -568,6 +619,36 @@ export default function RekapNilaiPage() {
                       </Badge>
                     ) : (
                       <span className="text-slate-300">-</span>
+                    )}
+                  </TableCell>
+
+                  {/* Subject Attendance Information */}
+                  <TableCell className="text-center bg-amber-50/20">
+                    {att && att.totalAbsen > 0 ? (
+                      <div className="flex items-center justify-center gap-1 font-semibold text-[11px]">
+                        {att.sakit > 0 && (
+                          <span className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800" title={`Sakit: ${att.sakit}`}>
+                            {att.sakit}S
+                          </span>
+                        )}
+                        {att.izin > 0 && (
+                          <span className="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800" title={`Izin: ${att.izin}`}>
+                            {att.izin}I
+                          </span>
+                        )}
+                        {att.alpa > 0 && (
+                          <span className="px-1.5 py-0.5 rounded bg-rose-100 text-rose-800" title={`Alpa: ${att.alpa}`}>
+                            {att.alpa}A
+                          </span>
+                        )}
+                        {att.dispen > 0 && (
+                          <span className="px-1.5 py-0.5 rounded bg-purple-100 text-purple-800" title={`Dispen: ${att.dispen}`}>
+                            {att.dispen}D
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-emerald-600 text-xs font-medium">100% Hadir</span>
                     )}
                   </TableCell>
                 </TableRow>

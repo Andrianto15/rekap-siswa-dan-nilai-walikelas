@@ -42,6 +42,9 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 
 ### 3.4 Kehadiran
 
+- Dua jenis presensi dalam sub-menu:
+  1. **Kehadiran Mapel (Wali Kelas)**: Presensi ketidakhadiran per mata pelajaran yang diampu. Guru otomatis ter-mapping ke mapel yang diampu tanpa dropdown pemilihan, sedangkan Admin memiliki dropdown filter untuk memilih mapel.
+  2. **Kehadiran Keseluruhan**: Presensi harian siswa umum (tanpa memandang mapel).
 - Tracking per **hari** per **siswa**.
 - Status: **Sakit (S)**, **Izin (I)**, **Alfa (A)**, **Dispen (D)**.
 - Default = **Hadir** (jika tidak ada input, dianggap hadir).
@@ -55,7 +58,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 - Rata-rata dihitung otomatis dari komponen yang terisi.
 - **Nilai akhir** = rata-rata, tapi bisa di-edit manual.
 - Ranking otomatis berdasarkan nilai akhir.
-- View dan export menampilkan identitas lengkap siswa (NIS & NISN).
+- Tampilan dan ekspor rekap nilai menampilkan integrasi informasi **absensi per mapel** (Sakit, Izin, Alpa, Dispen, Total Absen) serta identitas lengkap siswa (NIS & NISN).
 
 ---
 
@@ -73,26 +76,28 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 - Total siswa di kelas.
 - Quick action buttons ke input kehadiran & nilai.
 
-### 4.3 Menu Kehadiran (Guru)
+### 4.3 Menu Kehadiran (Guru & Admin)
 
 | Fitur | Deskripsi |
 |-------|-----------|
+| Sub-menu Kehadiran Mapel | Rekap & input kehadiran khusus mata pelajaran. Guru otomatis ter-mapping ke mapelnya, Admin dapat memilih mapel melalui dropdown filter. |
+| Sub-menu Kehadiran Keseluruhan | Rekap & input kehadiran harian umum seluruh siswa tanpa memandang mata pelajaran. |
 | Input per tanggal | Pilih tanggal → tampilkan semua siswa → centang S/I/A/D |
 | Input per bulan | Pilih bulan → grid siswa × tanggal → isi S/I/A/D |
 | Rekap per bulan | Tabel semua siswa, kolom: NIS, NISN, Nama, S, I, A, D count per bulan |
 | Rekap keseluruhan | Tabel semua siswa, kolom: NIS, NISN, Nama, total S, I, A, D semester ini |
-| Rekap per siswa | Detail kehadiran per bulan untuk satu siswa (menampilkan NIS & NISN) |
-| Download Excel | Export rekap ke file `.xlsx` lengkap dengan kolom NIS dan NISN |
+| Rekap per siswa | Detail riwayat ketidakhadiran per siswa sesuai sub-menu aktif (menampilkan NIS & NISN) |
+| Download Excel | Export rekap ke file `.xlsx` lengkap dengan judul sub-menu/mapel, NIS, dan NISN |
 
 ### 4.4 Menu Nilai (Guru)
 
 | Fitur | Deskripsi |
 |-------|-----------|
 | Input nilai | Pilih mapel → tabel siswa (NIS, NISN, Nama) × komponen nilai → isi nilai |
-| Rekap nilai | Tabel semua siswa + komponen + rata-rata per mapel + NIS & NISN |
+| Rekap nilai | Tabel semua siswa + komponen + rata-rata per mapel + NIS & NISN + info absensi per mapel (S, I, A, D) |
 | Nilai akhir | Tabel nilai akhir (rata-rata) per siswa, editable |
 | Ranking | Urutan siswa 1-N berdasarkan nilai akhir |
-| Download Excel | Export rekap nilai ke file `.xlsx` lengkap dengan kolom NIS dan NISN |
+| Download Excel | Export rekap nilai ke file `.xlsx` lengkap dengan komponen, rata-rata, nilai akhir, predikat, dan statistik absensi per mapel |
 
 ### 4.5 Menu Siswa (Guru)
 
@@ -147,6 +152,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 - **Environment**: Custom JSDOM with Node Web Standard APIs (Fetch, Request, Response, Headers)
 - **Test Directory**: `tests/`
 - **Coverage Suites**:
+  - `tests/lib/kehadiran-mapel.test.ts`: Validasi logika pemisahan presensi per mapel vs keseluruhan, agregasi kehadiran per mapel ke rekap nilai siswa, serta kontrol hak akses filter mapel untuk Admin vs Guru.
   - `tests/lib/siswa.test.ts`: Validasi struktur data Siswa (NIS, NISN, Jenis Kelamin L/P), format template Excel impor, parsing Excel file dengan NISN & L/P, algoritma pencarian/filter siswa, serta partisi aman operasi import (`partitionSiswaImport`) untuk pencegahan error conflict partial index.
   - `tests/lib/kehadiran.test.ts`: Validasi agregasi presensi ketidakhadiran (S, I, A, D), total ketidakhadiran, siklus transisi status grid bulanan, filtering penyimpanan absence-only, format kolom ekspor Excel, serta deteksi perubahan status (dirty state checking).
   - `tests/lib/utils.test.ts`: Utility formatting (`formatDate`, `formatShortDate`, `formatNumber`) & `cn`.
@@ -168,6 +174,13 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 
 ## 8. UI/UX Standards & Form Controls
 
+- **Sub-Menu Kehadiran (Kehadiran Mapel & Kehadiran Keseluruhan)**:
+  - Tersedia navigasi tab switcher responsif pada modul `/kehadiran` dan `/kehadiran/input`.
+  - Pada **Kehadiran Mapel**, Admin memiliki akses filter dropdown pemilihan mata pelajaran, sedangkan Guru otomatis menggunakan mapel yang diampu dengan tampilan badge/indikator nama mapel tanpa dropdown.
+  - Pada **Kehadiran Keseluruhan**, seluruh role melihat data presensi umum tanpa terikat mapel spesifik.
+- **Integrasi Absensi pada Rekap Nilai & Ranking (`/nilai`)**:
+  - Tabel Rekap Nilai menyajikan kolom informasi absensi per mata pelajaran (S, I, A, D) di samping rekapitulasi komponen nilai, rata-rata, nilai akhir, dan ranking.
+  - Ekspor Excel rekap nilai menyertakan kolom rincian ketidakhadiran per mapel secara otomatis.
 - **Tabel Kelola Kelas (Admin)**:
   - Kolom Nama Kelas pada tabel Kelola Kelas (`/admin/kelas`) hanya menampilkan teks nama kelas (`"Kelas [nama]"`) tanpa kotak badge nama kelas ganda/redundan di sampingnya.
 - **Dropdown Pemilihan Kelas**:
