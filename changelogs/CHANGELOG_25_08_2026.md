@@ -66,5 +66,29 @@
 - **PRD & Dokumentasi**:
   - Memperbarui `doc/PRD.md` dengan standar perilaku form kontrol input kehadiran dan cakupan test suite.
 
-
-
+## Versi 0.3.12
+### Sub-Menu Kehadiran (Mapel & Keseluruhan) dan Integrasi Absensi pada Rekap Nilai
+- **Database & Migration (`supabase/schema.sql`, `supabase/migrations/20260825000002_add_mapel_id_to_kehadiran.sql`)**:
+  - Menambahkan kolom `mapel_id uuid null references public.mapel(id) on delete cascade` pada tabel `kehadiran`.
+  - Mengganti unique index tunggal dengan 2 partial unique indexes: `uq_kehadiran_siswa_tanggal_general` (`where deleted_at is null and mapel_id is null`) dan `uq_kehadiran_siswa_mapel_tanggal` (`where deleted_at is null and mapel_id is not null`).
+- **Type Definitions (`src/lib/types.ts`)**:
+  - Menambahkan field `mapel_id?: string | null` dan `mapel?: Mapel` pada interface `Kehadiran`.
+  - Menambahkan field `kehadiranMapel?: { sakit: number; izin: number; alpa: number; dispen: number; totalAbsen: number }` pada interface `RekapNilaiSiswa`.
+- **Rekap Kehadiran Siswa (`src/app/(dashboard)/kehadiran/page.tsx`)**:
+  - Menambahkan sub-menu tab switcher: **Kehadiran Mapel** vs **Kehadiran Keseluruhan**.
+  - Pada Kehadiran Mapel: Admin dapat memilih mapel via dropdown filter, sedangkan Guru otomatis menggunakan mapel yang diampu tanpa dropdown dengan badge indikator mapel.
+  - Pada Kehadiran Keseluruhan: Rekap presensi umum tanpa mapel (`mapel_id IS NULL`).
+  - Ekspor Excel dan modal detail absensi menyesuaikan sub-menu aktif.
+- **Input Kehadiran Siswa (`src/app/(dashboard)/kehadiran/input/page.tsx`)**:
+  - Mendukung sub-menu Kehadiran Mapel dan Kehadiran Keseluruhan via tab switcher atau query parameter URL.
+  - Menyimpan record presensi dengan `mapel_id` aktif untuk Kehadiran Mapel, atau `mapel_id = null` untuk Kehadiran Keseluruhan.
+  - Mempertahankan proteksi status disabled tombol Simpan Presensi untuk kedua mode.
+- **Rekap Nilai & Ranking (`src/app/(dashboard)/nilai/page.tsx`)**:
+  - Mengambil data presensi per mapel yang dipilih (`mapel_id = selectedMapelId`).
+  - Menampilkan kolom informasi absensi per mapel (S, I, A, D / 100% Hadir) pada tabel ranking nilai.
+  - Menyertakan kolom rincian ketidakhadiran per mapel pada file unduhan Excel rekap nilai.
+- **Unit Testing & QA**:
+  - Menambahkan test suite baru `tests/lib/kehadiran-mapel.test.ts` (agregasi kehadiran mapel vs umum, integrasi nilai, dan verifikasi role permission filter mapel).
+  - Seluruh 18 test suites lulus 100% (103 tests passed).
+- **PRD & Dokumentasi**:
+  - Memperbarui `doc/PRD.md` menyelaraskan konsep data, fitur detail, dan standar UI/UX kehadiran dan nilai.

@@ -95,12 +95,14 @@ export interface Kehadiran {
   id: string;
   siswa_id: string;
   semester_id: string;
+  mapel_id?: string | null;
   tanggal: string; // YYYY-MM-DD
   status: KehadiranStatus;
   created_at?: string;
   updated_at?: string;
   deleted_at?: string | null;
   siswa?: Siswa;
+  mapel?: Mapel;
 }
 
 export interface KomponenNilai {
@@ -159,4 +161,11 @@ export interface RekapNilaiSiswa {
   rataRata: number;
   nilaiAkhir: number;
   ranking?: number;
+  kehadiranMapel?: {
+    sakit: number;
+    izin: number;
+    alpa: number;
+    dispen: number;
+    totalAbsen: number;
+  };
 }

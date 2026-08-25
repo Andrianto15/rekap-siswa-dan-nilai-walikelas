@@ -134,13 +134,15 @@ create table if not exists public.kehadiran (
   id uuid primary key default gen_random_uuid(),
   siswa_id uuid not null references public.siswa(id) on delete cascade,
   semester_id uuid not null references public.semester(id) on delete cascade,
+  mapel_id uuid null references public.mapel(id) on delete cascade,
   tanggal date not null,
   status text not null check (status in ('S', 'I', 'A', 'D')),
   created_at timestamptz default now(),
   updated_at timestamptz default now(),
   deleted_at timestamptz null
 );
-create unique index if not exists uq_kehadiran_siswa_tanggal on public.kehadiran (siswa_id, tanggal) where deleted_at is null;
+create unique index if not exists uq_kehadiran_siswa_tanggal_general on public.kehadiran (siswa_id, tanggal) where deleted_at is null and mapel_id is null;
+create unique index if not exists uq_kehadiran_siswa_mapel_tanggal on public.kehadiran (siswa_id, mapel_id, tanggal) where deleted_at is null and mapel_id is not null;
 
 -- ------------------------------------------------------------------------------
 -- 7. Komponen Nilai, Nilai, & Nilai Akhir

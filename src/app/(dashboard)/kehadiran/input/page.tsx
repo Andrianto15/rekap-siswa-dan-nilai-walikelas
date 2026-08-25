@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, Suspense } from 'react';
 import {
   CalendarCheck2,
   Calendar as CalendarIcon,
@@ -10,8 +10,11 @@ import {
   ArrowLeft,
   ChevronLeft,
   ChevronRight,
+  BookOpen,
+  Layers,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
@@ -19,17 +22,32 @@ import { Badge } from '@/components/ui/Badge';
 import { useToast } from '@/components/ui/Toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useRole } from '@/hooks/useRole';
-import type { Siswa, Kelas, Semester, KehadiranStatus, GuruKelas } from '@/lib/types';
+import type { Siswa, Kelas, Mapel, Semester, KehadiranStatus, GuruKelas, GuruMapel } from '@/lib/types';
 
-export default function InputKehadiranPage() {
+function InputKehadiranContent() {
   const supabase = useMemo(() => createClient(), []);
+  const searchParams = useSearchParams();
   const { user } = useAuth();
   const { isAdmin } = useRole();
   const { success: toastSuccess, error: toastError, info: toastInfo } = useToast();
 
+  const urlType = searchParams.get('type');
+  const urlKelasId = searchParams.get('kelasId');
+  const urlMapelId = searchParams.get('mapelId');
+
+  // Sub-Menu: 'mapel' (Kehadiran Wali Kelas per Mapel) | 'keseluruhan' (Kehadiran Keseluruhan tanpa Mapel)
+  const [subMode, setSubMode] = useState<'mapel' | 'keseluruhan'>(
+    urlType === 'keseluruhan' ? 'keseluruhan' : 'mapel'
+  );
+
   const [activeSemester, setActiveSemester] = useState<Semester | null>(null);
   const [kelasList, setKelasList] = useState<Kelas[]>([]);
-  const [selectedKelasId, setSelectedKelasId] = useState<string>('');
+  const [selectedKelasId, setSelectedKelasId] = useState<string>(urlKelasId || '');
+
+  // Mapel States
+  const [mapelList, setMapelList] = useState<Mapel[]>([]);
+  const [selectedMapelId, setSelectedMapelId] = useState<string>(urlMapelId || '');
+  const [assignedMapel, setAssignedMapel] = useState<Mapel | null>(null);
 
   const [siswaList, setSiswaList] = useState<Siswa[]>([]);
   const [loading, setLoading] = useState(true);
@@ -66,6 +84,7 @@ export default function InputKehadiranPage() {
       if (semData) {
         setActiveSemester(semData as unknown as Semester);
 
+        // Fetch Kelas
         const { data: kData } = await supabase
           .from('kelas')
           .select('*')
@@ -73,7 +92,16 @@ export default function InputKehadiranPage() {
           .order('nama', { ascending: true });
         if (kData) setKelasList(kData);
 
+        // Fetch Mapel
+        const { data: mData } = await supabase
+          .from('mapel')
+          .select('*')
+          .is('deleted_at', null)
+          .order('nama', { ascending: true });
+        if (mData) setMapelList(mData);
+
         if (user && !isAdmin) {
+          // Wali kelas mapping
           const { data: guruKelasData } = await supabase
             .from('guru_kelas')
             .select('*')
@@ -84,17 +112,49 @@ export default function InputKehadiranPage() {
 
           if (guruKelasData) {
             setSelectedKelasId((guruKelasData as GuruKelas).kelas_id);
+          } else if (urlKelasId) {
+            setSelectedKelasId(urlKelasId);
           } else if (kData && kData.length > 0) {
             setSelectedKelasId(kData[0].id);
           }
-        } else if (kData && kData.length > 0) {
-          setSelectedKelasId(kData[0].id);
+
+          // Teacher mapel mapping
+          const { data: guruMapelData } = await supabase
+            .from('guru_mapel')
+            .select(`*, mapel (*)`)
+            .eq('guru_id', user.id)
+            .eq('semester_id', semData.id)
+            .is('deleted_at', null)
+            .limit(1)
+            .single();
+
+          if (guruMapelData && (guruMapelData as unknown as GuruMapel).mapel) {
+            const mapped = (guruMapelData as unknown as GuruMapel).mapel as Mapel;
+            setAssignedMapel(mapped);
+            setSelectedMapelId(mapped.id);
+          } else if (urlMapelId) {
+            setSelectedMapelId(urlMapelId);
+          } else if (mData && mData.length > 0) {
+            setSelectedMapelId(mData[0].id);
+          }
+        } else {
+          if (urlKelasId) {
+            setSelectedKelasId(urlKelasId);
+          } else if (kData && kData.length > 0) {
+            setSelectedKelasId(kData[0].id);
+          }
+
+          if (urlMapelId) {
+            setSelectedMapelId(urlMapelId);
+          } else if (mData && mData.length > 0) {
+            setSelectedMapelId(mData[0].id);
+          }
         }
       }
     } catch (err: unknown) {
       toastError('Gagal Mengambil Data Awal', (err as Error).message);
     }
-  }, [supabase, user, isAdmin, toastError]);
+  }, [supabase, user, isAdmin, urlKelasId, urlMapelId, toastError]);
 
   // 2. Fetch students for class
   const fetchSiswa = useCallback(async () => {
@@ -121,15 +181,25 @@ export default function InputKehadiranPage() {
   // 3. Fetch daily attendance records
   const fetchDailyAttendance = useCallback(async () => {
     if (!activeSemester || !siswaList.length || !selectedDate) return;
+    if (subMode === 'mapel' && !selectedMapelId) return;
+
     try {
       const siswaIds = siswaList.map((s) => s.id);
-      const { data, error } = await supabase
+      let query = supabase
         .from('kehadiran')
         .select('*')
         .eq('tanggal', selectedDate)
         .in('siswa_id', siswaIds)
+        .eq('semester_id', activeSemester.id)
         .is('deleted_at', null);
 
+      if (subMode === 'mapel') {
+        query = query.eq('mapel_id', selectedMapelId);
+      } else {
+        query = query.is('mapel_id', null);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
 
       const map: Record<string, KehadiranStatus | null> = {};
@@ -144,7 +214,7 @@ export default function InputKehadiranPage() {
     } catch (err: unknown) {
       toastError('Gagal Memuat Presensi Harian', (err as Error).message);
     }
-  }, [supabase, activeSemester, siswaList, selectedDate, toastError]);
+  }, [supabase, activeSemester, siswaList, selectedDate, subMode, selectedMapelId, toastError]);
 
   // 4. Fetch monthly grid attendance records
   const daysInMonth = useMemo(() => {
@@ -153,19 +223,29 @@ export default function InputKehadiranPage() {
 
   const fetchMonthlyAttendance = useCallback(async () => {
     if (!activeSemester || !siswaList.length) return;
+    if (subMode === 'mapel' && !selectedMapelId) return;
+
     try {
       const siswaIds = siswaList.map((s) => s.id);
       const startDate = `${gridYear}-${String(gridMonth).padStart(2, '0')}-01`;
       const endDate = `${gridYear}-${String(gridMonth).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
 
-      const { data, error } = await supabase
+      let query = supabase
         .from('kehadiran')
         .select('*')
         .gte('tanggal', startDate)
         .lte('tanggal', endDate)
         .in('siswa_id', siswaIds)
+        .eq('semester_id', activeSemester.id)
         .is('deleted_at', null);
 
+      if (subMode === 'mapel') {
+        query = query.eq('mapel_id', selectedMapelId);
+      } else {
+        query = query.is('mapel_id', null);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
 
       const map: Record<string, KehadiranStatus | null> = {};
@@ -178,7 +258,7 @@ export default function InputKehadiranPage() {
     } catch (err: unknown) {
       toastError('Gagal Memuat Presensi Bulanan', (err as Error).message);
     }
-  }, [supabase, activeSemester, siswaList, gridYear, gridMonth, daysInMonth, toastError]);
+  }, [supabase, activeSemester, siswaList, gridYear, gridMonth, daysInMonth, subMode, selectedMapelId, toastError]);
 
   useEffect(() => {
     initData();
@@ -196,7 +276,7 @@ export default function InputKehadiranPage() {
     } else {
       fetchMonthlyAttendance();
     }
-  }, [mode, fetchDailyAttendance, fetchMonthlyAttendance]);
+  }, [mode, subMode, selectedMapelId, fetchDailyAttendance, fetchMonthlyAttendance]);
 
   // Check if there are unsaved changes
   const hasDailyChanges = useMemo(() => {
@@ -245,13 +325,17 @@ export default function InputKehadiranPage() {
   // Save Daily Attendance (Absence-Only pattern)
   const handleSaveDaily = async () => {
     if (!activeSemester || !selectedDate || !siswaList.length) return;
+    if (subMode === 'mapel' && !selectedMapelId) {
+      toastError('Mata Pelajaran Belum Dipilih', 'Pilih mata pelajaran terlebih dahulu.');
+      return;
+    }
     setSaving(true);
 
     try {
       const siswaIds = siswaList.map((s) => s.id);
 
-      // 1. Soft delete existing records for this day and these students
-      await supabase
+      // 1. Soft delete existing records for this day, students, and mapel/general mode
+      let deleteQuery = supabase
         .from('kehadiran')
         .update({
           deleted_at: new Date().toISOString(),
@@ -259,15 +343,32 @@ export default function InputKehadiranPage() {
         })
         .eq('tanggal', selectedDate)
         .in('siswa_id', siswaIds)
+        .eq('semester_id', activeSemester.id)
         .is('deleted_at', null);
 
+      if (subMode === 'mapel') {
+        deleteQuery = deleteQuery.eq('mapel_id', selectedMapelId);
+      } else {
+        deleteQuery = deleteQuery.is('mapel_id', null);
+      }
+
+      await deleteQuery;
+
       // 2. Prepare absence rows only (S, I, A, D)
-      const absenceRows: { siswa_id: string; semester_id: string; tanggal: string; status: KehadiranStatus }[] = [];
+      const absenceRows: {
+        siswa_id: string;
+        semester_id: string;
+        mapel_id?: string | null;
+        tanggal: string;
+        status: KehadiranStatus;
+      }[] = [];
+
       Object.entries(dailyStatusMap).forEach(([siswaId, status]) => {
         if (status && ['S', 'I', 'A', 'D'].includes(status)) {
           absenceRows.push({
             siswa_id: siswaId,
             semester_id: activeSemester.id,
+            mapel_id: subMode === 'mapel' ? selectedMapelId : null,
             tanggal: selectedDate,
             status,
           });
@@ -311,6 +412,10 @@ export default function InputKehadiranPage() {
   // Save Monthly Grid Attendance
   const handleSaveGrid = async () => {
     if (!activeSemester || !siswaList.length) return;
+    if (subMode === 'mapel' && !selectedMapelId) {
+      toastError('Mata Pelajaran Belum Dipilih', 'Pilih mata pelajaran terlebih dahulu.');
+      return;
+    }
     setSaving(true);
 
     try {
@@ -318,8 +423,8 @@ export default function InputKehadiranPage() {
       const startDate = `${gridYear}-${String(gridMonth).padStart(2, '0')}-01`;
       const endDate = `${gridYear}-${String(gridMonth).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
 
-      // 1. Soft delete all records for this month and students
-      await supabase
+      // 1. Soft delete all records for this month, students, and mapel/general mode
+      let deleteQuery = supabase
         .from('kehadiran')
         .update({
           deleted_at: new Date().toISOString(),
@@ -328,10 +433,26 @@ export default function InputKehadiranPage() {
         .gte('tanggal', startDate)
         .lte('tanggal', endDate)
         .in('siswa_id', siswaIds)
+        .eq('semester_id', activeSemester.id)
         .is('deleted_at', null);
 
+      if (subMode === 'mapel') {
+        deleteQuery = deleteQuery.eq('mapel_id', selectedMapelId);
+      } else {
+        deleteQuery = deleteQuery.is('mapel_id', null);
+      }
+
+      await deleteQuery;
+
       // 2. Prepare absence rows
-      const absenceRows: { siswa_id: string; semester_id: string; tanggal: string; status: KehadiranStatus }[] = [];
+      const absenceRows: {
+        siswa_id: string;
+        semester_id: string;
+        mapel_id?: string | null;
+        tanggal: string;
+        status: KehadiranStatus;
+      }[] = [];
+
       Object.entries(gridStatusMap).forEach(([key, status]) => {
         if (status && ['S', 'I', 'A', 'D'].includes(status)) {
           const [sId, date] = key.split('_');
@@ -339,6 +460,7 @@ export default function InputKehadiranPage() {
             absenceRows.push({
               siswa_id: sId,
               semester_id: activeSemester.id,
+              mapel_id: subMode === 'mapel' ? selectedMapelId : null,
               tanggal: date,
               status,
             });
@@ -361,8 +483,41 @@ export default function InputKehadiranPage() {
     }
   };
 
+  const currentMapelName = useMemo(() => {
+    if (subMode !== 'mapel') return '';
+    return mapelList.find((m) => m.id === selectedMapelId)?.nama || assignedMapel?.nama || 'Mapel';
+  }, [subMode, mapelList, selectedMapelId, assignedMapel]);
+
   return (
     <div className="space-y-6">
+      {/* Sub-Menu Tabs Switcher */}
+      <div className="flex bg-slate-100 p-1.5 rounded-2xl max-w-lg border border-slate-200/80">
+        <button
+          type="button"
+          onClick={() => setSubMode('mapel')}
+          className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+            subMode === 'mapel'
+              ? 'bg-white text-blue-600 shadow-sm'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <BookOpen className="w-4 h-4 shrink-0" />
+          <span>Kehadiran Mapel</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setSubMode('keseluruhan')}
+          className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+            subMode === 'keseluruhan'
+              ? 'bg-white text-blue-600 shadow-sm'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <Layers className="w-4 h-4 shrink-0" />
+          <span>Kehadiran Keseluruhan</span>
+        </button>
+      </div>
+
       {/* Header with Back Button */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
@@ -378,15 +533,19 @@ export default function InputKehadiranPage() {
               <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
                 <CalendarCheck2 className="w-5 h-5" />
               </div>
-              <h1 className="text-xl font-bold text-slate-900">Input Kehadiran Siswa</h1>
+              <h1 className="text-xl font-bold text-slate-900">
+                {subMode === 'mapel' ? 'Input Kehadiran Mapel' : 'Input Kehadiran Keseluruhan'}
+              </h1>
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              Catat absensi ketidakhadiran (Sakit, Izin, Alpa, Dispen) harian atau bulanan.
+              {subMode === 'mapel'
+                ? `Catat absensi ketidakhadiran khusus mapel ${currentMapelName || ''}.`
+                : 'Catat absensi ketidakhadiran siswa umum (tanpa mapel).'}
             </p>
           </div>
         </div>
 
-        {/* Mode Switcher */}
+        {/* Mode Switcher (Harian vs Grid) */}
         <div className="flex bg-slate-200/80 p-1 rounded-xl">
           <button
             type="button"
@@ -417,74 +576,99 @@ export default function InputKehadiranPage() {
 
       {/* Filter Bar */}
       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-4">
-        {/* Class selector */}
-        <div className="flex items-center gap-2.5">
-          <span className="text-xs font-semibold text-slate-600">Kelas:</span>
-          <div className="w-40">
-            <Select
-              value={selectedKelasId}
-              onChange={(e) => setSelectedKelasId(e.target.value)}
-              options={kelasList.map((k) => ({
-                value: k.id,
-                label: k.nama,
-              }))}
-            />
-          </div>
-        </div>
-
-        {/* Date or Month Picker */}
-        {mode === 'daily' ? (
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Class selector */}
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-slate-600">Tanggal:</span>
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-            />
-          </div>
-        ) : (
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-slate-600">Bulan:</span>
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => {
-                  if (gridMonth === 1) {
-                    setGridMonth(12);
-                    setGridYear((y) => y - 1);
-                  } else {
-                    setGridMonth((m) => m - 1);
-                  }
-                }}
-                className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <span className="text-xs font-bold text-slate-800 px-2">
-                {new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' }).format(
-                  new Date(gridYear, gridMonth - 1, 1)
-                )}
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  if (gridMonth === 12) {
-                    setGridMonth(1);
-                    setGridYear((y) => y + 1);
-                  } else {
-                    setGridMonth((m) => m + 1);
-                  }
-                }}
-                className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
+            <span className="text-xs font-semibold text-slate-600">Kelas:</span>
+            <div className="w-36">
+              <Select
+                value={selectedKelasId}
+                onChange={(e) => setSelectedKelasId(e.target.value)}
+                options={kelasList.map((k) => ({
+                  value: k.id,
+                  label: k.nama,
+                }))}
+              />
             </div>
           </div>
-        )}
 
-        {/* Save Button */}
+          {/* Mapel Filter: Admin has dropdown, Teacher is auto-mapped (info badge) */}
+          {subMode === 'mapel' && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-slate-600">Mapel:</span>
+              {isAdmin ? (
+                <div className="w-44">
+                  <Select
+                    value={selectedMapelId}
+                    onChange={(e) => setSelectedMapelId(e.target.value)}
+                    options={mapelList.map((m) => ({
+                      value: m.id,
+                      label: m.nama,
+                    }))}
+                  />
+                </div>
+              ) : (
+                <div className="px-3 py-1.5 bg-blue-50 text-blue-700 font-bold text-xs rounded-xl border border-blue-100">
+                  {assignedMapel?.nama || currentMapelName || 'Mapel Diampu'}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Date or Month Picker */}
+          {mode === 'daily' ? (
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-slate-600">Tanggal:</span>
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              />
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-slate-600">Bulan:</span>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (gridMonth === 1) {
+                      setGridMonth(12);
+                      setGridYear((y) => y - 1);
+                    } else {
+                      setGridMonth((m) => m - 1);
+                    }
+                  }}
+                  className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <span className="text-xs font-bold text-slate-800 px-2">
+                  {new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' }).format(
+                    new Date(gridYear, gridMonth - 1, 1)
+                  )}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (gridMonth === 12) {
+                      setGridMonth(1);
+                      setGridYear((y) => y + 1);
+                    } else {
+                      setGridMonth((m) => m + 1);
+                    }
+                  }}
+                  className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Action Buttons */}
         <div className="flex items-center gap-2">
           {mode === 'daily' && (
             <Button
@@ -702,5 +886,13 @@ export default function InputKehadiranPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function InputKehadiranPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-slate-400">Memuat halaman...</div>}>
+      <InputKehadiranContent />
+    </Suspense>
   );
 }
