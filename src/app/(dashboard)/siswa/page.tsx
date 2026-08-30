@@ -174,6 +174,12 @@ export default function SiswaPage() {
     }
   }, [selectedKelasId, activeSemester, fetchSiswa]);
 
+  // Current selected class object
+  const currentKelas = useMemo(
+    () => kelasList.find((k) => k.id === selectedKelasId),
+    [kelasList, selectedKelasId]
+  );
+
   // Filtered students by search query
   const filteredSiswa = useMemo(() => {
     const q = searchQuery.toLowerCase().trim();
@@ -472,7 +478,10 @@ export default function SiswaPage() {
         if (firstErr) throw firstErr;
       }
 
-      toastSuccess('Impor Berhasil', `${validRows.length} siswa berhasil dimasukkan ke kelas.`);
+      toastSuccess(
+        'Impor Berhasil',
+        `${validRows.length} siswa berhasil dimasukkan ke kelas ${currentKelas?.nama || ''}.`
+      );
       setIsExcelModalOpen(false);
       setExcelFile(null);
       setParsedList([]);
@@ -786,6 +795,35 @@ export default function SiswaPage() {
         maxWidth="lg"
       >
         <div className="space-y-5">
+          {/* Target Class Info Banner */}
+          <div className="p-3.5 bg-blue-50/70 border border-blue-200/80 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-xs shrink-0">
+                <Users className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-[11px] font-medium text-slate-500">Kelas Tujuan Impor</p>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="text-sm font-bold text-slate-900">
+                    {currentKelas?.nama || 'Belum dipilih'}
+                  </span>
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+                    Kelas Aktif
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {activeSemester && (
+              <div className="text-left sm:text-right pl-12 sm:pl-0 border-t sm:border-t-0 pt-2 sm:pt-0 border-blue-100/60">
+                <p className="text-[10px] text-slate-400 font-medium">Semester Berjalan</p>
+                <p className="text-xs font-semibold text-slate-700">
+                  {activeSemester.nama} {activeSemester.tahun_ajaran?.tahun ? `(${activeSemester.tahun_ajaran.tahun})` : ''}
+                </p>
+              </div>
+            )}
+          </div>
+
           {/* Step 1: Download template */}
           <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-3">
             <div>

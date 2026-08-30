@@ -230,5 +230,47 @@ describe('Siswa Table & Excel Preview Rendering', () => {
     expect(firstRowCells[3].textContent).toBe('Ahmad Dani Pratama');
     expect(firstRowCells[4].textContent).toBe('L');
   });
+
+  it('renders target class parameter banner inside import modal with selected class and semester', () => {
+    const mockKelas = { id: 'k-1', nama: 'X TKJ 1' };
+    const mockSemester = {
+      id: 'sem-1',
+      nama: 'Semester Ganjil',
+      tahun_ajaran: { id: 'ta-1', tahun: '2025/2026', is_active: true },
+    };
+
+    render(
+      <div data-testid="import-modal-content">
+        <div className="p-3.5 bg-blue-50/70 border border-blue-200/80 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <div className="flex items-center gap-3">
+            <div>
+              <p className="text-[11px] font-medium text-slate-500">Kelas Tujuan Impor</p>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="text-sm font-bold text-slate-900" data-testid="target-class-name">
+                  {mockKelas?.nama || 'Belum dipilih'}
+                </span>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+                  Kelas Aktif
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-left sm:text-right">
+            <p className="text-[10px] text-slate-400 font-medium">Semester Berjalan</p>
+            <p className="text-xs font-semibold text-slate-700" data-testid="active-semester-info">
+              {mockSemester.nama} ({mockSemester.tahun_ajaran.tahun})
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+
+    expect(screen.getByText('Kelas Tujuan Impor')).toBeInTheDocument();
+    expect(screen.getByTestId('target-class-name').textContent).toBe('X TKJ 1');
+    expect(screen.getByText('Kelas Aktif')).toBeInTheDocument();
+    expect(screen.getByText('Semester Berjalan')).toBeInTheDocument();
+    expect(screen.getByTestId('active-semester-info').textContent).toBe('Semester Ganjil (2025/2026)');
+  });
 });
 
