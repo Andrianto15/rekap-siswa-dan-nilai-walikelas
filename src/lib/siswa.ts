@@ -80,3 +80,29 @@ export const partitionSiswaImport = (
 
   return { toInsert, toUpdate };
 };
+
+export const toggleSiswaSelection = (selectedIds: string[], id: string): string[] => {
+  return selectedIds.includes(id)
+    ? selectedIds.filter((item) => item !== id)
+    : [...selectedIds, id];
+};
+
+export const toggleAllSiswaSelection = (selectedIds: string[], targetIds: string[]): string[] => {
+  if (targetIds.length === 0) return selectedIds;
+  const isAllSelected = targetIds.every((id) => selectedIds.includes(id));
+  if (isAllSelected) {
+    return selectedIds.filter((id) => !targetIds.includes(id));
+  }
+  const set = new Set([...selectedIds, ...targetIds]);
+  return Array.from(set);
+};
+
+export const isAllSiswaSelected = (selectedIds: string[], targetIds: string[]): boolean => {
+  return targetIds.length > 0 && targetIds.every((id) => selectedIds.includes(id));
+};
+
+export const isSomeSiswaSelected = (selectedIds: string[], targetIds: string[]): boolean => {
+  const isAll = isAllSiswaSelected(selectedIds, targetIds);
+  return !isAll && targetIds.some((id) => selectedIds.includes(id));
+};
+

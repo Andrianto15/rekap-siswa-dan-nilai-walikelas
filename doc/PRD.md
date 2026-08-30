@@ -103,10 +103,10 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 
 | Fitur | Deskripsi |
 |-------|-----------|
-| Daftar siswa | List siswa di kelas guru dengan kolom NISN, NIS, Nama, dan L/P |
+| Daftar siswa | List siswa di kelas guru dengan kolom Checkbox, NISN, NIS, Nama, dan L/P |
 | Tambah siswa | Form input satu per satu (NIS, NISN opsional, Nama Lengkap, Jenis Kelamin L/P) |
 | Upload Excel | Upload file `.xlsx` untuk bulk import (kolom NISN, NIS, Nama Lengkap, L/P) |
-| Edit / Hapus | Edit data atau hapus siswa (soft delete) |
+| Edit / Hapus | Edit data, hapus siswa satu per satu, bulk delete terpilih via checkbox, atau hapus seluruh siswa di kelas aktif (soft delete) |
 
 ### 4.6 Menu Admin
 
@@ -153,7 +153,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 - **Test Directory**: `tests/`
 - **Coverage Suites**:
   - `tests/lib/kehadiran-mapel.test.ts`: Validasi logika pemisahan presensi per mapel vs keseluruhan, agregasi kehadiran per mapel ke rekap nilai siswa, serta kontrol hak akses filter mapel untuk Admin vs Guru.
-  - `tests/lib/siswa.test.ts`: Validasi struktur data Siswa (NIS, NISN, Jenis Kelamin L/P), format template Excel impor, parsing Excel file dengan NISN & L/P, algoritma pencarian/filter siswa, serta partisi aman operasi import (`partitionSiswaImport`) untuk pencegahan error conflict partial index.
+  - `tests/lib/siswa.test.ts`: Validasi struktur data Siswa (NIS, NISN, Jenis Kelamin L/P), format template Excel impor, parsing Excel file dengan NISN & L/P, algoritma pencarian/filter siswa, partisi aman operasi import (`partitionSiswaImport`), serta helper seleksi bulk delete (`toggleSiswaSelection`, `toggleAllSiswaSelection`, `isAllSiswaSelected`, `isSomeSiswaSelected`).
   - `tests/lib/kehadiran.test.ts`: Validasi agregasi presensi ketidakhadiran (S, I, A, D), total ketidakhadiran, siklus transisi status grid bulanan, filtering penyimpanan absence-only, format kolom ekspor Excel, serta deteksi perubahan status (dirty state checking).
   - `tests/lib/utils.test.ts`: Utility formatting (`formatDate`, `formatShortDate`, `formatNumber`) & `cn`.
   - `tests/lib/excel.test.ts`: Template download, Excel export, and Excel file parser (`parseExcelFile`).
@@ -166,7 +166,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - `tests/components/ui.test.tsx`: UI primitives (`Button`, `Badge`, `Input`, `Select`, `Modal`, `ConfirmDialog`, `Toast`, `Table`).
   - `tests/components/kelas-dropdown.test.tsx`: Verifikasi format label dropdown pemilih kelas langsung menggunakan nama kelas tanpa redundant prefix "Kelas ".
   - `tests/components/kelas-table.test.tsx`: Verifikasi rendering tabel kelas menampilkan nama kelas ("Kelas [nama]") tanpa badge redundan.
-  - `tests/components/siswa-table.test.tsx`: Verifikasi rendering tabel siswa dan pratinjau impor Excel dengan urutan kolom NISN sebelum NIS.
+  - `tests/components/siswa-table.test.tsx`: Verifikasi rendering tabel siswa dengan kolom checkbox seleksi massal, urutan kolom NISN sebelum NIS, interaksi select-all / indeterminate, dan pratinjau impor Excel.
   - `tests/components/kehadiran-nilai-table.test.tsx`: Verifikasi rendering tabel Kehadiran, Rekap Nilai, dan Input Nilai dengan urutan kolom NISN sebelum NIS.
   - `tests/components/input-kehadiran.test.tsx`: Verifikasi status disabled/enabled tombol Simpan Presensi pada perubahan data, kondisi loading, dan ketiadaan data siswa.
 - **Command**: `npm test` / `npm run test:coverage`
@@ -187,10 +187,17 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 - **Dropdown Pemilihan Kelas**:
   - Seluruh opsi dropdown kelas (`<Select>`) menampilkan nama kelas secara langsung tanpa prefix "Kelas " (contoh: `"XI TKJ 3"`, `"X RPL 1"`, bukan `"Kelas XI TKJ 3"`).
   - Konsisten diterapkan di seluruh modul: Siswa, Kehadiran, Input Kehadiran, Nilai, Input Nilai, Admin Supervisi Data, dan Admin Mapping Guru/Wali Kelas.
-- **Identitas Siswa (NIS, NISN, & Jenis Kelamin)**:
-  - Urutan kolom pada tabel daftar siswa (`/siswa`), tabel rekap kehadiran (`/kehadiran`), tabel rekap nilai (`/nilai`), dan tabel matriks input nilai (`/nilai/input`) menampilkan **NISN** terlebih dahulu sebelum **NIS** (`No` / `Peringkat` → `NISN` → `NIS` → `Nama Siswa` ...).
+- **Identitas Siswa & Kolom Seleksi Siswa**:
+  - Urutan kolom pada tabel daftar siswa (`/siswa`): `[Checkbox]` → `No` → `NISN` → `NIS` → `Nama Siswa` → `L/P` → `Aksi`.
+  - Urutan kolom pada tabel rekap kehadiran (`/kehadiran`), tabel rekap nilai (`/nilai`), dan tabel matriks input nilai (`/nilai/input`): `No` / `Peringkat` → `NISN` → `NIS` → `Nama Siswa` ...
   - Ekspor spreadsheet Excel dan pratinjau data impor menggunakan urutan kolom **NISN**, **NIS**, **Nama Lengkap**, dst.
   - Input NISN dan Jenis Kelamin bersifat opsional namun disertakan dalam template download, import Excel, tabel daftar siswa, pratinjau data, dan form modal siswa.
+- **Mekanisme Bulk Delete & Delete All pada Kelola Data Siswa (`/siswa`)**:
+  - Checkbox per baris dan checkbox select-all pada header tabel dengan dukungan status *indeterminate*.
+  - Toolbar aksi bulk responsif (mobile-first) yang muncul otomatis saat ada siswa terpilih: menyajikan badge counter siswa terpilih, tombol *Batalkan Pilihan*, dan tombol *Hapus Terpilih (N)*.
+  - Tombol *Hapus Semua* pada header untuk menghapus seluruh siswa di kelas aktif dalam satu tindakan terkonfirmasi.
+  - Dialog konfirmasi bahaya (`variant: 'danger'`) untuk mencegah penghapusan data yang tidak disengaja.
+  - Eksekusi soft-delete aman terisolasi pada `kelas_id` dan `semester_id` yang aktif.
 - **Status Presensi Siswa**:
   - Pilihan status ketidakhadiran mencakup Sakit (S - Amber), Izin (I - Blue), Alfa (A - Rose), dan Dispen (D - Purple).
   - Terintegrasi di input harian, matrix bulanan, rekap kehadiran, dashboard, supervisi admin, dan ekspor spreadsheet.
@@ -198,6 +205,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - Tombol Simpan Presensi pada `/kehadiran/input` berstatus disabled secara default ketika tidak ada perubahan status dari database baseline.
   - Tombol otomatis menjadi aktif (enabled) hanya ketika terdapat perbedaan antara status saat ini dengan status awal (mode harian maupun bulanan).
   - Tombol kembali disabled setelah proses penyimpanan berhasil diselesaikan atau perubahan dibatalkan ke nilai semula.
+
 
 
 
