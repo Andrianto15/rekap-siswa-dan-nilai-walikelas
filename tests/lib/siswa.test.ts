@@ -1,6 +1,13 @@
 import type { Siswa } from '@/lib/types';
 import { downloadExcelTemplate, parseExcelFile } from '@/lib/excel';
-import { parseGender, partitionSiswaImport } from '@/lib/siswa';
+import {
+  parseGender,
+  partitionSiswaImport,
+  toggleSiswaSelection,
+  toggleAllSiswaSelection,
+  isAllSiswaSelected,
+  isSomeSiswaSelected,
+} from '@/lib/siswa';
 import * as XLSX from 'xlsx';
 
 describe('Siswa, NISN, & Jenis Kelamin Domain Logic', () => {
@@ -240,5 +247,64 @@ describe('Siswa, NISN, & Jenis Kelamin Domain Logic', () => {
       expect(result).toHaveLength(0);
     });
   });
+
+  describe('Selection & Bulk Operations Helper Logic', () => {
+    it('toggleSiswaSelection should add an id if not selected, and remove if already selected', () => {
+      let selected: string[] = [];
+
+      selected = toggleSiswaSelection(selected, 's-1');
+      expect(selected).toEqual(['s-1']);
+
+      selected = toggleSiswaSelection(selected, 's-2');
+      expect(selected).toEqual(['s-1', 's-2']);
+
+      selected = toggleSiswaSelection(selected, 's-1');
+      expect(selected).toEqual(['s-2']);
+
+      selected = toggleSiswaSelection(selected, 's-2');
+      expect(selected).toEqual([]);
+    });
+
+    it('toggleAllSiswaSelection should select all targets if not all selected, and deselect all targets if all selected', () => {
+      const targetIds = ['s-1', 's-2', 's-3'];
+
+      // Empty -> select all
+      let selected = toggleAllSiswaSelection([], targetIds);
+      expect(selected).toEqual(['s-1', 's-2', 's-3']);
+
+      // All selected -> deselect all
+      selected = toggleAllSiswaSelection(selected, targetIds);
+      expect(selected).toEqual([]);
+
+      // Partially selected -> select remaining targets
+      selected = toggleAllSiswaSelection(['s-2'], targetIds);
+      expect(selected).toHaveLength(3);
+      expect(selected).toEqual(expect.arrayContaining(['s-1', 's-2', 's-3']));
+
+      // Empty targetIds should return existing selection
+      expect(toggleAllSiswaSelection(['s-1'], [])).toEqual(['s-1']);
+    });
+
+    it('isAllSiswaSelected should return true only when all target ids are included in selected', () => {
+      const targetIds = ['s-1', 's-2'];
+
+      expect(isAllSiswaSelected([], targetIds)).toBe(false);
+      expect(isAllSiswaSelected(['s-1'], targetIds)).toBe(false);
+      expect(isAllSiswaSelected(['s-1', 's-2'], targetIds)).toBe(true);
+      expect(isAllSiswaSelected(['s-1', 's-2', 's-3'], targetIds)).toBe(true);
+      expect(isAllSiswaSelected(['s-1'], [])).toBe(false);
+    });
+
+    it('isSomeSiswaSelected should return true when some (but not all) targets are selected', () => {
+      const targetIds = ['s-1', 's-2', 's-3'];
+
+      expect(isSomeSiswaSelected([], targetIds)).toBe(false);
+      expect(isSomeSiswaSelected(['s-1'], targetIds)).toBe(true);
+      expect(isSomeSiswaSelected(['s-1', 's-2'], targetIds)).toBe(true);
+      expect(isSomeSiswaSelected(['s-1', 's-2', 's-3'], targetIds)).toBe(false); // All, not some
+      expect(isSomeSiswaSelected(['other-id'], targetIds)).toBe(false);
+    });
+  });
 });
+
 

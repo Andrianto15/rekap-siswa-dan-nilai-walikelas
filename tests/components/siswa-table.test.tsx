@@ -1,6 +1,12 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
+import React, { useState } from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/Table';
+import {
+  toggleSiswaSelection,
+  toggleAllSiswaSelection,
+  isAllSiswaSelected,
+  isSomeSiswaSelected,
+} from '@/lib/siswa';
 import type { Siswa } from '@/lib/types';
 
 describe('Siswa Table & Excel Preview Rendering', () => {
@@ -25,11 +31,14 @@ describe('Siswa Table & Excel Preview Rendering', () => {
     },
   ];
 
-  it('renders student table with column order: No, NISN, NIS, Nama Lengkap, L/P, Aksi', () => {
+  it('renders student table with column order: Checkbox, No, NISN, NIS, Nama Lengkap, L/P, Aksi', () => {
     render(
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-12 text-center">
+              <input type="checkbox" aria-label="Pilih semua siswa" readOnly />
+            </TableHead>
             <TableHead className="w-14">No</TableHead>
             <TableHead className="w-32">NISN</TableHead>
             <TableHead className="w-28">NIS</TableHead>
@@ -41,6 +50,9 @@ describe('Siswa Table & Excel Preview Rendering', () => {
         <TableBody>
           {mockSiswaList.map((item, index) => (
             <TableRow key={item.id}>
+              <TableCell className="text-center">
+                <input type="checkbox" aria-label={`Pilih siswa ${item.nama}`} readOnly />
+              </TableCell>
               <TableCell className="font-semibold text-slate-400">{index + 1}</TableCell>
               <TableCell className="font-mono text-xs text-slate-600">{item.nisn || '-'}</TableCell>
               <TableCell className="font-mono text-xs font-semibold text-slate-700">{item.nis}</TableCell>
@@ -58,29 +70,117 @@ describe('Siswa Table & Excel Preview Rendering', () => {
     );
 
     const ths = screen.getAllByRole('columnheader');
-    expect(ths).toHaveLength(6);
-    expect(ths[0].textContent).toBe('No');
-    expect(ths[1].textContent).toBe('NISN');
-    expect(ths[2].textContent).toBe('NIS');
-    expect(ths[3].textContent).toBe('Nama Lengkap');
-    expect(ths[4].textContent).toBe('L/P');
-    expect(ths[5].textContent).toBe('Aksi');
+    expect(ths).toHaveLength(7);
+    expect(screen.getByLabelText('Pilih semua siswa')).toBeInTheDocument();
+    expect(ths[1].textContent).toBe('No');
+    expect(ths[2].textContent).toBe('NISN');
+    expect(ths[3].textContent).toBe('NIS');
+    expect(ths[4].textContent).toBe('Nama Lengkap');
+    expect(ths[5].textContent).toBe('L/P');
+    expect(ths[6].textContent).toBe('Aksi');
 
     const rows = screen.getAllByRole('row');
     // Header is row 0, data rows are 1 and 2
     const firstDataCells = rows[1].querySelectorAll('td');
-    expect(firstDataCells[0].textContent).toBe('1');
-    expect(firstDataCells[1].textContent).toBe('0012345678'); // NISN first
-    expect(firstDataCells[2].textContent).toBe('20260101');   // NIS second
-    expect(firstDataCells[3].textContent).toBe('Ahmad Maulana');
-    expect(firstDataCells[4].textContent).toBe('L');
+    expect(firstDataCells[1].textContent).toBe('1');
+    expect(firstDataCells[2].textContent).toBe('0012345678'); // NISN first
+    expect(firstDataCells[3].textContent).toBe('20260101');   // NIS second
+    expect(firstDataCells[4].textContent).toBe('Ahmad Maulana');
+    expect(firstDataCells[5].textContent).toBe('L');
 
     const secondDataCells = rows[2].querySelectorAll('td');
-    expect(secondDataCells[0].textContent).toBe('2');
-    expect(secondDataCells[1].textContent).toBe('-');        // NISN fallback dash
-    expect(secondDataCells[2].textContent).toBe('20260102');
-    expect(secondDataCells[3].textContent).toBe('Bunga Citra');
-    expect(secondDataCells[4].textContent).toBe('P');
+    expect(secondDataCells[1].textContent).toBe('2');
+    expect(secondDataCells[2].textContent).toBe('-');        // NISN fallback dash
+    expect(secondDataCells[3].textContent).toBe('20260102');
+    expect(secondDataCells[4].textContent).toBe('Bunga Citra');
+    expect(secondDataCells[5].textContent).toBe('P');
+  });
+
+  it('supports selecting individual rows and select-all with indeterminate state', () => {
+    function InteractiveTestTable() {
+      const [selectedIds, setSelectedIds] = useState<string[]>([]);
+      const visibleIds = mockSiswaList.map((s) => s.id);
+      const isAll = isAllSiswaSelected(selectedIds, visibleIds);
+      const isSome = isSomeSiswaSelected(selectedIds, visibleIds);
+
+      return (
+        <div>
+          {selectedIds.length > 0 && (
+            <div data-testid="bulk-bar">{selectedIds.length} siswa dipilih</div>
+          )}
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>
+                  <input
+                    type="checkbox"
+                    aria-label="Pilih semua siswa"
+                    checked={isAll}
+                    ref={(el) => {
+                      if (el) el.indeterminate = isSome;
+                    }}
+                    onChange={() => setSelectedIds((prev) => toggleAllSiswaSelection(prev, visibleIds))}
+                  />
+                </TableHead>
+                <TableHead>Nama</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {mockSiswaList.map((item) => {
+                const isSelected = selectedIds.includes(item.id);
+                return (
+                  <TableRow key={item.id} className={isSelected ? 'selected-row' : ''}>
+                    <TableCell>
+                      <input
+                        type="checkbox"
+                        aria-label={`Pilih siswa ${item.nama}`}
+                        checked={isSelected}
+                        onChange={() => setSelectedIds((prev) => toggleSiswaSelection(prev, item.id))}
+                      />
+                    </TableCell>
+                    <TableCell>{item.nama}</TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+      );
+    }
+
+    render(<InteractiveTestTable />);
+
+    const selectAllCheckbox = screen.getByLabelText('Pilih semua siswa') as HTMLInputElement;
+    const checkbox1 = screen.getByLabelText('Pilih siswa Ahmad Maulana') as HTMLInputElement;
+    const checkbox2 = screen.getByLabelText('Pilih siswa Bunga Citra') as HTMLInputElement;
+
+    expect(selectAllCheckbox.checked).toBe(false);
+    expect(checkbox1.checked).toBe(false);
+    expect(checkbox2.checked).toBe(false);
+    expect(screen.queryByTestId('bulk-bar')).not.toBeInTheDocument();
+
+    // Select row 1
+    fireEvent.click(checkbox1);
+    expect(checkbox1.checked).toBe(true);
+    expect(checkbox2.checked).toBe(false);
+    expect(selectAllCheckbox.checked).toBe(false);
+    expect(selectAllCheckbox.indeterminate).toBe(true);
+    expect(screen.getByTestId('bulk-bar').textContent).toBe('1 siswa dipilih');
+
+    // Click select all
+    fireEvent.click(selectAllCheckbox);
+    expect(checkbox1.checked).toBe(true);
+    expect(checkbox2.checked).toBe(true);
+    expect(selectAllCheckbox.checked).toBe(true);
+    expect(selectAllCheckbox.indeterminate).toBe(false);
+    expect(screen.getByTestId('bulk-bar').textContent).toBe('2 siswa dipilih');
+
+    // Click select all again -> deselect all
+    fireEvent.click(selectAllCheckbox);
+    expect(checkbox1.checked).toBe(false);
+    expect(checkbox2.checked).toBe(false);
+    expect(selectAllCheckbox.checked).toBe(false);
+    expect(screen.queryByTestId('bulk-bar')).not.toBeInTheDocument();
   });
 
   it('renders excel import preview table with column order: Status, NISN, NIS, Nama Lengkap, L/P', () => {
@@ -131,3 +231,4 @@ describe('Siswa Table & Excel Preview Rendering', () => {
     expect(firstRowCells[4].textContent).toBe('L');
   });
 });
+

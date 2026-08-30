@@ -25,7 +25,14 @@ import { useConfirm } from '@/components/ui/ConfirmDialog';
 import { useAuth } from '@/hooks/useAuth';
 import { useRole } from '@/hooks/useRole';
 import { downloadExcelTemplate, parseExcelFile } from '@/lib/excel';
-import { parseGender, partitionSiswaImport } from '@/lib/siswa';
+import {
+  parseGender,
+  partitionSiswaImport,
+  toggleSiswaSelection,
+  toggleAllSiswaSelection,
+  isAllSiswaSelected,
+  isSomeSiswaSelected,
+} from '@/lib/siswa';
 import type { Siswa, Kelas, Semester, GuruKelas, JenisKelamin } from '@/lib/types';
 
 interface ParsedExcelRow {
@@ -68,6 +75,8 @@ export default function SiswaPage() {
   const [siswaList, setSiswaList] = useState<Siswa[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [deletingBulk, setDeletingBulk] = useState(false);
 
   // Modal: Add / Edit Single Student
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -147,6 +156,7 @@ export default function SiswaPage() {
 
       if (error) throw error;
       setSiswaList(data || []);
+      setSelectedIds((prev) => prev.filter((id) => (data || []).some((s) => s.id === id)));
     } catch (err: unknown) {
       toastError('Gagal Memuat Daftar Siswa', (err as Error).message);
     } finally {
@@ -175,6 +185,23 @@ export default function SiswaPage() {
         (s.nisn && s.nisn.toLowerCase().includes(q))
     );
   }, [siswaList, searchQuery]);
+
+  // Selection states & helpers
+  const visibleIds = useMemo(() => filteredSiswa.map((s) => s.id), [filteredSiswa]);
+  const isAllSelected = useMemo(() => isAllSiswaSelected(selectedIds, visibleIds), [selectedIds, visibleIds]);
+  const isSomeSelected = useMemo(() => isSomeSiswaSelected(selectedIds, visibleIds), [selectedIds, visibleIds]);
+
+  const handleToggleSelectAll = () => {
+    setSelectedIds((prev) => toggleAllSiswaSelection(prev, visibleIds));
+  };
+
+  const handleToggleSelectSiswa = (id: string) => {
+    setSelectedIds((prev) => toggleSiswaSelection(prev, id));
+  };
+
+  const handleClearSelection = () => {
+    setSelectedIds([]);
+  };
 
   // Open modal add / edit single student
   const openModal = (siswa?: Siswa) => {
@@ -238,7 +265,7 @@ export default function SiswaPage() {
     }
   };
 
-  // Soft delete student
+  // Soft delete single student
   const handleDeleteSiswa = async (id: string, studentName: string) => {
     const isConfirmed = await confirm({
       title: 'Hapus Siswa',
@@ -259,9 +286,85 @@ export default function SiswaPage() {
 
       if (error) throw error;
       toastSuccess('Berhasil', `Data siswa ${studentName} berhasil dihapus`);
+      setSelectedIds((prev) => prev.filter((item) => item !== id));
       fetchSiswa();
     } catch (err: unknown) {
       toastError('Gagal Menghapus', (err as Error).message);
+    }
+  };
+
+  // Bulk soft delete selected students
+  const handleBulkDelete = async () => {
+    if (!selectedIds.length || !selectedKelasId || !activeSemester) return;
+
+    const count = selectedIds.length;
+    const isConfirmed = await confirm({
+      title: `Hapus ${count} Siswa Terpilih`,
+      message: `Apakah Anda yakin ingin menghapus ${count} data siswa yang dipilih? Siswa yang dihapus akan dinonaktifkan.`,
+      confirmText: `Ya, Hapus (${count}) Siswa`,
+      variant: 'danger',
+    });
+    if (!isConfirmed) return;
+
+    setDeletingBulk(true);
+    try {
+      const { error } = await supabase
+        .from('siswa')
+        .update({
+          deleted_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .in('id', selectedIds)
+        .eq('kelas_id', selectedKelasId)
+        .eq('semester_id', activeSemester.id);
+
+      if (error) throw error;
+
+      toastSuccess('Berhasil', `${count} data siswa berhasil dihapus`);
+      setSelectedIds([]);
+      fetchSiswa();
+    } catch (err: unknown) {
+      toastError('Gagal Menghapus Siswa', (err as Error).message);
+    } finally {
+      setDeletingBulk(false);
+    }
+  };
+
+  // Bulk soft delete all students in active class
+  const handleDeleteAllInClass = async () => {
+    if (!siswaList.length || !selectedKelasId || !activeSemester) return;
+
+    const totalCount = siswaList.length;
+    const isConfirmed = await confirm({
+      title: 'Hapus Semua Siswa di Kelas Ini',
+      message: `Apakah Anda yakin ingin menghapus seluruh data siswa (${totalCount} siswa) di kelas ini? Siswa yang dihapus akan dinonaktifkan.`,
+      confirmText: `Ya, Hapus Semua (${totalCount}) Siswa`,
+      variant: 'danger',
+    });
+    if (!isConfirmed) return;
+
+    setDeletingBulk(true);
+    try {
+      const allIds = siswaList.map((s) => s.id);
+      const { error } = await supabase
+        .from('siswa')
+        .update({
+          deleted_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .in('id', allIds)
+        .eq('kelas_id', selectedKelasId)
+        .eq('semester_id', activeSemester.id);
+
+      if (error) throw error;
+
+      toastSuccess('Berhasil', `Seluruh data siswa (${totalCount} siswa) di kelas ini berhasil dihapus`);
+      setSelectedIds([]);
+      fetchSiswa();
+    } catch (err: unknown) {
+      toastError('Gagal Menghapus Seluruh Siswa', (err as Error).message);
+    } finally {
+      setDeletingBulk(false);
     }
   };
 
@@ -399,6 +502,19 @@ export default function SiswaPage() {
 
         {/* Actions */}
         <div className="flex flex-wrap items-center gap-2">
+          {siswaList.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-rose-600 hover:text-rose-700 hover:bg-rose-50 border-rose-200"
+              leftIcon={<Trash2 className="w-4 h-4 text-rose-500" />}
+              disabled={loading || deletingBulk}
+              onClick={handleDeleteAllInClass}
+            >
+              Hapus Semua
+            </Button>
+          )}
+
           <Button
             variant="outline"
             size="sm"
@@ -430,7 +546,10 @@ export default function SiswaPage() {
           <div className="w-full sm:w-48">
             <Select
               value={selectedKelasId}
-              onChange={(e) => setSelectedKelasId(e.target.value)}
+              onChange={(e) => {
+                setSelectedKelasId(e.target.value);
+                setSelectedIds([]);
+              }}
               options={kelasList.map((k) => ({
                 value: k.id,
                 label: k.nama,
@@ -449,10 +568,66 @@ export default function SiswaPage() {
         </div>
       </div>
 
+      {/* Selection / Bulk Action Bar */}
+      {selectedIds.length > 0 && (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-blue-50/90 border border-blue-200 p-3 sm:px-4 sm:py-3 rounded-2xl shadow-xs">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center justify-center min-w-6 h-6 px-1.5 rounded-full text-xs font-bold bg-blue-600 text-white">
+              {selectedIds.length}
+            </span>
+            <span className="text-xs font-semibold text-blue-950">
+              siswa dipilih
+            </span>
+            <span className="text-xs text-blue-600 hidden sm:inline">
+              (dari total {siswaList.length} siswa)
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleClearSelection}
+              disabled={deletingBulk}
+              className="text-xs flex-1 sm:flex-none"
+            >
+              Batalkan Pilihan
+            </Button>
+            <Button
+              type="button"
+              variant="danger"
+              size="sm"
+              leftIcon={<Trash2 className="w-4 h-4" />}
+              isLoading={deletingBulk}
+              onClick={handleBulkDelete}
+              className="text-xs flex-1 sm:flex-none"
+            >
+              Hapus Terpilih ({selectedIds.length})
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Table */}
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-12 text-center">
+              <div className="flex items-center justify-center">
+                <input
+                  type="checkbox"
+                  aria-label="Pilih semua siswa"
+                  className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
+                  checked={isAllSelected}
+                  disabled={loading || filteredSiswa.length === 0}
+                  ref={(el) => {
+                    if (el) el.indeterminate = isSomeSelected;
+                  }}
+                  onChange={handleToggleSelectAll}
+                />
+              </div>
+            </TableHead>
             <TableHead className="w-14">No</TableHead>
             <TableHead className="w-32">NISN</TableHead>
             <TableHead className="w-28">NIS</TableHead>
@@ -463,10 +638,10 @@ export default function SiswaPage() {
         </TableHeader>
         <TableBody>
           {loading ? (
-            <TableEmpty colSpan={6} message="Memuat data siswa..." />
+            <TableEmpty colSpan={7} message="Memuat data siswa..." />
           ) : filteredSiswa.length === 0 ? (
             <TableEmpty
-              colSpan={6}
+              colSpan={7}
               message={
                 searchQuery
                   ? `Tidak ada siswa yang cocok dengan "${searchQuery}".`
@@ -474,55 +649,72 @@ export default function SiswaPage() {
               }
             />
           ) : (
-            filteredSiswa.map((item, index) => (
-              <TableRow key={item.id}>
-                <TableCell className="font-semibold text-slate-400">{index + 1}</TableCell>
-                <TableCell className="font-mono text-xs text-slate-600">
-                  {item.nisn || '-'}
-                </TableCell>
-                <TableCell className="font-mono text-xs font-semibold text-slate-700">
-                  {item.nis}
-                </TableCell>
-                <TableCell>
-                  <span className="font-semibold text-slate-900">{item.nama}</span>
-                </TableCell>
-                <TableCell className="text-center">
-                  {item.jenis_kelamin ? (
-                    <span
-                      className={`inline-flex items-center justify-center px-2 py-0.5 rounded-md text-xs font-bold ${
-                        item.jenis_kelamin === 'L'
-                          ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                          : 'bg-pink-50 text-pink-700 border border-pink-200'
-                      }`}
-                    >
-                      {item.jenis_kelamin}
-                    </span>
-                  ) : (
-                    <span className="text-slate-300">-</span>
-                  )}
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex items-center justify-end gap-1">
-                    <button
-                      type="button"
-                      onClick={() => openModal(item)}
-                      className="p-1.5 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-slate-100 transition cursor-pointer"
-                      title="Edit Siswa"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteSiswa(item.id, item.nama)}
-                      className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition cursor-pointer"
-                      title="Hapus Siswa"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))
+            filteredSiswa.map((item, index) => {
+              const isSelected = selectedIds.includes(item.id);
+              return (
+                <TableRow
+                  key={item.id}
+                  className={isSelected ? 'bg-blue-50/40 hover:bg-blue-50/70' : undefined}
+                >
+                  <TableCell className="text-center">
+                    <div className="flex items-center justify-center">
+                      <input
+                        type="checkbox"
+                        aria-label={`Pilih siswa ${item.nama}`}
+                        className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                        checked={isSelected}
+                        onChange={() => handleToggleSelectSiswa(item.id)}
+                      />
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-semibold text-slate-400">{index + 1}</TableCell>
+                  <TableCell className="font-mono text-xs text-slate-600">
+                    {item.nisn || '-'}
+                  </TableCell>
+                  <TableCell className="font-mono text-xs font-semibold text-slate-700">
+                    {item.nis}
+                  </TableCell>
+                  <TableCell>
+                    <span className="font-semibold text-slate-900">{item.nama}</span>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {item.jenis_kelamin ? (
+                      <span
+                        className={`inline-flex items-center justify-center px-2 py-0.5 rounded-md text-xs font-bold ${
+                          item.jenis_kelamin === 'L'
+                            ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                            : 'bg-pink-50 text-pink-700 border border-pink-200'
+                        }`}
+                      >
+                        {item.jenis_kelamin}
+                      </span>
+                    ) : (
+                      <span className="text-slate-300">-</span>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      <button
+                        type="button"
+                        onClick={() => openModal(item)}
+                        className="p-1.5 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-slate-100 transition cursor-pointer"
+                        title="Edit Siswa"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteSiswa(item.id, item.nama)}
+                        className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition cursor-pointer"
+                        title="Hapus Siswa"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })
           )}
         </TableBody>
       </Table>
