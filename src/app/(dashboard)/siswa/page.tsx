@@ -818,7 +818,8 @@ export default function SiswaPage() {
               <div className="text-left sm:text-right pl-12 sm:pl-0 border-t sm:border-t-0 pt-2 sm:pt-0 border-blue-100/60">
                 <p className="text-[10px] text-slate-400 font-medium">Semester Berjalan</p>
                 <p className="text-xs font-semibold text-slate-700">
-                  {activeSemester.nama} {activeSemester.tahun_ajaran?.tahun ? `(${activeSemester.tahun_ajaran.tahun})` : ''}
+                  Semester {activeSemester.tipe ? activeSemester.tipe.toUpperCase() : ''}{' '}
+                  {activeSemester.tahun_ajaran?.nama ? `(${activeSemester.tahun_ajaran.nama})` : ''}
                 </p>
               </div>
             )}

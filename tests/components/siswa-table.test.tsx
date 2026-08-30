@@ -235,8 +235,10 @@ describe('Siswa Table & Excel Preview Rendering', () => {
     const mockKelas = { id: 'k-1', nama: 'X TKJ 1' };
     const mockSemester = {
       id: 'sem-1',
-      nama: 'Semester Ganjil',
-      tahun_ajaran: { id: 'ta-1', tahun: '2025/2026', is_active: true },
+      tahun_ajaran_id: 'ta-1',
+      tipe: 'ganjil' as const,
+      is_active: true,
+      tahun_ajaran: { id: 'ta-1', nama: '2025/2026', is_active: true },
     };
 
     render(
@@ -259,7 +261,7 @@ describe('Siswa Table & Excel Preview Rendering', () => {
           <div className="text-left sm:text-right">
             <p className="text-[10px] text-slate-400 font-medium">Semester Berjalan</p>
             <p className="text-xs font-semibold text-slate-700" data-testid="active-semester-info">
-              {mockSemester.nama} ({mockSemester.tahun_ajaran.tahun})
+              Semester {mockSemester.tipe.toUpperCase()} ({mockSemester.tahun_ajaran.nama})
             </p>
           </div>
         </div>
@@ -270,7 +272,7 @@ describe('Siswa Table & Excel Preview Rendering', () => {
     expect(screen.getByTestId('target-class-name').textContent).toBe('X TKJ 1');
     expect(screen.getByText('Kelas Aktif')).toBeInTheDocument();
     expect(screen.getByText('Semester Berjalan')).toBeInTheDocument();
-    expect(screen.getByTestId('active-semester-info').textContent).toBe('Semester Ganjil (2025/2026)');
+    expect(screen.getByTestId('active-semester-info').textContent).toBe('Semester GANJIL (2025/2026)');
   });
 });
 
