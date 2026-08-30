@@ -105,7 +105,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 |-------|-----------|
 | Daftar siswa | List siswa di kelas guru dengan kolom Checkbox, NISN, NIS, Nama, dan L/P |
 | Tambah siswa | Form input satu per satu (NIS, NISN opsional, Nama Lengkap, Jenis Kelamin L/P) |
-| Upload Excel | Upload file `.xlsx` untuk bulk import (kolom NISN, NIS, Nama Lengkap, L/P) |
+| Upload Excel | Upload file `.xlsx` untuk bulk import (kolom NISN, NIS, Nama Lengkap, L/P) dengan indikator parameter kelas & semester tujuan impor |
 | Edit / Hapus | Edit data, hapus siswa satu per satu, bulk delete terpilih via checkbox, atau hapus seluruh siswa di kelas aktif (soft delete) |
 
 ### 4.6 Menu Admin
@@ -166,7 +166,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - `tests/components/ui.test.tsx`: UI primitives (`Button`, `Badge`, `Input`, `Select`, `Modal`, `ConfirmDialog`, `Toast`, `Table`).
   - `tests/components/kelas-dropdown.test.tsx`: Verifikasi format label dropdown pemilih kelas langsung menggunakan nama kelas tanpa redundant prefix "Kelas ".
   - `tests/components/kelas-table.test.tsx`: Verifikasi rendering tabel kelas menampilkan nama kelas ("Kelas [nama]") tanpa badge redundan.
-  - `tests/components/siswa-table.test.tsx`: Verifikasi rendering tabel siswa dengan kolom checkbox seleksi massal, urutan kolom NISN sebelum NIS, interaksi select-all / indeterminate, dan pratinjau impor Excel.
+  - `tests/components/siswa-table.test.tsx`: Verifikasi rendering tabel siswa dengan kolom checkbox seleksi massal, urutan kolom NISN sebelum NIS, interaksi select-all / indeterminate, banner info parameter kelas tujuan impor, dan pratinjau impor Excel.
   - `tests/components/kehadiran-nilai-table.test.tsx`: Verifikasi rendering tabel Kehadiran, Rekap Nilai, dan Input Nilai dengan urutan kolom NISN sebelum NIS.
   - `tests/components/input-kehadiran.test.tsx`: Verifikasi status disabled/enabled tombol Simpan Presensi pada perubahan data, kondisi loading, dan ketiadaan data siswa.
 - **Command**: `npm test` / `npm run test:coverage`
@@ -198,6 +198,9 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - Tombol *Hapus Semua* pada header untuk menghapus seluruh siswa di kelas aktif dalam satu tindakan terkonfirmasi.
   - Dialog konfirmasi bahaya (`variant: 'danger'`) untuk mencegah penghapusan data yang tidak disengaja.
   - Eksekusi soft-delete aman terisolasi pada `kelas_id` dan `semester_id` yang aktif.
+- **Modal Impor Siswa via Excel (`/siswa`)**:
+  - Menyajikan banner informasi parameter kelas tujuan impor yang aktif dipilih (`currentKelas`) beserta semester dan tahun ajaran berjalan secara kontras dan mobile-friendly di bagian atas modal.
+  - Mencegah kebingungan atau salah target impor kelas bagi wali kelas maupun admin saat mengunggah file spreadsheet.
 - **Status Presensi Siswa**:
   - Pilihan status ketidakhadiran mencakup Sakit (S - Amber), Izin (I - Blue), Alfa (A - Rose), dan Dispen (D - Purple).
   - Terintegrasi di input harian, matrix bulanan, rekap kehadiran, dashboard, supervisi admin, dan ekspor spreadsheet.

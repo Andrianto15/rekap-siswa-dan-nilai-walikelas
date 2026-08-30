@@ -25,3 +25,16 @@
   - Seluruh 19 test suites lulus 100% (111 tests passed).
 - **PRD & Dokumentasi**:
   - Memperbarui `doc/PRD.md` pada bagian *4.5 Menu Siswa*, *7. Testing Strategy*, dan *8. UI/UX Standards & Form Controls*.
+
+## Versi 0.3.15
+### Indikator Parameter Kelas pada Modal Impor Data Siswa via Excel
+- **Frontend / Menu Siswa (`src/app/(dashboard)/siswa/page.tsx`)**:
+  - Menambahkan memoized selector `currentKelas` untuk mendeteksi data objek kelas yang sedang aktif dipilih.
+  - Menambahkan banner informasi parameter kelas tujuan impor dan semester/tahun ajaran aktif pada bagian atas dialog modal "Impor Data Siswa via Excel".
+  - Desain banner responsif (mobile-first) dengan badge status "Kelas Aktif" dan icon kontras yang jelas untuk mencegah kesalahan pengunggahan data antar kelas.
+  - Memperjelas pesan feedback toast notifikasi berhasil impor dengan menyertakan nama kelas tujuan.
+- **Unit Testing & QA**:
+  - Menambahkan unit test di `tests/components/siswa-table.test.tsx` untuk memverifikasi rendering banner informasi parameter kelas target dan semester pada modal impor Excel.
+  - Seluruh 19 test suites lulus 100% (112 tests passed).
+- **PRD & Dokumentasi**:
+  - Memperbarui `doc/PRD.md` pada bagian *4.5 Menu Siswa*, *7. Testing Strategy*, dan *8. UI/UX Standards & Form Controls*.
