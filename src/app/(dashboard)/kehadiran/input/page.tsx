@@ -720,7 +720,7 @@ function InputKehadiranContent() {
                 return (
                   <div
                     key={siswa.id}
-                    className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50/50 transition"
+                    className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-blue-50/60 transition"
                   >
                     <div className="flex items-center gap-3">
                       <span className="font-semibold text-slate-400 text-xs w-6">{idx + 1}.</span>
@@ -815,15 +815,15 @@ function InputKehadiranContent() {
             </div>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-auto max-h-[calc(100vh-280px)] min-h-[340px] border-t border-slate-200">
             <table className="w-full text-xs text-center border-collapse">
-              <thead className="bg-slate-100/80 text-slate-700 font-semibold border-b">
+              <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200 sticky top-0 z-20 shadow-xs">
                 <tr>
-                  <th className="p-2.5 text-left sticky left-0 bg-slate-100 z-10 min-w-[160px] border-r">
+                  <th className="p-2.5 text-left sticky top-0 left-0 bg-slate-100 z-30 min-w-[160px] border-r border-b border-slate-200">
                     Nama Siswa
                   </th>
                   {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((d) => (
-                    <th key={d} className="p-2 w-8 border-r last:border-r-0">
+                    <th key={d} className="p-2 w-8 border-r border-b border-slate-200 last:border-r-0 sticky top-0 bg-slate-100 z-20">
                       {d}
                     </th>
                   ))}
@@ -844,8 +844,8 @@ function InputKehadiranContent() {
                   </tr>
                 ) : (
                   siswaList.map((siswa) => (
-                    <tr key={siswa.id} className="hover:bg-slate-50/50">
-                      <td className="p-2.5 text-left sticky left-0 bg-white z-10 border-r max-w-[200px]">
+                    <tr key={siswa.id} className="group hover:bg-blue-50/80 transition-colors">
+                      <td className="p-2.5 text-left sticky left-0 bg-white group-hover:bg-blue-50/80 z-10 border-r border-slate-200 max-w-[200px] transition-colors">
                         <div className="font-semibold text-slate-900 truncate">{siswa.nama}</div>
                         <div className="text-[10px] font-mono text-slate-400 truncate">
                           NIS: {siswa.nis}{siswa.nisn ? ` • NISN: ${siswa.nisn}` : ''}
@@ -860,7 +860,7 @@ function InputKehadiranContent() {
                           <td
                             key={d}
                             onClick={() => handleCycleGridCell(siswa.id, d)}
-                            className={`p-1 border-r last:border-r-0 cursor-pointer font-bold select-none transition ${
+                            className={`p-1 border-r border-slate-100 last:border-r-0 cursor-pointer font-bold select-none transition ${
                               status === 'S'
                                 ? 'bg-amber-100 text-amber-800 hover:bg-amber-200'
                                 : status === 'I'
@@ -869,7 +869,7 @@ function InputKehadiranContent() {
                                 ? 'bg-rose-100 text-rose-800 hover:bg-rose-200'
                                 : status === 'D'
                                 ? 'bg-purple-100 text-purple-800 hover:bg-purple-200'
-                                : 'hover:bg-slate-100 text-slate-300'
+                                : 'group-hover:bg-blue-100/30 hover:!bg-blue-100 text-slate-300'
                             }`}
                             title={`Klik untuk ubah presensi (${siswa.nama}, Tanggal ${d})`}
                           >

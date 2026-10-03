@@ -83,7 +83,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 | Sub-menu Kehadiran Mapel | Rekap & input kehadiran khusus mata pelajaran. Guru otomatis ter-mapping ke mapelnya, Admin dapat memilih mapel melalui dropdown filter. |
 | Sub-menu Kehadiran Keseluruhan | Rekap & input kehadiran harian umum seluruh siswa tanpa memandang mata pelajaran. |
 | Input per tanggal | Pilih tanggal → tampilkan semua siswa → centang S/I/A/D |
-| Input per bulan | Pilih bulan → grid siswa × tanggal → isi S/I/A/D |
+| Input per bulan | Pilih bulan → grid siswa × tanggal → isi S/I/A/D. Dilengkapi freeze header tanggal (sticky top), kolom nama siswa (sticky left), dan highlight hover baris lebih tebal untuk kemudahan input presensi. |
 | Rekap per bulan | Tabel semua siswa, kolom: NISN, NIS, Nama, S, I, A, D count per bulan |
 | Rekap keseluruhan | Tabel semua siswa, kolom: NISN, NIS, Nama, total S, I, A, D semester ini |
 | Rekap per siswa | Detail riwayat ketidakhadiran per siswa sesuai sub-menu aktif (menampilkan NISN & NIS) |
