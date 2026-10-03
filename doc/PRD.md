@@ -83,7 +83,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 | Sub-menu Kehadiran Mapel | Rekap & input kehadiran khusus mata pelajaran. Guru otomatis ter-mapping ke mapelnya, Admin dapat memilih mapel melalui dropdown filter. |
 | Sub-menu Kehadiran Keseluruhan | Rekap & input kehadiran harian umum seluruh siswa tanpa memandang mata pelajaran. |
 | Input per tanggal | Pilih tanggal → tampilkan semua siswa → centang S/I/A/D |
-| Input per bulan | Pilih bulan → grid siswa × tanggal → isi S/I/A/D. Dilengkapi freeze header tanggal (sticky top), kolom nama siswa (sticky left), dan highlight hover baris lebih tebal untuk kemudahan input presensi. |
+| Input per bulan | Pilih bulan → grid siswa × tanggal → isi S/I/A/D. Dilengkapi freeze header tanggal (sticky top), kolom nama siswa (sticky left), serta highlight hover interaktif dua arah (horizontal baris siswa dan vertikal kolom tanggal) dengan indikator aktif pada header dan sel perpotongan. |
 | Rekap per bulan | Tabel semua siswa, kolom: NISN, NIS, Nama, S, I, A, D count per bulan |
 | Rekap keseluruhan | Tabel semua siswa, kolom: NISN, NIS, Nama, total S, I, A, D semester ini |
 | Rekap per siswa | Detail riwayat ketidakhadiran per siswa sesuai sub-menu aktif (menampilkan NISN & NIS) |
@@ -168,7 +168,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - `tests/components/kelas-table.test.tsx`: Verifikasi rendering tabel kelas menampilkan nama kelas ("Kelas [nama]") tanpa badge redundan.
   - `tests/components/siswa-table.test.tsx`: Verifikasi rendering tabel siswa dengan kolom checkbox seleksi massal, urutan kolom NISN sebelum NIS, interaksi select-all / indeterminate, banner info parameter kelas tujuan impor, dan pratinjau impor Excel.
   - `tests/components/kehadiran-nilai-table.test.tsx`: Verifikasi rendering tabel Kehadiran, Rekap Nilai, dan Input Nilai dengan urutan kolom NISN sebelum NIS.
-  - `tests/components/input-kehadiran.test.tsx`: Verifikasi status disabled/enabled tombol Simpan Presensi pada perubahan data, kondisi loading, dan ketiadaan data siswa.
+  - `tests/components/input-kehadiran.test.tsx`: Verifikasi status disabled/enabled tombol Simpan Presensi pada perubahan data, freeze header tanggal & kolom nama siswa, serta interaktivitas hover highlight dua arah (horizontal baris siswa dan vertikal kolom tanggal).
 - **Command**: `npm test` / `npm run test:coverage`
 
 ---
@@ -179,6 +179,12 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - Tersedia navigasi tab switcher responsif pada modul `/kehadiran` dan `/kehadiran/input`.
   - Pada **Kehadiran Mapel**, Admin memiliki akses filter dropdown pemilihan mata pelajaran, sedangkan Guru otomatis menggunakan mapel yang diampu dengan tampilan badge/indikator nama mapel tanpa dropdown.
   - Pada **Kehadiran Keseluruhan**, seluruh role melihat data presensi umum tanpa terikat mapel spesifik.
+- **Matrix Presensi Bulanan (`/kehadiran/input?mode=grid`)**:
+  - **Freeze Header & Kolom**: Container scrollable `overflow-auto` dengan `sticky top-0` untuk baris header tanggal dan `sticky left-0` untuk kolom Nama Siswa.
+  - **Highlight Interaktif Dua Arah (Cross-Highlighting)**:
+    - **Horizontal**: Baris siswa di-highlight saat kursor berada di atasnya (`hover:bg-blue-50/80` pada baris dan `group-hover:bg-blue-50/80` pada sel sticky nama siswa).
+    - **Vertikal**: Saat kursor berada di sel kolom tanggal tertentu atau di header tanggal, seluruh kolom tanggal tersebut ter-highlight secara vertikal. Header tanggal mendapat penanda aktif (`bg-blue-100 text-blue-800 font-bold shadow-xs`), sel berstatus (`S`, `I`, `A`, `D`) dipertegas dengan kontras warna aktif yang lebih jelas, dan sel kosong mendapat background `bg-blue-50/90`.
+    - **Fokus Titik Temu**: Sel persimpangan aktif (baris aktif + kolom aktif) memiliki sorotan terkuat (`hover:!bg-blue-200 hover:!text-slate-800`), memudahkan verifikasi absensi siswa pada tanggal yang dituju.
 - **Integrasi Absensi pada Rekap Nilai & Ranking (`/nilai`)**:
   - Tabel Rekap Nilai menyajikan kolom informasi absensi per mata pelajaran (S, I, A, D) di samping rekapitulasi komponen nilai, rata-rata, nilai akhir, dan ranking.
   - Ekspor Excel rekap nilai menyertakan kolom rincian ketidakhadiran per mapel secara otomatis.
