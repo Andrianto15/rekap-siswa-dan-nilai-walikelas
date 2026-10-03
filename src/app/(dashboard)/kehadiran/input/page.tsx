@@ -70,6 +70,8 @@ function InputKehadiranContent() {
   // Map: `${siswa_id}_${dateStr}` -> 'S' | 'I' | 'A' | 'D' | null
   const [gridStatusMap, setGridStatusMap] = useState<Record<string, KehadiranStatus | null>>({});
   const [initialGridStatusMap, setInitialGridStatusMap] = useState<Record<string, KehadiranStatus | null>>({});
+  // Hovered day for vertical matrix column highlight
+  const [hoveredDay, setHoveredDay] = useState<number | null>(null);
 
   // 1. Initial metadata
   const initData = useCallback(async () => {
@@ -816,17 +818,34 @@ function InputKehadiranContent() {
           </div>
 
           <div className="overflow-auto max-h-[calc(100vh-280px)] min-h-[340px] border-t border-slate-200">
-            <table className="w-full text-xs text-center border-collapse">
+            <table
+              onMouseLeave={() => setHoveredDay(null)}
+              className="w-full text-xs text-center border-collapse"
+            >
               <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200 sticky top-0 z-20 shadow-xs">
                 <tr>
-                  <th className="p-2.5 text-left sticky top-0 left-0 bg-slate-100 z-30 min-w-[160px] border-r border-b border-slate-200">
+                  <th
+                    onMouseEnter={() => setHoveredDay(null)}
+                    className="p-2.5 text-left sticky top-0 left-0 bg-slate-100 z-30 min-w-[160px] border-r border-b border-slate-200"
+                  >
                     Nama Siswa
                   </th>
-                  {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((d) => (
-                    <th key={d} className="p-2 w-8 border-r border-b border-slate-200 last:border-r-0 sticky top-0 bg-slate-100 z-20">
-                      {d}
-                    </th>
-                  ))}
+                  {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((d) => {
+                    const isColHovered = hoveredDay === d;
+                    return (
+                      <th
+                        key={d}
+                        onMouseEnter={() => setHoveredDay(d)}
+                        className={`p-2 w-8 border-r border-b border-slate-200 last:border-r-0 sticky top-0 z-20 cursor-pointer transition-colors ${
+                          isColHovered
+                            ? 'bg-blue-100 text-blue-800 font-bold shadow-xs'
+                            : 'bg-slate-100 text-slate-700'
+                        }`}
+                      >
+                        {d}
+                      </th>
+                    );
+                  })}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -845,7 +864,10 @@ function InputKehadiranContent() {
                 ) : (
                   siswaList.map((siswa) => (
                     <tr key={siswa.id} className="group hover:bg-blue-50/80 transition-colors">
-                      <td className="p-2.5 text-left sticky left-0 bg-white group-hover:bg-blue-50/80 z-10 border-r border-slate-200 max-w-[200px] transition-colors">
+                      <td
+                        onMouseEnter={() => setHoveredDay(null)}
+                        className="p-2.5 text-left sticky left-0 bg-white group-hover:bg-blue-50/80 z-10 border-r border-slate-200 max-w-[200px] transition-colors"
+                      >
                         <div className="font-semibold text-slate-900 truncate">{siswa.nama}</div>
                         <div className="text-[10px] font-mono text-slate-400 truncate">
                           NIS: {siswa.nis}{siswa.nisn ? ` • NISN: ${siswa.nisn}` : ''}
@@ -855,20 +877,32 @@ function InputKehadiranContent() {
                         const dateStr = `${gridYear}-${String(gridMonth).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
                         const key = `${siswa.id}_${dateStr}`;
                         const status = gridStatusMap[key] || null;
+                        const isColHovered = hoveredDay === d;
 
                         return (
                           <td
                             key={d}
+                            onMouseEnter={() => setHoveredDay(d)}
                             onClick={() => handleCycleGridCell(siswa.id, d)}
                             className={`p-1 border-r border-slate-100 last:border-r-0 cursor-pointer font-bold select-none transition ${
                               status === 'S'
-                                ? 'bg-amber-100 text-amber-800 hover:bg-amber-200'
+                                ? isColHovered
+                                  ? 'bg-amber-200 text-amber-900 shadow-xs'
+                                  : 'bg-amber-100 text-amber-800 hover:bg-amber-200'
                                 : status === 'I'
-                                ? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                                ? isColHovered
+                                  ? 'bg-blue-200 text-blue-900 shadow-xs'
+                                  : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
                                 : status === 'A'
-                                ? 'bg-rose-100 text-rose-800 hover:bg-rose-200'
+                                ? isColHovered
+                                  ? 'bg-rose-200 text-rose-900 shadow-xs'
+                                  : 'bg-rose-100 text-rose-800 hover:bg-rose-200'
                                 : status === 'D'
-                                ? 'bg-purple-100 text-purple-800 hover:bg-purple-200'
+                                ? isColHovered
+                                  ? 'bg-purple-200 text-purple-900 shadow-xs'
+                                  : 'bg-purple-100 text-purple-800 hover:bg-purple-200'
+                                : isColHovered
+                                ? 'bg-blue-50/90 text-slate-400 group-hover:bg-blue-100/90 hover:!bg-blue-200 hover:!text-slate-800'
                                 : 'group-hover:bg-blue-100/30 hover:!bg-blue-100 text-slate-300'
                             }`}
                             title={`Klik untuk ubah presensi (${siswa.nama}, Tanggal ${d})`}
