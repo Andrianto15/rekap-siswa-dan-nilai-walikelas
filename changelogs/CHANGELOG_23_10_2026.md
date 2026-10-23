@@ -45,3 +45,17 @@
   - 20 test suites lulus 100% (121 tests passed).
 - **PRD**:
   - Memperbarui `doc/PRD.md` Bab 8 (A11y & Aksesibilitas Mobile serta Theming Dark Mode).
+
+## Versi 0.3.18
+### Indikator Semester Aktif Dinamis & Adaptasi Mobile Header
+- **Dynamic Semester Query (`src/components/layout/Header.tsx`)**:
+  - Mengganti teks hardcoded `"Ganjil 2026/2027"` dengan query dinamis ke tabel `semester` Supabase berelasi dengan `tahun_ajaran` (`is_active = true`, `deleted_at is null`).
+  - Menangani status loading (`...`) dan fallback informatif (`Belum Diatur`) bila belum disetel oleh admin.
+- **Mobile-First Layout & Ergonomics**:
+  - Menyembunyikan prefix label visual `"Semester Aktif: "` pada layar kecil (`hidden sm:inline`) guna mencegah text-clipping dan overflow layout dengan pill profil pengguna dan tombol logout di mobile.
+  - Mempertahankan ikon `CalendarDays` dengan `shrink-0` dan kontras teks badges yang konsisten di mode terang maupun gelap.
+- **Testing & QA**:
+  - Menambahkan test suite baru `tests/components/header.test.tsx` (3 tests) memvalidasi data dinamis, fallback, dan klik logout.
+  - 21 test suites lulus 100% (130 tests passed).
+- **PRD**:
+  - Memperbarui `doc/PRD.md` Bab 7 & 8 dengan spesifikasi header dinamis dan penyesuaian mobile-first.
