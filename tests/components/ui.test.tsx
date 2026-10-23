@@ -45,8 +45,14 @@ describe('UI Components', () => {
 
       rerender(<Button variant="secondary">Batal</Button>);
       expect(screen.getByRole('button')).toHaveClass('bg-slate-100');
+
+      rerender(<Button variant="primary">Simpan</Button>);
+      expect(screen.getByRole('button')).toHaveClass('bg-[#4682b4]');
+      expect(screen.getByRole('button')).toHaveClass('min-h-[44px]');
+      expect(screen.getByRole('button')).toHaveClass('rounded-lg');
     });
   });
+
 
   describe('Badge', () => {
     it('should render with different status variants', () => {
@@ -77,7 +83,10 @@ describe('UI Components', () => {
       expect(screen.getByText('Nama Siswa')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('Masukkan nama')).toBeInTheDocument();
       expect(screen.getByText('Nama lengkap sesuai akta')).toBeInTheDocument();
+      expect(screen.getByRole('textbox')).toHaveClass('min-h-[44px]');
+      expect(screen.getByRole('textbox')).toHaveClass('rounded-lg');
     });
+
 
     it('should display error state and message', () => {
       render(<Input label="NISN" error="NISN wajib diisi" />);
