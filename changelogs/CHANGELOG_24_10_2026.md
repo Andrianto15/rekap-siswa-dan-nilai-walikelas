@@ -40,3 +40,20 @@
 - **PRD**:
   - Memperbarui `doc/PRD.md` Bab 8 dengan spesifikasi standardisasi touch target 44x44px dan kontrol toggle presensi harian.
 
+## Versi 0.3.22
+### Poles Kualitas Visual & Ergonomi Mobile (Theme Switcher, Dark Mode Dashboard & Palet Semantik Dispen)
+- **Kontrol Pengalih Tema (Theme Switcher) Terpadu**:
+  - Menambahkan tombol pengalih mode gelap / terang (Sun/Moon icon toggle) di `Header.tsx` (desktop & mobile) dan drawer menu `BottomNav.tsx` (mobile).
+  - Menyimpan preferensi tema pengguna secara persisten di `localStorage` (`theme`: `light` | `dark`) dan sinkronisasi otomatis dengan kelas CSS root `.dark`.
+  - Memenuhi standar WCAG minimum touch target 44x44px (`min-h-[44px] min-w-[44px]`) serta atribut `aria-label` deskriptif.
+- **Konsistensi Visual Dark Mode pada Halaman Dashboard (`/dashboard`)**:
+  - Menyempurnakan seluruh kartu metrik statistik sekolah, ringkasan presensi bulanan kelas binaan, aksi cepat navigasi, dan pintasan menu admin dengan token warna tema gelap (`dark:bg-slate-900`, `dark:border-slate-800`, `dark:text-slate-100`, `dark:text-slate-400`, `dark:bg-blue-950/60`, `dark:bg-emerald-950/60`, `dark:bg-amber-950/60`, `dark:bg-teal-950/60`).
+- **Pembersihan Anti-Pattern AI Color Palette (`Badge variant="dispen"`)**:
+  - Menghilangkan warna ungu buatan (`purple`) pada status Dispensasi dan beralih ke palet semantik Teal yang natural (`bg-teal-100 text-teal-800 dark:bg-teal-950/50 dark:text-teal-300`).
+  - Hasil audit mechanical detector `impeccable detect` menghasilkan 0 peringatan / 0 antipattern.
+- **Testing & QA**:
+  - Menambahkan test case pengujian toggle tema pada `tests/components/header.test.tsx` untuk memvalidasi interaksi klik, update class DOM root, persistensi `localStorage`, dan ukuran 44x44px.
+  - Memperbarui assert class dispen di `tests/components/a11y-p1-audit.test.tsx` dan `tests/components/ui.test.tsx`.
+  - Seluruh 24 test suites lulus 100% (142 tests passed).
+- **PRD**:
+  - Memperbarui `doc/PRD.md` Bab 8 dengan spesifikasi pengalih tema, konsistensi dark mode dashboard, dan palet semantik dispen.

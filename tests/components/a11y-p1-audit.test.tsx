@@ -53,8 +53,8 @@ describe('Impeccable Audit P1 Fixes (Accessibility & Theming)', () => {
       expect(screen.getByText('Alpa').className).toContain('dark:text-rose-300');
 
       rerender(<Badge variant="dispen">Dispen</Badge>);
-      expect(screen.getByText('Dispen').className).toContain('dark:bg-purple-950/50');
-      expect(screen.getByText('Dispen').className).toContain('dark:text-purple-300');
+      expect(screen.getByText('Dispen').className).toContain('dark:bg-teal-950/50');
+      expect(screen.getByText('Dispen').className).toContain('dark:text-teal-300');
     });
 
     it('should include dark mode classes for standard variants', () => {

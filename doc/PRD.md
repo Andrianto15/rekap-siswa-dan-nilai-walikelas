@@ -245,6 +245,11 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 - **Standarisasi Kontrol Toggle Presensi Harian (`/kehadiran/input`)**:
   - Tombol pilihan status presensi harian (Hadir, Sakit, Izin, Alpa, Dispen) diperbesar ke standar mobile touch ergonomics `min-h-[44px] px-3.5 py-2` guna mencegah salah tekan (mis-tap) saat pencatatan presensi kelas melalui perangkat seluler.
   - Mengimplementasikan atribut state `aria-pressed` (true/false), `aria-label`, dan varian tema gelap (`dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300`).
+- **Kontrol Pengalih Tema (Theme Switcher) & Konsistensi Dark Mode Terpadu**:
+  - Tombol pengalih mode gelap / terang (Sun/Moon toggle) terintegrasi pada `Header.tsx` (desktop & mobile) dan drawer menu `BottomNav.tsx` (mobile) dengan persistensi `localStorage` ('theme': 'light' | 'dark') serta sinkronisasi `document.documentElement.classList`.
+  - Memenuhi standar touch target minimal 44x44px (`min-h-[44px] min-w-[44px]`) serta dilengkapi atribut `aria-label` deskriptif (`Ganti ke Mode Gelap` / `Ganti ke Mode Terang`).
+  - Halaman Dashboard (`/dashboard`) diselaraskan penuh dengan varian tema gelap (`dark:bg-slate-900`, `dark:border-slate-800`, `dark:text-slate-100`, `dark:text-slate-400`, `dark:bg-blue-950/60`, `dark:bg-emerald-950/60`, `dark:bg-amber-950/60`, `dark:bg-teal-950/60`).
+  - Palet status dispensasi (`Badge variant="dispen"`) diselaraskan ke warna semantik Teal (`bg-teal-100 text-teal-800 dark:bg-teal-950/50 dark:text-teal-300`) guna menghindari kesan AI color palette dan mempertahankan kontras visual natural di mode terang maupun gelap.
 
 
 

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { CalendarDays, LogOut, User } from 'lucide-react';
+import { CalendarDays, LogOut, Moon, Sun, User } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Badge } from '@/components/ui/Badge';
 import { createClient } from '@/lib/supabase/client';
@@ -10,6 +10,33 @@ export function Header() {
   const { profile, signOut } = useAuth();
   const [activeSemester, setActiveSemester] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const isDarkMode =
+      document.documentElement.classList.contains('dark') ||
+      localStorage.getItem('theme') === 'dark' ||
+      (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+      setIsDark(true);
+    } else {
+      document.documentElement.classList.remove('dark');
+      setIsDark(false);
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    if (isDark) {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+      setIsDark(false);
+    } else {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+      setIsDark(true);
+    }
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -79,6 +106,16 @@ export function Header() {
             </div>
           </div>
         </div>
+
+        <button
+          type="button"
+          onClick={toggleTheme}
+          className="flex items-center justify-center min-h-[44px] min-w-[44px] rounded-lg text-slate-400 dark:text-slate-400 hover:text-[#4682b4] dark:hover:text-[#6ba3ce] hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+          title={isDark ? 'Ganti ke Mode Terang' : 'Ganti ke Mode Gelap'}
+          aria-label={isDark ? 'Ganti ke Mode Terang' : 'Ganti ke Mode Gelap'}
+        >
+          {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-500" />}
+        </button>
 
         <button
           type="button"

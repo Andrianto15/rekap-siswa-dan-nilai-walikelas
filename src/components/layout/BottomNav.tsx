@@ -18,6 +18,8 @@ import {
   Database,
   LogOut,
   ShieldCheck,
+  Moon,
+  Sun,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useRole } from '@/hooks/useRole';
@@ -28,6 +30,25 @@ export function BottomNav() {
   const { isAdmin } = useRole();
   const { signOut, profile } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDark, setIsDark] = useState(false);
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    }
+  }, [isMenuOpen]);
+
+  const toggleTheme = () => {
+    if (document.documentElement.classList.contains('dark')) {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+      setIsDark(false);
+    } else {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+      setIsDark(true);
+    }
+  };
 
   const mainItems = [
     { name: 'Home', href: '/dashboard', icon: LayoutDashboard },
@@ -94,6 +115,20 @@ export function BottomNav() {
                 </div>
               </div>
             )}
+
+            <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-800 mb-3">
+              <div className="flex items-center gap-2">
+                {isDark ? <Moon className="w-4 h-4 text-[#6ba3ce]" /> : <Sun className="w-4 h-4 text-amber-500" />}
+                <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">Tema Tampilan</span>
+              </div>
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className="px-3 py-1.5 min-h-[36px] rounded-lg text-xs font-semibold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 shadow-xs cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-600 transition"
+              >
+                {isDark ? 'Mode Gelap' : 'Mode Terang'}
+              </button>
+            </div>
 
             <button
               type="button"

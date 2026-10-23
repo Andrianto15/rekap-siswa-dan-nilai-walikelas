@@ -66,7 +66,7 @@ describe('UI Components', () => {
       expect(screen.getByText('Gagal')).toHaveClass('bg-rose-50');
 
       rerender(<Badge variant="dispen">Dispen</Badge>);
-      expect(screen.getByText('Dispen')).toHaveClass('bg-purple-100 text-purple-800');
+      expect(screen.getByText('Dispen')).toHaveClass('bg-teal-100 text-teal-800');
     });
   });
 

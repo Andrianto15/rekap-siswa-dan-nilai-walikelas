@@ -108,4 +108,41 @@ describe('Header component', () => {
     fireEvent.click(logoutBtn);
     expect(mockSignOut).toHaveBeenCalledTimes(1);
   });
+
+  it('toggles theme between light and dark when theme button is clicked', async () => {
+    mockSupabase.from.mockReturnValue({
+      select: jest.fn().mockReturnValue({
+        eq: jest.fn().mockReturnValue({
+          is: jest.fn().mockReturnValue({
+            single: jest.fn().mockResolvedValue({
+              data: null,
+              error: null,
+            }),
+          }),
+        }),
+      }),
+    });
+
+    render(<Header />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Belum Diatur')).toBeInTheDocument();
+    });
+
+    const themeBtn = screen.getByRole('button', { name: /Ganti ke Mode Gelap/i });
+    expect(themeBtn).toBeInTheDocument();
+    expect(themeBtn).toHaveClass('min-h-[44px]');
+    expect(themeBtn).toHaveClass('min-w-[44px]');
+
+    // Click to toggle to dark mode
+    fireEvent.click(themeBtn);
+    expect(document.documentElement.classList.contains('dark')).toBe(true);
+    expect(localStorage.getItem('theme')).toBe('dark');
+    expect(screen.getByRole('button', { name: /Ganti ke Mode Terang/i })).toBeInTheDocument();
+
+    // Click again to toggle back to light mode
+    fireEvent.click(screen.getByRole('button', { name: /Ganti ke Mode Terang/i }));
+    expect(document.documentElement.classList.contains('dark')).toBe(false);
+    expect(localStorage.getItem('theme')).toBe('light');
+  });
 });

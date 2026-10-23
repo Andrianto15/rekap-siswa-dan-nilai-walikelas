@@ -215,42 +215,42 @@ export default function DashboardPage() {
       {isAdmin && (
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <ShieldCheck className="w-4 h-4 text-blue-600" />
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+            <ShieldCheck className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
               Statistik Master Data Sekolah
             </h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold mb-2">
+            <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold mb-2">
                 <School className="w-5 h-5" />
               </div>
-              <p className="text-xs text-slate-500 font-medium">Total Kelas</p>
-              <p className="text-xl font-extrabold text-slate-900">{adminStats.totalKelas}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Total Kelas</p>
+              <p className="text-xl font-extrabold text-slate-900 dark:text-slate-100">{adminStats.totalKelas}</p>
             </div>
 
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
-              <div className="w-10 h-10 rounded-xl bg-[#4682b4]/10 text-[#4682b4] flex items-center justify-center font-bold mb-2">
+            <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+              <div className="w-10 h-10 rounded-xl bg-[#4682b4]/10 dark:bg-[#4682b4]/20 text-[#4682b4] dark:text-[#6ba3ce] flex items-center justify-center font-bold mb-2">
                 <UserCheck className="w-5 h-5" />
               </div>
-              <p className="text-xs text-slate-500 font-medium">Total Guru / Akun</p>
-              <p className="text-xl font-extrabold text-slate-900">{adminStats.totalGuru}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Total Guru / Akun</p>
+              <p className="text-xl font-extrabold text-slate-900 dark:text-slate-100">{adminStats.totalGuru}</p>
             </div>
 
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold mb-2">
+            <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+              <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold mb-2">
                 <Users className="w-5 h-5" />
               </div>
-              <p className="text-xs text-slate-500 font-medium">Total Siswa Aktif</p>
-              <p className="text-xl font-extrabold text-slate-900">{adminStats.totalSiswa}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Total Siswa Aktif</p>
+              <p className="text-xl font-extrabold text-slate-900 dark:text-slate-100">{adminStats.totalSiswa}</p>
             </div>
 
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
-              <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold mb-2">
+            <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+              <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold mb-2">
                 <BookOpen className="w-5 h-5" />
               </div>
-              <p className="text-xs text-slate-500 font-medium">Mata Pelajaran</p>
-              <p className="text-xl font-extrabold text-slate-900">{adminStats.totalMapel}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Mata Pelajaran</p>
+              <p className="text-xl font-extrabold text-slate-900 dark:text-slate-100">{adminStats.totalMapel}</p>
             </div>
           </div>
         </div>
@@ -260,87 +260,87 @@ export default function DashboardPage() {
       <div>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <CalendarCheck2 className="w-4 h-4 text-emerald-600" />
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+            <CalendarCheck2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
               Presensi Kelas {waliKelas ? waliKelas.nama : ''} ({currentMonthName})
             </h2>
           </div>
-          <Link href="/kehadiran" className="text-xs text-blue-600 hover:text-blue-700 font-semibold inline-flex items-center gap-1">
+          <Link href="/kehadiran" className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold inline-flex items-center gap-1">
             <span>Lihat Rekap Lengkap</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+          <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-slate-500 font-medium">Siswa di Kelas</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Siswa di Kelas</span>
               <Badge variant="default" size="sm">Binaan</Badge>
             </div>
-            <p className="text-2xl font-black text-slate-900">{loading ? '...' : studentCount}</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">Siswa terdaftar aktif</p>
+            <p className="text-2xl font-black text-slate-900 dark:text-slate-100">{loading ? '...' : studentCount}</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">Siswa terdaftar aktif</p>
           </div>
 
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+          <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-slate-500 font-medium">Sakit (S)</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Sakit (S)</span>
               <Badge variant="sakit" size="sm">Bulan Ini</Badge>
             </div>
-            <p className="text-2xl font-black text-amber-600">{loading ? '...' : monthlyAbsences.sakit}</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">Hari tidak hadir</p>
+            <p className="text-2xl font-black text-amber-600 dark:text-amber-400">{loading ? '...' : monthlyAbsences.sakit}</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">Hari tidak hadir</p>
           </div>
 
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+          <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-slate-500 font-medium">Izin (I)</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Izin (I)</span>
               <Badge variant="izin" size="sm">Bulan Ini</Badge>
             </div>
-            <p className="text-2xl font-black text-blue-600">{loading ? '...' : monthlyAbsences.izin}</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">Hari dengan keterangan</p>
+            <p className="text-2xl font-black text-blue-600 dark:text-blue-400">{loading ? '...' : monthlyAbsences.izin}</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">Hari dengan keterangan</p>
           </div>
 
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+          <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-slate-500 font-medium">Alpa (A)</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Alpa (A)</span>
               <Badge variant="alpa" size="sm">Bulan Ini</Badge>
             </div>
-            <p className="text-2xl font-black text-rose-600">{loading ? '...' : monthlyAbsences.alpa}</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">Tanpa keterangan</p>
+            <p className="text-2xl font-black text-rose-600 dark:text-rose-400">{loading ? '...' : monthlyAbsences.alpa}</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">Tanpa keterangan</p>
           </div>
 
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs col-span-2 sm:col-span-1">
+          <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs col-span-2 sm:col-span-1">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-slate-500 font-medium">Dispen (D)</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Dispen (D)</span>
               <Badge variant="dispen" size="sm">Bulan Ini</Badge>
             </div>
-            <p className="text-2xl font-black text-purple-600">{loading ? '...' : monthlyAbsences.dispen}</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">Dispensasi resmi</p>
+            <p className="text-2xl font-black text-teal-600 dark:text-teal-400">{loading ? '...' : monthlyAbsences.dispen}</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">Dispensasi resmi</p>
           </div>
         </div>
       </div>
 
       {/* Quick Action Navigation Grid */}
       <div>
-        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-3">
+        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-3">
           Aksi Cepat & Navigasi
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <Link
             href="/kehadiran/input"
-            className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-blue-500 hover:shadow-md transition group flex flex-col justify-between"
+            className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-md transition group flex flex-col justify-between"
           >
             <div>
-              <div className="w-11 h-11 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-3 group-hover:scale-105 transition">
+              <div className="w-11 h-11 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-3 group-hover:scale-105 transition">
                 <CalendarCheck2 className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-slate-900 group-hover:text-blue-600 transition">
+              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
                 Input Kehadiran Hari Ini
               </h3>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 Catat presensi harian atau perbarui grid absensi bulanan siswa kelas binaan.
               </p>
             </div>
-            <div className="mt-4 flex items-center text-xs font-bold text-blue-600 gap-1">
+            <div className="mt-4 flex items-center text-xs font-bold text-blue-600 dark:text-blue-400 gap-1">
               <span>Buka Presensi</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition" />
             </div>
@@ -348,20 +348,20 @@ export default function DashboardPage() {
 
           <Link
             href="/nilai/input"
-            className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-[#4682b4] hover:shadow-md transition group flex flex-col justify-between"
+            className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-[#4682b4] dark:hover:border-[#6ba3ce] hover:shadow-md transition group flex flex-col justify-between"
           >
             <div>
-              <div className="w-11 h-11 rounded-2xl bg-[#4682b4]/10 text-[#4682b4] flex items-center justify-center mb-3 group-hover:scale-105 transition">
+              <div className="w-11 h-11 rounded-2xl bg-[#4682b4]/10 dark:bg-[#4682b4]/20 text-[#4682b4] dark:text-[#6ba3ce] flex items-center justify-center mb-3 group-hover:scale-105 transition">
                 <GraduationCap className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-slate-900 group-hover:text-[#4682b4] transition">
+              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 group-hover:text-[#4682b4] dark:group-hover:text-[#6ba3ce] transition">
                 Input Nilai Siswa
               </h3>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 Masukkan nilai per komponen (UH/UTS/UAS), hitung rata-rata, dan tentukan nilai akhir.
               </p>
             </div>
-            <div className="mt-4 flex items-center text-xs font-bold text-[#4682b4] gap-1">
+            <div className="mt-4 flex items-center text-xs font-bold text-[#4682b4] dark:text-[#6ba3ce] gap-1">
               <span>Buka Penilaian</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition" />
             </div>
@@ -369,20 +369,20 @@ export default function DashboardPage() {
 
           <Link
             href="/siswa"
-            className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-emerald-500 hover:shadow-md transition group flex flex-col justify-between"
+            className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md transition group flex flex-col justify-between"
           >
             <div>
-              <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3 group-hover:scale-105 transition">
+              <div className="w-11 h-11 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3 group-hover:scale-105 transition">
                 <Users className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-slate-900 group-hover:text-emerald-600 transition">
+              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
                 Kelola Data Siswa
               </h3>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 Lihat daftar nama siswa, tambah siswa baru, atau impor data massal dari file Excel.
               </p>
             </div>
-            <div className="mt-4 flex items-center text-xs font-bold text-emerald-600 gap-1">
+            <div className="mt-4 flex items-center text-xs font-bold text-emerald-600 dark:text-emerald-400 gap-1">
               <span>Buka Data Siswa</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition" />
             </div>
@@ -392,59 +392,59 @@ export default function DashboardPage() {
 
       {/* Admin Quick Links (If Admin) */}
       {isAdmin && (
-        <div className="bg-slate-100/70 p-5 rounded-3xl border border-slate-200 space-y-3">
+        <div className="bg-slate-100/70 dark:bg-slate-900/60 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-3">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-blue-600" />
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
+            <ShieldCheck className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
               Pintasan Menu Administrator
             </h3>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
             <Link
               href="/admin/periode"
-              className="p-3 bg-white rounded-xl border border-slate-200 hover:border-blue-400 text-center flex flex-col items-center gap-1.5 transition text-slate-800 hover:text-blue-600"
+              className="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-500 text-center flex flex-col items-center gap-1.5 transition text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400"
             >
-              <CalendarDays className="w-5 h-5 text-slate-500" />
+              <CalendarDays className="w-5 h-5 text-slate-500 dark:text-slate-400" />
               <span className="text-xs font-semibold">Tahun & Sem</span>
             </Link>
 
             <Link
               href="/admin/kelas"
-              className="p-3 bg-white rounded-xl border border-slate-200 hover:border-blue-400 text-center flex flex-col items-center gap-1.5 transition text-slate-800 hover:text-blue-600"
+              className="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-500 text-center flex flex-col items-center gap-1.5 transition text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400"
             >
-              <School className="w-5 h-5 text-slate-500" />
+              <School className="w-5 h-5 text-slate-500 dark:text-slate-400" />
               <span className="text-xs font-semibold">Master Kelas</span>
             </Link>
 
             <Link
               href="/admin/mapel"
-              className="p-3 bg-white rounded-xl border border-slate-200 hover:border-blue-400 text-center flex flex-col items-center gap-1.5 transition text-slate-800 hover:text-blue-600"
+              className="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-500 text-center flex flex-col items-center gap-1.5 transition text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400"
             >
-              <BookOpen className="w-5 h-5 text-slate-500" />
+              <BookOpen className="w-5 h-5 text-slate-500 dark:text-slate-400" />
               <span className="text-xs font-semibold">Master Mapel</span>
             </Link>
 
             <Link
               href="/admin/users"
-              className="p-3 bg-white rounded-xl border border-slate-200 hover:border-blue-400 text-center flex flex-col items-center gap-1.5 transition text-slate-800 hover:text-blue-600"
+              className="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-500 text-center flex flex-col items-center gap-1.5 transition text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400"
             >
-              <UserCheck className="w-5 h-5 text-slate-500" />
+              <UserCheck className="w-5 h-5 text-slate-500 dark:text-slate-400" />
               <span className="text-xs font-semibold">Kelola User</span>
             </Link>
 
             <Link
               href="/admin/mapping"
-              className="p-3 bg-white rounded-xl border border-slate-200 hover:border-blue-400 text-center flex flex-col items-center gap-1.5 transition text-slate-800 hover:text-blue-600"
+              className="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-500 text-center flex flex-col items-center gap-1.5 transition text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400"
             >
-              <GitFork className="w-5 h-5 text-slate-500" />
+              <GitFork className="w-5 h-5 text-slate-500 dark:text-slate-400" />
               <span className="text-xs font-semibold">Mapping Guru</span>
             </Link>
 
             <Link
               href="/admin/data"
-              className="p-3 bg-white rounded-xl border border-slate-200 hover:border-blue-400 text-center flex flex-col items-center gap-1.5 transition text-slate-800 hover:text-blue-600"
+              className="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-500 text-center flex flex-col items-center gap-1.5 transition text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400"
             >
-              <Database className="w-5 h-5 text-slate-500" />
+              <Database className="w-5 h-5 text-slate-500 dark:text-slate-400" />
               <span className="text-xs font-semibold">Semua Data</span>
             </Link>
           </div>
