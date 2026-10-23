@@ -453,14 +453,14 @@ export default function MappingAdminPage() {
                     <TableCell className="font-semibold text-slate-400">{index + 1}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full bg-indigo-50 text-indigo-700 font-bold text-xs flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-full bg-[#4682b4]/10 text-[#4682b4] font-bold text-xs flex items-center justify-center">
                           <User className="w-4 h-4" />
                         </div>
                         <span className="font-semibold text-slate-900">{item.guru?.full_name || 'Guru'}</span>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 font-bold text-xs border border-indigo-200">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-[#4682b4]/10 text-[#4682b4] font-bold text-xs border border-[#4682b4]/20">
                         {item.mapel?.nama}
                       </span>
                     </TableCell>
@@ -468,8 +468,9 @@ export default function MappingAdminPage() {
                       <button
                         type="button"
                         onClick={() => handleDeleteMapel(item.id)}
-                        className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition cursor-pointer"
+                        className="p-1.5 min-h-[44px] min-w-[44px] inline-flex items-center justify-center text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition cursor-pointer"
                         title="Hapus Penugasan"
+                        aria-label="Hapus Penugasan"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>

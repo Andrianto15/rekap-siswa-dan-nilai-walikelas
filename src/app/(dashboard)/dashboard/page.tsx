@@ -175,7 +175,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-800 p-6 md:p-8 text-white shadow-xl shadow-blue-600/20">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#36648b] via-[#4682b4] to-[#0ea5e9] p-6 md:p-8 text-white shadow-xl shadow-[#4682b4]/20">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <div className="flex items-center gap-2 mb-2">
@@ -230,7 +230,7 @@ export default function DashboardPage() {
             </div>
 
             <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold mb-2">
+              <div className="w-10 h-10 rounded-xl bg-[#4682b4]/10 text-[#4682b4] flex items-center justify-center font-bold mb-2">
                 <UserCheck className="w-5 h-5" />
               </div>
               <p className="text-xs text-slate-500 font-medium">Total Guru / Akun</p>
@@ -348,20 +348,20 @@ export default function DashboardPage() {
 
           <Link
             href="/nilai/input"
-            className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-indigo-500 hover:shadow-md transition group flex flex-col justify-between"
+            className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-[#4682b4] hover:shadow-md transition group flex flex-col justify-between"
           >
             <div>
-              <div className="w-11 h-11 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-3 group-hover:scale-105 transition">
+              <div className="w-11 h-11 rounded-2xl bg-[#4682b4]/10 text-[#4682b4] flex items-center justify-center mb-3 group-hover:scale-105 transition">
                 <GraduationCap className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition">
+              <h3 className="text-base font-bold text-slate-900 group-hover:text-[#4682b4] transition">
                 Input Nilai Siswa
               </h3>
               <p className="text-xs text-slate-500 mt-1">
                 Masukkan nilai per komponen (UH/UTS/UAS), hitung rata-rata, dan tentukan nilai akhir.
               </p>
             </div>
-            <div className="mt-4 flex items-center text-xs font-bold text-indigo-600 gap-1">
+            <div className="mt-4 flex items-center text-xs font-bold text-[#4682b4] gap-1">
               <span>Buka Penilaian</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition" />
             </div>

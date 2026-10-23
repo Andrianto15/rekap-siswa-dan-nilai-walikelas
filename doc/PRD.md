@@ -171,6 +171,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - `tests/components/input-kehadiran.test.tsx`: Verifikasi status disabled/enabled tombol Simpan Presensi pada perubahan data, freeze header tanggal & kolom nama siswa, serta interaktivitas hover highlight dua arah (horizontal baris siswa dan vertikal kolom tanggal).
   - `tests/components/a11y-p1.test.tsx`: Verifikasi kepatuhan A11y (viewport pinch-to-zoom tidak dimatikan, aria-invalid/aria-describedby pada Input/Select, dialog role & modal aria-labelledby, serta theming dark mode pada Table).
   - `tests/components/header.test.tsx`: Verifikasi rendering dinamis semester aktif dari Supabase, fallback teks saat belum diatur, adaptasi label mobile-first, dan penanganan aksi logout pada komponen Header.
+  - `tests/components/a11y-p2.test.tsx`: Verifikasi focus trap keyboard (`Tab` & `Shift+Tab` wrapping) pada komponen `Modal` dan `ConfirmDialog` demi kepatuhan WCAG 2.4.3 Focus Order.
 - **Command**: `npm test` / `npm run test:coverage`
 
 ---
@@ -181,7 +182,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - **Pinch-to-Zoom**: Viewport tidak menonaktifkan zoom pengguna (`maximumScale` dan `userScalable: false` dihapus) demi kepatuhan WCAG 1.4.4 Resize Text.
   - **Accessible Names & Form States (WCAG 4.1.2)**: Seluruh input matriks nilai per siswa, dropdown filter kelas & mapel tanpa label visual, dan tombol aksi ikonik (Edit, Hapus, Navigasi Bulan) wajib menyertakan atribut `aria-label` deskriptif.
   - **Error Linking**: Komponen `Input` dan `Select` otomatis menambahkan atribut `aria-invalid="true"` dan `aria-describedby` ke elemen teks error saat validasi gagal.
-  - **Dialog Semantics & Trap**: Komponen `Modal` menggunakan `role="dialog"`, `aria-modal="true"`, serta tautan ID `aria-labelledby` dan `aria-describedby`. `ConfirmDialog` menggunakan `role="alertdialog"`.
+  - **Dialog Semantics & Focus Trap (WCAG 2.4.3 Focus Order)**: Komponen `Modal` menggunakan `role="dialog"`, `aria-modal="true"`, tautan ID `aria-labelledby` & `aria-describedby`, serta mekanisme focus trap keyboard yang membatasi navigasi `Tab`/`Shift+Tab` di dalam dialog. `ConfirmDialog` menggunakan `role="alertdialog"` dengan auto-focus tombol konfirmasi dan Tab focus wrap-around yang sama.
   - **Live Regions**: Komponen `Toast` menggunakan container `role="status"` dan `aria-live="polite"`.
   - **Motion Sensitivity (WCAG 2.3.3)**: Implementasi gentle fallback pada `@media (prefers-reduced-motion: reduce)` (durasi transisi 50ms terukur dan mematikan infinite spin) guna menjaga persepsi perubahan state tanpa memicu gangguan vestibular.
 - **Theming & Dark Mode Foundation**:

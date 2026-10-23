@@ -59,3 +59,20 @@
   - 21 test suites lulus 100% (130 tests passed).
 - **PRD**:
   - Memperbarui `doc/PRD.md` Bab 7 & 8 dengan spesifikasi header dinamis dan penyesuaian mobile-first.
+
+## Versi 0.3.19
+### Perbaikan Audit Teknis P2 (Dialog Focus Traps & Color Token Harmonization)
+- **Modal & ConfirmDialog Keyboard Focus Trap (WCAG 2.4.3 Focus Order)**:
+  - Mengimplementasikan `useRef` dialog dan keyboard listener `Tab` & `Shift+Tab` wrapping pada `Modal.tsx` dan `ConfirmDialog.tsx`.
+  - Mencegah fokus keyboard keluar dari dialog ke background page saat modal aktif.
+  - Menambahkan auto-focus timer pada elemen fokus pertama saat dialog terbuka.
+- **Harmonisasi Color Palette & Eliminasi AI Color Tells (`DESIGN.md`)**:
+  - Menghapus drift utility `indigo-*` di seluruh codebase (`dashboard/page.tsx`, `admin/mapping/page.tsx`, `nilai/page.tsx`).
+  - Mengganti styling banner dashboard menjadi gradient Steel Blue & Sky Glow (`from-[#36648b] via-[#4682b4] to-[#0ea5e9]`).
+  - Menyelaraskan kartu aksi cepat "Input Nilai Siswa" dan kartu statistik total guru/siswa ke token Steel Blue (`#4682b4`).
+  - Memperbesar tombol hapus penugasan pada `admin/mapping/page.tsx` menjadi `min-h-[44px] min-w-[44px]` dengan atribut `aria-label`.
+- **Testing & QA**:
+  - Menambahkan test suite baru `tests/components/a11y-p2.test.tsx` (2 tests) memvalidasi fokus trapping `Modal` dan `ConfirmDialog`.
+  - 22 test suites lulus 100% (132 tests passed).
+- **PRD**:
+  - Memperbarui `doc/PRD.md` Bab 7 & 8 terkait spesifikasi focus trap dan daftar test suite.

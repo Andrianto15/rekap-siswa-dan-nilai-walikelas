@@ -450,12 +450,12 @@ export default function RekapNilaiPage() {
         </div>
 
         <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+          <div className="w-10 h-10 rounded-xl bg-[#4682b4]/10 text-[#4682b4] flex items-center justify-center font-bold">
             <Award className="w-5 h-5" />
           </div>
           <div>
             <p className="text-xs text-slate-500 font-medium">Siswa Dinilai</p>
-            <p className="text-lg font-bold text-indigo-600">
+            <p className="text-lg font-bold text-[#4682b4]">
               {validScores.length} / {siswaList.length}
             </p>
           </div>
