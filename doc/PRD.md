@@ -169,12 +169,22 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - `tests/components/siswa-table.test.tsx`: Verifikasi rendering tabel siswa dengan kolom checkbox seleksi massal, urutan kolom NISN sebelum NIS, interaksi select-all / indeterminate, banner info parameter kelas tujuan impor, dan pratinjau impor Excel.
   - `tests/components/kehadiran-nilai-table.test.tsx`: Verifikasi rendering tabel Kehadiran, Rekap Nilai, dan Input Nilai dengan urutan kolom NISN sebelum NIS.
   - `tests/components/input-kehadiran.test.tsx`: Verifikasi status disabled/enabled tombol Simpan Presensi pada perubahan data, freeze header tanggal & kolom nama siswa, serta interaktivitas hover highlight dua arah (horizontal baris siswa dan vertikal kolom tanggal).
+  - `tests/components/a11y-p1.test.tsx`: Verifikasi kepatuhan A11y (viewport pinch-to-zoom tidak dimatikan, aria-invalid/aria-describedby pada Input/Select, dialog role & modal aria-labelledby, serta theming dark mode pada Table).
 - **Command**: `npm test` / `npm run test:coverage`
 
 ---
 
 ## 8. UI/UX Standards & Form Controls
 
+- **A11y & Aksesibilitas Mobile (WCAG 2.1 AA Compliance)**:
+  - **Pinch-to-Zoom**: Viewport tidak menonaktifkan zoom pengguna (`maximumScale` dan `userScalable: false` dihapus) demi kepatuhan WCAG 1.4.4 Resize Text.
+  - **Accessible Names & Form States (WCAG 4.1.2)**: Seluruh input matriks nilai per siswa, dropdown filter kelas & mapel tanpa label visual, dan tombol aksi ikonik (Edit, Hapus, Navigasi Bulan) wajib menyertakan atribut `aria-label` deskriptif.
+  - **Error Linking**: Komponen `Input` dan `Select` otomatis menambahkan atribut `aria-invalid="true"` dan `aria-describedby` ke elemen teks error saat validasi gagal.
+  - **Dialog Semantics & Trap**: Komponen `Modal` menggunakan `role="dialog"`, `aria-modal="true"`, serta tautan ID `aria-labelledby` dan `aria-describedby`. `ConfirmDialog` menggunakan `role="alertdialog"`.
+  - **Live Regions**: Komponen `Toast` menggunakan container `role="status"` dan `aria-live="polite"`.
+  - **Motion Sensitivity (WCAG 2.3.3)**: Implementasi gentle fallback pada `@media (prefers-reduced-motion: reduce)` (durasi transisi 50ms terukur dan mematikan infinite spin) guna menjaga persepsi perubahan state tanpa memicu gangguan vestibular.
+- **Theming & Dark Mode Foundation**:
+  - Seluruh layout inti (`Header`, `Sidebar`, `BottomNav`) dan komponen UI dasar (`Table`, `Modal`, `ConfirmDialog`, `Toast`, `Input`, `Select`) mendukung kelas semantik varian mode gelap (`dark:*`) berkesinambungan dengan token CSS `DESIGN.md`.
 - **Sub-Menu Kehadiran (Kehadiran Mapel & Kehadiran Keseluruhan)**:
   - Tersedia navigasi tab switcher responsif pada modul `/kehadiran` dan `/kehadiran/input`.
   - Pada **Kehadiran Mapel**, Admin memiliki akses filter dropdown pemilihan mata pelajaran, sedangkan Guru otomatis menggunakan mapel yang diampu dengan tampilan badge/indikator nama mapel tanpa dropdown.
@@ -214,6 +224,12 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - Tombol Simpan Presensi pada `/kehadiran/input` berstatus disabled secara default ketika tidak ada perubahan status dari database baseline.
   - Tombol otomatis menjadi aktif (enabled) hanya ketika terdapat perbedaan antara status saat ini dengan status awal (mode harian maupun bulanan).
   - Tombol kembali disabled setelah proses penyimpanan berhasil diselesaikan atau perubahan dibatalkan ke nilai semula.
+- **Standar Design System & Mobile Ergonomics (DESIGN.md)**:
+  - **Palet Warna**: Steel Blue Accent (`#4682b4`, dark `#6ba3ce`, hover `#36648b`), Sky Glow Accent (`#0ea5e9`, dark `#38bdf8`), Slate neutrals (`#f8fafc` bg, `#ffffff` card, `#e2e8f0` border, `#0f172a` text main).
+  - **Tipografi**: Public Sans untuk display & body, JetBrains Mono untuk code & metadata teknis.
+  - **Bentuk & Elevasi**: Base radius `0.5rem` (`rounded-lg`), Card radius `1rem` (`rounded-xl`), Pill radius `rounded-full`. Resting surface flat dengan hairline border (`1px solid var(--border-card)`), elevasi bertingkat (`--shadow-card-hover`, `--shadow-modal`) hanya aktif saat hover/focus/modal.
+  - **Touch Ergonomics**: Minimum tap target 44px (`min-h-[44px]`) untuk seluruh kontrol interaktif di mobile, padding responsif dengan dukungan `env(safe-area-inset-bottom)`.
+  - **Antislop Rules**: Ikon kontekstual fungsional tanpa pulse tanpa tujuan (misal `CalendarDays` pada indikator semester aktif).
 
 
 

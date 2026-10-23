@@ -2,28 +2,70 @@
 
 @layer base {
   :root {
-    --background: #f8fafc;
-    --foreground: #0f172a;
-    --card: #ffffff;
-    --card-foreground: #0f172a;
-    --primary: #2563eb;
-    --primary-hover: #1d4ed8;
+    /* Brand Primary & Accent (DESIGN.md) */
+    --color-primary: #4682b4;
+    --color-primary-hover: #36648b;
+    --color-primary-dark: #6ba3ce;
+    --color-accent: #0ea5e9;
+    --color-accent-dark: #38bdf8;
+
+    /* Semantic Neutral Light */
+    --bg-main: #f8fafc;
+    --bg-card: #ffffff;
+    --border-card: #e2e8f0;
+    --border-card-hover: #cbd5e1;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+
+    /* Semantic Aliases for compatibility */
+    --background: var(--bg-main);
+    --foreground: var(--text-main);
+    --card: var(--bg-card);
+    --card-foreground: var(--text-main);
+    --primary: var(--color-primary);
+    --primary-hover: var(--color-primary-hover);
     --primary-foreground: #ffffff;
     --secondary: #f1f5f9;
     --secondary-foreground: #334155;
-    --muted: #64748b;
+    --muted: var(--text-muted);
     --muted-foreground: #94a3b8;
-    --border: #e2e8f0;
-    --ring: #3b82f6;
+    --border: var(--border-card);
+    --ring: var(--color-primary);
+
+    /* Elevation Vocabulary (DESIGN.md) */
+    --shadow-card-rest: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+    --shadow-card-hover: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+    --shadow-modal: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  }
+
+  .dark {
+    /* Semantic Neutral Dark (DESIGN.md) */
+    --bg-main: #090d16;
+    --bg-card: #0f172a;
+    --border-card: #1e293b;
+    --border-card-hover: #334155;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --color-primary: #6ba3ce;
+    --color-primary-hover: #4682b4;
+    --color-accent: #38bdf8;
+
+    --background: var(--bg-main);
+    --foreground: var(--text-main);
+    --card: var(--bg-card);
+    --card-foreground: var(--text-main);
+    --primary: var(--color-primary);
+    --border: var(--border-card);
+    --ring: var(--color-primary);
   }
 
   * {
-    border-color: var(--border);
+    border-color: var(--border-card);
   }
 
   body {
-    background-color: var(--background);
-    color: var(--foreground);
+    background-color: var(--bg-main);
+    color: var(--text-main);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -49,7 +91,40 @@
   background: #94a3b8;
 }
 
-/* Safe area inset for mobile phones (bottom nav) */
+/* Mobile ergonomics & Safe area insets */
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom, 1rem);
+}
+
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Shadow utilities per DESIGN.md */
+.shadow-card-rest {
+  box-shadow: var(--shadow-card-rest);
+}
+
+.shadow-card-hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+.shadow-modal {
+  box-shadow: var(--shadow-modal);
+}
+
+/* Motion sensitivity: intentional gentle transition preserving state changes */
+@media (prefers-reduced-motion: reduce) {
+  .animate-in,
+  .transition,
+  .transition-all,
+  .transition-colors,
+  .transition-opacity {
+    transition-duration: 0.05s !important;
+    animation-duration: 0.05s !important;
+  }
+  .animate-spin {
+    animation: none !important;
+  }
 }

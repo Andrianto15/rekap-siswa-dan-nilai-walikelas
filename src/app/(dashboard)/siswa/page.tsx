@@ -554,6 +554,7 @@ export default function SiswaPage() {
           <span className="text-xs font-semibold text-slate-600 shrink-0">Pilih Kelas:</span>
           <div className="w-full sm:w-48">
             <Select
+              aria-label="Pilih Kelas"
               value={selectedKelasId}
               onChange={(e) => {
                 setSelectedKelasId(e.target.value);
@@ -706,16 +707,18 @@ export default function SiswaPage() {
                       <button
                         type="button"
                         onClick={() => openModal(item)}
-                        className="p-1.5 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-slate-100 transition cursor-pointer"
+                        className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
                         title="Edit Siswa"
+                        aria-label={`Edit data siswa ${item.nama}`}
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDeleteSiswa(item.id, item.nama)}
-                        className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition cursor-pointer"
+                        className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
                         title="Hapus Siswa"
+                        aria-label={`Hapus data siswa ${item.nama}`}
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>

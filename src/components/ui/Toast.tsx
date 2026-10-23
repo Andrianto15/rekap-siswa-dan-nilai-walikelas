@@ -61,21 +61,25 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={{ toast, success, error, info }}>
       {children}
-      <div className="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0">
+      <div
+        role="status"
+        aria-live="polite"
+        className="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"
+      >
         {toasts.map((item) => (
           <div
             key={item.id}
             className={cn(
               'pointer-events-auto flex items-start gap-3 p-4 rounded-xl border shadow-lg transition-all transform animate-in slide-in-from-top-2 duration-200',
-              item.type === 'success' && 'bg-emerald-50 border-emerald-200 text-emerald-900',
-              item.type === 'error' && 'bg-rose-50 border-rose-200 text-rose-900',
-              item.type === 'info' && 'bg-blue-50 border-blue-200 text-blue-900'
+              item.type === 'success' && 'bg-emerald-50 dark:bg-emerald-950/90 border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-100',
+              item.type === 'error' && 'bg-rose-50 dark:bg-rose-950/90 border-rose-200 dark:border-rose-800 text-rose-900 dark:text-rose-100',
+              item.type === 'info' && 'bg-blue-50 dark:bg-blue-950/90 border-blue-200 dark:border-blue-800 text-blue-900 dark:text-blue-100'
             )}
           >
             <div className="mt-0.5 shrink-0">
-              {item.type === 'success' && <CheckCircle2 className="w-5 h-5 text-emerald-600" />}
-              {item.type === 'error' && <AlertCircle className="w-5 h-5 text-rose-600" />}
-              {item.type === 'info' && <Info className="w-5 h-5 text-blue-600" />}
+              {item.type === 'success' && <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />}
+              {item.type === 'error' && <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400" />}
+              {item.type === 'info' && <Info className="w-5 h-5 text-blue-600 dark:text-blue-400" />}
             </div>
             <div className="flex-1 min-w-0">
               <h4 className="text-sm font-semibold">{item.title}</h4>
@@ -84,8 +88,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             <button
               type="button"
               onClick={() => removeToast(item.id)}
-              className="text-slate-400 hover:text-slate-600 p-1 rounded-md transition"
-              aria-label="Tutup"
+              className="text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-md transition cursor-pointer -mr-2 -mt-2"
+              aria-label="Tutup notifikasi"
             >
               <X className="w-4 h-4" />
             </button>
