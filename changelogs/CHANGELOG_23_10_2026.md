@@ -1,6 +1,6 @@
 # Changelog 23-10-2026
 
-## Versi 0.3.15
+## Versi 0.3.16
 ### Standardisasi Design System & Mobile Ergonomics (DESIGN.md)
 - **Design Tokens & Global Styling (`src/app/globals.css`)**:
   - Menetapkan CSS custom properties untuk palet warna: Primary Steel Blue (`#4682b4`, hover `#36648b`, dark `#6ba3ce`), Accent Sky Glow (`#0ea5e9`), dan Slate neutral backgrounds (`#f8fafc`, `#ffffff`, `#e2e8f0`).
