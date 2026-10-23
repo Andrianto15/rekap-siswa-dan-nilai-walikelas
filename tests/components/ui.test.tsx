@@ -300,6 +300,16 @@ describe('UI Components', () => {
       expect(cssContent).toContain('--shadow-card-hover:');
       expect(cssContent).toContain('--shadow-modal:');
     });
+
+    it('should configure Public Sans and theme color #4682b4 in layout.tsx per DESIGN.md', () => {
+      const fs = require('fs');
+      const path = require('path');
+      const layoutContent = fs.readFileSync(path.resolve(__dirname, '../../src/app/layout.tsx'), 'utf-8');
+
+      expect(layoutContent).toContain('Public_Sans');
+      expect(layoutContent).toContain("themeColor: '#4682b4'");
+    });
   });
 });
+
 
