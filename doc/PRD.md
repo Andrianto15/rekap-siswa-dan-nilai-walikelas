@@ -208,6 +208,12 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - Tombol Simpan Presensi pada `/kehadiran/input` berstatus disabled secara default ketika tidak ada perubahan status dari database baseline.
   - Tombol otomatis menjadi aktif (enabled) hanya ketika terdapat perbedaan antara status saat ini dengan status awal (mode harian maupun bulanan).
   - Tombol kembali disabled setelah proses penyimpanan berhasil diselesaikan atau perubahan dibatalkan ke nilai semula.
+- **Standar Design System & Mobile Ergonomics (DESIGN.md)**:
+  - **Palet Warna**: Steel Blue Accent (`#4682b4`, dark `#6ba3ce`, hover `#36648b`), Sky Glow Accent (`#0ea5e9`, dark `#38bdf8`), Slate neutrals (`#f8fafc` bg, `#ffffff` card, `#e2e8f0` border, `#0f172a` text main).
+  - **Tipografi**: Public Sans untuk display & body, JetBrains Mono untuk code & metadata teknis.
+  - **Bentuk & Elevasi**: Base radius `0.5rem` (`rounded-lg`), Card radius `1rem` (`rounded-xl`), Pill radius `rounded-full`. Resting surface flat dengan hairline border (`1px solid var(--border-card)`), elevasi bertingkat (`--shadow-card-hover`, `--shadow-modal`) hanya aktif saat hover/focus/modal.
+  - **Touch Ergonomics**: Minimum tap target 44px (`min-h-[44px]`) untuk seluruh kontrol interaktif di mobile, padding responsif dengan dukungan `env(safe-area-inset-bottom)`.
+  - **Antislop Rules**: Ikon kontekstual fungsional tanpa pulse tanpa tujuan (misal `CalendarDays` pada indikator semester aktif).
 
 
 
