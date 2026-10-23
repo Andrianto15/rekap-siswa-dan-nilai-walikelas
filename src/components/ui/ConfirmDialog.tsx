@@ -30,6 +30,7 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
   });
 
   const confirmBtnRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   const confirm = useCallback<ConfirmFunction>((options) => {
     return new Promise<boolean>((resolve) => {
@@ -93,6 +94,28 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
       if (e.key === 'Escape') {
         e.preventDefault();
         handleClose(false);
+        return;
+      }
+
+      if (e.key === 'Tab' && dialogRef.current) {
+        const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length > 0) {
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+          if (e.shiftKey) {
+            if (document.activeElement === first || document.activeElement === dialogRef.current) {
+              last.focus();
+              e.preventDefault();
+            }
+          } else {
+            if (document.activeElement === last) {
+              first.focus();
+              e.preventDefault();
+            }
+          }
+        }
       }
     };
 
@@ -148,6 +171,7 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
 
           {/* Dialog Modal */}
           <div
+            ref={dialogRef}
             role="alertdialog"
             aria-modal="true"
             aria-labelledby="confirm-dialog-title"
