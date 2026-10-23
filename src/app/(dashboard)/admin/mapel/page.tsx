@@ -172,16 +172,18 @@ export default function MapelAdminPage() {
                     <button
                       type="button"
                       onClick={() => openModal(m)}
-                      className="p-1.5 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-slate-100 transition cursor-pointer"
+                      className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
                       title="Edit Nama Mapel"
+                      aria-label={`Edit mata pelajaran ${m.nama}`}
                     >
                       <Edit2 className="w-4 h-4" />
                     </button>
                     <button
                       type="button"
                       onClick={() => handleDeleteMapel(m.id, m.nama)}
-                      className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition cursor-pointer"
+                      className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
                       title="Hapus Mapel"
+                      aria-label={`Hapus mata pelajaran ${m.nama}`}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

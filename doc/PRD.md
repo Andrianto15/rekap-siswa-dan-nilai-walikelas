@@ -239,9 +239,12 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 - **Aksesibilitas & Standar Kontras Matriks Kehadiran (`/kehadiran/input`)**:
   - Matriks kehadiran bulanan memenuhi standar rasio kontras WCAG 2.1 AA (minimal 4.5:1). Mengeliminasi status teks kontras rendah pada hover kolom aktif dengan warna kontras tinggi `text-blue-950 font-bold dark:text-blue-100` pada `bg-blue-100` / `bg-blue-200`. Tanda presensi default menggunakan `text-slate-500 dark:text-slate-400`.
   - Aksesibilitas keyboard dan pembaca layar: tabel matriks kehadiran mengimplementasikan semantik ARIA `role="grid"`, `role="row"`, `role="columnheader"`, `role="rowheader"`, dan `role="gridcell"`. Sel matriks mendukung navigasi fokus (`tabIndex={0}`) serta pengubahan siklus status presensi via tombol `Enter` atau `Space` dan dilengkapi `aria-label` deskriptif lengkap (nama siswa, tanggal, dan status presensi).
-- **Kompatibilitas Dark Mode & Token Desain Global**:
-  - Kontainer layout dashboard (`/src/app/(dashboard)/layout.tsx`) dan halaman login (`/src/app/login/page.tsx`) mengadopsi token semantik `bg-[var(--bg-main)] dark:bg-[#090d16] text-[var(--text-main)]`.
-  - Komponen inti UI `Button` dan `Badge` mendukung varian tema gelap lengkap (`dark:bg-slate-800`, `dark:border-slate-700`, `dark:text-slate-100`, varian dark status pills) guna menjamin konsistensi kontras saat tema gelap aktif.
+- **Standardisasi Touch Target 44x44px & Aksesibilitas Kontrol Tabel (WCAG 2.5.5 & 4.1.2)**:
+  - Seluruh tombol aksi ikon pada tabel admin (`/admin/kelas`, `/admin/users`, `/admin/periode`, `/admin/mapel`, `/admin/mapping`, `/kehadiran`, dan `/nilai/input`) distandarkan dengan dimensi target sentuh minimal 44x44px (`min-h-[44px] min-w-[44px] flex items-center justify-center`).
+  - Dilengkapi atribut `aria-label` deskriptif unik per baris data (misal: `"Edit nama kelas 7A"`, `"Hapus pengguna Budi"`, `"Lihat riwayat ketidakhadiran Siti"`) demi kepatuhan pembaca layar.
+- **Standarisasi Kontrol Toggle Presensi Harian (`/kehadiran/input`)**:
+  - Tombol pilihan status presensi harian (Hadir, Sakit, Izin, Alpa, Dispen) diperbesar ke standar mobile touch ergonomics `min-h-[44px] px-3.5 py-2` guna mencegah salah tekan (mis-tap) saat pencatatan presensi kelas melalui perangkat seluler.
+  - Mengimplementasikan atribut state `aria-pressed` (true/false), `aria-label`, dan varian tema gelap (`dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300`).
 
 
 

@@ -19,3 +19,24 @@
   - Seluruh 23 test suites lulus 100% (139 tests passed).
 - **PRD**:
   - Memperbarui `doc/PRD.md` Bab 8 dengan spesifikasi kontras matriks kehadiran, navigasi keyboard grid, dan dark mode token.
+
+## Versi 0.3.21
+### Perbaikan Audit Teknis P2 (Touch Targets 44x44px, ARIA State & Ergonomi Mobile)
+- **Standardisasi Touch Target 44x44px & ARIA Labels Tabel Admin**:
+  - `admin/kelas/page.tsx`: Tombol Edit dan Hapus nama kelas diperbesar ke `min-h-[44px] min-w-[44px]` dengan `aria-label="Edit nama kelas [nama]"` dan `aria-label="Hapus kelas [nama]"`.
+  - `admin/users/page.tsx`: Tombol Edit dan Hapus pengguna diperbesar ke `min-h-[44px] min-w-[44px]` dengan `aria-label="Edit pengguna [nama]"` dan `aria-label="Hapus pengguna [nama]"`.
+  - `admin/periode/page.tsx`: Tombol Edit Tahun, Hapus Tahun, dan Hapus Semester diperbesar ke `min-h-[44px] min-w-[44px]` dengan atribut `aria-label` deskriptif.
+  - `admin/mapel/page.tsx`: Tombol Edit dan Hapus mapel diperbesar ke `min-h-[44px] min-w-[44px]` dengan `aria-label="Edit mata pelajaran [nama]"` dan `aria-label="Hapus mata pelajaran [nama]"`.
+  - `admin/mapping/page.tsx`: Tombol Hapus penugasan wali kelas diperbesar ke `min-h-[44px] min-w-[44px]` dengan `aria-label="Hapus penugasan wali kelas [guru] untuk kelas [kelas]"`.
+  - `kehadiran/page.tsx`: Tombol Lihat Riwayat Ketidakhadiran siswa diperbesar ke `min-h-[44px] min-w-[44px]` dengan `aria-label="Lihat riwayat ketidakhadiran [siswa]"`.
+  - `nilai/input/page.tsx`: Tombol Edit dan Hapus komponen nilai diperbesar ke `min-h-[44px] min-w-[44px]` dengan atribut `aria-label` deskriptif.
+- **Standarisasi Kontrol Toggle Presensi Harian (`/kehadiran/input`)**:
+  - Tombol pilihan status presensi (Hadir, Sakit, Izin, Alpa, Dispen) diperbesar ke standar mobile touch ergonomics `min-h-[44px] px-3.5 py-2` guna mencegah mis-tap di layar sentuh ponsel.
+  - Mengimplementasikan atribut state aksesibilitas `aria-pressed` (true/false) dan deskriptif `aria-label`.
+  - Menambahkan varian tema gelap (`dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300`).
+- **Testing & QA**:
+  - Menambahkan test suite baru `tests/components/a11y-p2-audit.test.tsx` (2 tests) memvalidasi touch target 44px dan state `aria-pressed`.
+  - Seluruh 24 test suites lulus 100% (141 tests passed).
+- **PRD**:
+  - Memperbarui `doc/PRD.md` Bab 8 dengan spesifikasi standardisasi touch target 44x44px dan kontrol toggle presensi harian.
+

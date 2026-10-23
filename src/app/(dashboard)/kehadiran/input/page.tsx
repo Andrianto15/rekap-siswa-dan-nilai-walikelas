@@ -739,10 +739,12 @@ function InputKehadiranContent() {
                       <button
                         type="button"
                         onClick={() => handleDailyStatusChange(siswa.id, null)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer border ${
+                        aria-pressed={currentStatus === null}
+                        aria-label={`Set status Hadir untuk ${siswa.nama}`}
+                        className={`min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer border inline-flex items-center justify-center ${
                           currentStatus === null
-                            ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs'
-                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                            ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs dark:bg-emerald-600 dark:border-emerald-500'
+                            : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60'
                         }`}
                       >
                         Hadir
@@ -750,10 +752,12 @@ function InputKehadiranContent() {
                       <button
                         type="button"
                         onClick={() => handleDailyStatusChange(siswa.id, 'S')}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer border ${
+                        aria-pressed={currentStatus === 'S'}
+                        aria-label={`Set status Sakit untuk ${siswa.nama}`}
+                        className={`min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer border inline-flex items-center justify-center ${
                           currentStatus === 'S'
-                            ? 'bg-amber-500 text-white border-amber-500 shadow-xs'
-                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                            ? 'bg-amber-500 text-white border-amber-500 shadow-xs dark:bg-amber-600 dark:border-amber-500'
+                            : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60'
                         }`}
                       >
                         Sakit (S)
@@ -761,10 +765,12 @@ function InputKehadiranContent() {
                       <button
                         type="button"
                         onClick={() => handleDailyStatusChange(siswa.id, 'I')}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer border ${
+                        aria-pressed={currentStatus === 'I'}
+                        aria-label={`Set status Izin untuk ${siswa.nama}`}
+                        className={`min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer border inline-flex items-center justify-center ${
                           currentStatus === 'I'
-                            ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
-                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                            ? 'bg-blue-600 text-white border-blue-600 shadow-xs dark:bg-blue-600 dark:border-blue-500'
+                            : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60'
                         }`}
                       >
                         Izin (I)
@@ -772,10 +778,12 @@ function InputKehadiranContent() {
                       <button
                         type="button"
                         onClick={() => handleDailyStatusChange(siswa.id, 'A')}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer border ${
+                        aria-pressed={currentStatus === 'A'}
+                        aria-label={`Set status Alpa untuk ${siswa.nama}`}
+                        className={`min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer border inline-flex items-center justify-center ${
                           currentStatus === 'A'
-                            ? 'bg-rose-600 text-white border-rose-600 shadow-xs'
-                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                            ? 'bg-rose-600 text-white border-rose-600 shadow-xs dark:bg-rose-600 dark:border-rose-500'
+                            : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60'
                         }`}
                       >
                         Alpa (A)
@@ -783,10 +791,12 @@ function InputKehadiranContent() {
                       <button
                         type="button"
                         onClick={() => handleDailyStatusChange(siswa.id, 'D')}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer border ${
+                        aria-pressed={currentStatus === 'D'}
+                        aria-label={`Set status Dispen untuk ${siswa.nama}`}
+                        className={`min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer border inline-flex items-center justify-center ${
                           currentStatus === 'D'
-                            ? 'bg-purple-600 text-white border-purple-600 shadow-xs'
-                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                            ? 'bg-purple-600 text-white border-purple-600 shadow-xs dark:bg-purple-600 dark:border-purple-500'
+                            : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60'
                         }`}
                       >
                         Dispen (D)

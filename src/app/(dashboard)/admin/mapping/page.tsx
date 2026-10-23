@@ -398,8 +398,9 @@ export default function MappingAdminPage() {
                       <button
                         type="button"
                         onClick={() => handleDeleteWali(item.id)}
-                        className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition cursor-pointer"
+                        className="p-2 min-h-[44px] min-w-[44px] inline-flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
                         title="Hapus Penugasan"
+                        aria-label={`Hapus penugasan wali kelas ${item.guru_nama} untuk kelas ${item.kelas_nama}`}
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>

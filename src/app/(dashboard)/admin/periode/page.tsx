@@ -347,16 +347,18 @@ export default function PeriodeAdminPage() {
                   <button
                     type="button"
                     onClick={() => openTahunModal(tahun)}
-                    className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-200/60 transition"
+                    className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 rounded-lg hover:bg-slate-200/60 dark:hover:bg-slate-800 transition cursor-pointer"
                     title="Edit Tahun"
+                    aria-label={`Edit tahun ${tahun.nama}`}
                   >
                     <Edit2 className="w-4 h-4" />
                   </button>
                   <button
                     type="button"
                     onClick={() => handleDeleteTahun(tahun.id)}
-                    className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition"
+                    className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
                     title="Hapus Tahun"
+                    aria-label={`Hapus tahun ${tahun.nama}`}
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -422,8 +424,9 @@ export default function PeriodeAdminPage() {
                           <button
                             type="button"
                             onClick={() => handleDeleteSemester(sem.id)}
-                            className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition"
+                            className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
                             title="Hapus Semester"
+                            aria-label={`Hapus semester ${sem.tipe} ${tahun.nama}`}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
