@@ -439,12 +439,13 @@ export default function RekapKehadiranPage() {
       </div>
 
       {/* Filter and View Mode Switcher */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-slate-600">Kelas:</span>
+            <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">Kelas:</span>
             <div className="w-36">
               <Select
+                aria-label="Pilih Kelas"
                 value={selectedKelasId}
                 onChange={(e) => setSelectedKelasId(e.target.value)}
                 options={kelasList.map((k) => ({
@@ -458,10 +459,11 @@ export default function RekapKehadiranPage() {
           {/* Mapel Filter: Admin has dropdown, Teacher is auto-mapped (info badge) */}
           {subMode === 'mapel' && (
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-slate-600">Mapel:</span>
+              <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">Mapel:</span>
               {isAdmin ? (
                 <div className="w-44">
                   <Select
+                    aria-label="Pilih Mata Pelajaran"
                     value={selectedMapelId}
                     onChange={(e) => setSelectedMapelId(e.target.value)}
                     options={mapelList.map((m) => ({
@@ -471,7 +473,7 @@ export default function RekapKehadiranPage() {
                   />
                 </div>
               ) : (
-                <div className="px-3 py-1.5 bg-blue-50 text-blue-700 font-bold text-xs rounded-xl border border-blue-100">
+                <div className="px-3 py-1.5 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-bold text-xs rounded-xl border border-blue-100 dark:border-blue-900/60">
                   {assignedMapel?.nama || currentMapelName || 'Mapel Diampu'}
                 </div>
               )}
@@ -479,14 +481,14 @@ export default function RekapKehadiranPage() {
           )}
 
           {/* Mode Switcher */}
-          <div className="flex bg-slate-100 p-1 rounded-xl">
+          <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
             <button
               type="button"
               onClick={() => setViewMode('bulan')}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
                 viewMode === 'bulan'
-                  ? 'bg-white text-blue-600 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100'
               }`}
             >
               Rekap Bulanan
@@ -496,8 +498,8 @@ export default function RekapKehadiranPage() {
               onClick={() => setViewMode('semester')}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
                 viewMode === 'semester'
-                  ? 'bg-white text-blue-600 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100'
               }`}
             >
               Keseluruhan Semester
@@ -510,6 +512,7 @@ export default function RekapKehadiranPage() {
           <div className="flex items-center gap-1">
             <button
               type="button"
+              aria-label="Bulan sebelumnya"
               onClick={() => {
                 if (selectedMonth === 1) {
                   setSelectedMonth(12);
@@ -518,17 +521,18 @@ export default function RekapKehadiranPage() {
                   setSelectedMonth((m) => m - 1);
                 }
               }}
-              className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600"
+              className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <span className="text-xs font-bold text-slate-800 px-3">
+            <span className="text-xs font-bold text-slate-800 dark:text-slate-200 px-3">
               {new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' }).format(
                 new Date(selectedYear, selectedMonth - 1, 1)
               )}
             </span>
             <button
               type="button"
+              aria-label="Bulan berikutnya"
               onClick={() => {
                 if (selectedMonth === 12) {
                   setSelectedMonth(1);
@@ -537,7 +541,7 @@ export default function RekapKehadiranPage() {
                   setSelectedMonth((m) => m + 1);
                 }
               }}
-              className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600"
+              className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 cursor-pointer"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

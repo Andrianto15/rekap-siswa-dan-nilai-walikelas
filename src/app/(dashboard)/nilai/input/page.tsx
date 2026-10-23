@@ -727,6 +727,7 @@ export default function InputNilaiPage() {
                               max="100"
                               step="0.5"
                               placeholder="0"
+                              aria-label={`Nilai ${comp.nama} untuk ${siswa.nama}`}
                               value={val}
                               onChange={(e) => handleScoreChange(siswa.id, comp.id, e.target.value)}
                               className="w-20 mx-auto text-center font-semibold text-slate-900 bg-slate-50 border border-slate-300 rounded-xl px-2 py-1.5 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600"
@@ -748,6 +749,7 @@ export default function InputNilaiPage() {
                           max="100"
                           step="0.5"
                           placeholder={avg > 0 ? String(avg) : '0'}
+                          aria-label={`Nilai akhir untuk ${siswa.nama}`}
                           value={finalVal}
                           onChange={(e) => handleFinalScoreChange(siswa.id, e.target.value)}
                           className="w-24 mx-auto text-center font-bold text-blue-900 bg-white border border-blue-300 rounded-xl px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-600 shadow-xs"

@@ -113,3 +113,18 @@
 .shadow-modal {
   box-shadow: var(--shadow-modal);
 }
+
+/* Motion sensitivity: intentional gentle transition preserving state changes */
+@media (prefers-reduced-motion: reduce) {
+  .animate-in,
+  .transition,
+  .transition-all,
+  .transition-colors,
+  .transition-opacity {
+    transition-duration: 0.05s !important;
+    animation-duration: 0.05s !important;
+  }
+  .animate-spin {
+    animation: none !important;
+  }
+}
