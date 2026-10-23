@@ -36,10 +36,11 @@ export default function DashboardPage() {
   const [waliKelas, setWaliKelas] = useState<Kelas | null>(null);
   const [ampuMapels, setAmpuMapels] = useState<Mapel[]>([]);
   const [studentCount, setStudentCount] = useState<number>(0);
-  const [monthlyAbsences, setMonthlyAbsences] = useState<{ sakit: number; izin: number; alpa: number }>({
+  const [monthlyAbsences, setMonthlyAbsences] = useState<{ sakit: number; izin: number; alpa: number; dispen: number }>({
     sakit: 0,
     izin: 0,
     alpa: 0,
+    dispen: 0,
   });
 
   // Admin-specific stats
@@ -135,6 +136,7 @@ export default function DashboardPage() {
                 sakit: records.filter((r) => r.status === 'S').length,
                 izin: records.filter((r) => r.status === 'I').length,
                 alpa: records.filter((r) => r.status === 'A').length,
+                dispen: records.filter((r) => r.status === 'D').length,
               });
             }
           }
@@ -269,7 +271,7 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs text-slate-500 font-medium">Siswa di Kelas</span>
@@ -304,6 +306,15 @@ export default function DashboardPage() {
             </div>
             <p className="text-2xl font-black text-rose-600">{loading ? '...' : monthlyAbsences.alpa}</p>
             <p className="text-[11px] text-slate-400 mt-0.5">Tanpa keterangan</p>
+          </div>
+
+          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs col-span-2 sm:col-span-1">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs text-slate-500 font-medium">Dispen (D)</span>
+              <Badge variant="dispen" size="sm">Bulan Ini</Badge>
+            </div>
+            <p className="text-2xl font-black text-purple-600">{loading ? '...' : monthlyAbsences.dispen}</p>
+            <p className="text-[11px] text-slate-400 mt-0.5">Dispensasi resmi</p>
           </div>
         </div>
       </div>

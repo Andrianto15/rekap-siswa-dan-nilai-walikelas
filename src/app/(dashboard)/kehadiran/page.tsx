@@ -13,6 +13,8 @@ import {
   ChevronLeft,
   ChevronRight,
   CheckCircle2,
+  BookOpen,
+  Layers,
 } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
@@ -26,7 +28,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useRole } from '@/hooks/useRole';
 import { exportToExcel } from '@/lib/excel';
 import { formatDate } from '@/lib/utils';
-import type { Siswa, Kelas, Semester, Kehadiran, GuruKelas, RekapKehadiranSiswa } from '@/lib/types';
+import type { Siswa, Kelas, Mapel, Semester, Kehadiran, GuruKelas, GuruMapel, RekapKehadiranSiswa } from '@/lib/types';
 
 export default function RekapKehadiranPage() {
   const supabase = useMemo(() => createClient(), []);
@@ -37,6 +39,14 @@ export default function RekapKehadiranPage() {
   const [activeSemester, setActiveSemester] = useState<Semester | null>(null);
   const [kelasList, setKelasList] = useState<Kelas[]>([]);
   const [selectedKelasId, setSelectedKelasId] = useState<string>('');
+
+  // Sub-Menu: 'mapel' (Kehadiran Wali Kelas per Mapel) | 'keseluruhan' (Kehadiran Keseluruhan tanpa Mapel)
+  const [subMode, setSubMode] = useState<'mapel' | 'keseluruhan'>('mapel');
+
+  // Mapel States
+  const [mapelList, setMapelList] = useState<Mapel[]>([]);
+  const [selectedMapelId, setSelectedMapelId] = useState<string>('');
+  const [assignedMapel, setAssignedMapel] = useState<Mapel | null>(null);
 
   const [siswaList, setSiswaList] = useState<Siswa[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,6 +79,7 @@ export default function RekapKehadiranPage() {
       if (semData) {
         setActiveSemester(semData as unknown as Semester);
 
+        // Fetch Kelas
         const { data: kData } = await supabase
           .from('kelas')
           .select('*')
@@ -76,7 +87,16 @@ export default function RekapKehadiranPage() {
           .order('nama', { ascending: true });
         if (kData) setKelasList(kData);
 
+        // Fetch Mapel
+        const { data: mData } = await supabase
+          .from('mapel')
+          .select('*')
+          .is('deleted_at', null)
+          .order('nama', { ascending: true });
+        if (mData) setMapelList(mData);
+
         if (user && !isAdmin) {
+          // Wali kelas class mapping
           const { data: guruKelasData } = await supabase
             .from('guru_kelas')
             .select('*')
@@ -90,8 +110,27 @@ export default function RekapKehadiranPage() {
           } else if (kData && kData.length > 0) {
             setSelectedKelasId(kData[0].id);
           }
-        } else if (kData && kData.length > 0) {
-          setSelectedKelasId(kData[0].id);
+
+          // Teacher mapel mapping
+          const { data: guruMapelData } = await supabase
+            .from('guru_mapel')
+            .select(`*, mapel (*)`)
+            .eq('guru_id', user.id)
+            .eq('semester_id', semData.id)
+            .is('deleted_at', null)
+            .limit(1)
+            .single();
+
+          if (guruMapelData && (guruMapelData as unknown as GuruMapel).mapel) {
+            const mappedMapel = (guruMapelData as unknown as GuruMapel).mapel as Mapel;
+            setAssignedMapel(mappedMapel);
+            setSelectedMapelId(mappedMapel.id);
+          } else if (mData && mData.length > 0) {
+            setSelectedMapelId(mData[0].id);
+          }
+        } else {
+          if (kData && kData.length > 0) setSelectedKelasId(kData[0].id);
+          if (mData && mData.length > 0) setSelectedMapelId(mData[0].id);
         }
       }
     } catch (err: unknown) {
@@ -102,6 +141,8 @@ export default function RekapKehadiranPage() {
   // 2. Fetch students & attendance records
   const fetchData = useCallback(async () => {
     if (!selectedKelasId || !activeSemester) return;
+    if (subMode === 'mapel' && !selectedMapelId) return;
+
     setLoading(true);
 
     try {
@@ -127,6 +168,13 @@ export default function RekapKehadiranPage() {
           .in('siswa_id', sIds)
           .is('deleted_at', null);
 
+        // Filter by mapel or general
+        if (subMode === 'mapel') {
+          query = query.eq('mapel_id', selectedMapelId);
+        } else {
+          query = query.is('mapel_id', null);
+        }
+
         // If monthly filter applied
         if (viewMode === 'bulan') {
           const daysInMonth = new Date(selectedYear, selectedMonth, 0).getDate();
@@ -146,7 +194,7 @@ export default function RekapKehadiranPage() {
     } finally {
       setLoading(false);
     }
-  }, [supabase, selectedKelasId, activeSemester, viewMode, selectedYear, selectedMonth, toastError]);
+  }, [supabase, selectedKelasId, activeSemester, subMode, selectedMapelId, viewMode, selectedYear, selectedMonth, toastError]);
 
   useEffect(() => {
     initData();
@@ -156,7 +204,7 @@ export default function RekapKehadiranPage() {
     if (selectedKelasId && activeSemester) {
       fetchData();
     }
-  }, [selectedKelasId, activeSemester, fetchData]);
+  }, [selectedKelasId, activeSemester, subMode, selectedMapelId, fetchData]);
 
   // Compute aggregated stats per student
   const rekapData: RekapKehadiranSiswa[] = useMemo(() => {
@@ -165,13 +213,15 @@ export default function RekapKehadiranPage() {
       const sakit = records.filter((r) => r.status === 'S').length;
       const izin = records.filter((r) => r.status === 'I').length;
       const alpa = records.filter((r) => r.status === 'A').length;
-      const totalAbsen = sakit + izin + alpa;
+      const dispen = records.filter((r) => r.status === 'D').length;
+      const totalAbsen = sakit + izin + alpa + dispen;
 
       return {
         siswa,
         sakit,
         izin,
         alpa,
+        dispen,
         totalAbsen,
       };
     });
@@ -181,6 +231,13 @@ export default function RekapKehadiranPage() {
   const totalSakit = useMemo(() => rekapData.reduce((acc, r) => acc + r.sakit, 0), [rekapData]);
   const totalIzin = useMemo(() => rekapData.reduce((acc, r) => acc + r.izin, 0), [rekapData]);
   const totalAlpa = useMemo(() => rekapData.reduce((acc, r) => acc + r.alpa, 0), [rekapData]);
+  const totalDispen = useMemo(() => rekapData.reduce((acc, r) => acc + r.dispen, 0), [rekapData]);
+
+  // Active Mapel Name Helper
+  const currentMapelName = useMemo(() => {
+    if (subMode !== 'mapel') return '';
+    return mapelList.find((m) => m.id === selectedMapelId)?.nama || assignedMapel?.nama || 'Mapel';
+  }, [subMode, mapelList, selectedMapelId, assignedMapel]);
 
   // Open detail breakdown modal for a student
   const openStudentDetail = async (siswa: Siswa) => {
@@ -188,14 +245,20 @@ export default function RekapKehadiranPage() {
     setDetailModalOpen(true);
 
     try {
-      const { data } = await supabase
+      let query = supabase
         .from('kehadiran')
         .select('*')
         .eq('siswa_id', siswa.id)
         .eq('semester_id', activeSemester?.id || '')
-        .is('deleted_at', null)
-        .order('tanggal', { ascending: false });
+        .is('deleted_at', null);
 
+      if (subMode === 'mapel') {
+        query = query.eq('mapel_id', selectedMapelId);
+      } else {
+        query = query.is('mapel_id', null);
+      }
+
+      const { data } = await query.order('tanggal', { ascending: false });
       setStudentDetailAbsences((data || []) as unknown as Kehadiran[]);
     } catch (err: unknown) {
       toastError('Gagal Memuat Detail Siswa', (err as Error).message);
@@ -215,30 +278,72 @@ export default function RekapKehadiranPage() {
         ? `Bulan_${selectedMonth}_${selectedYear}`
         : `Semester_${activeSemester?.tipe || 'Ganjil'}`;
 
-    const headers = ['No', 'NIS', 'NISN', 'Nama Siswa', 'Sakit (S)', 'Izin (I)', 'Alpa (A)', 'Total Absen'];
+    const headers = ['No', 'NISN', 'NIS', 'Nama Siswa', 'Sakit (S)', 'Izin (I)', 'Alpa (A)', 'Dispen (D)', 'Total Absen'];
     const rows = rekapData.map((item, idx) => [
       idx + 1,
-      item.siswa.nis,
       item.siswa.nisn || '-',
+      item.siswa.nis,
       item.siswa.nama,
       item.sakit,
       item.izin,
       item.alpa,
+      item.dispen,
       item.totalAbsen,
     ]);
 
-    exportToExcel(
-      `Rekap_Kehadiran_${currentKelas}_${periodeLabel}.xlsx`,
-      'Rekap Kehadiran',
-      rows,
-      headers
-    );
+    const filename =
+      subMode === 'mapel'
+        ? `Rekap_Kehadiran_${currentMapelName}_${currentKelas}_${periodeLabel}.xlsx`
+        : `Rekap_Kehadiran_Keseluruhan_${currentKelas}_${periodeLabel}.xlsx`;
+
+    const sheetName =
+      subMode === 'mapel'
+        ? `Kehadiran ${currentMapelName}`
+        : 'Kehadiran Keseluruhan';
+
+    exportToExcel(filename, sheetName, rows, headers);
 
     toastSuccess('Ekspor Berhasil', 'File rekap kehadiran telah diunduh.');
   };
 
+  const inputHref = useMemo(() => {
+    const params = new URLSearchParams();
+    params.set('type', subMode);
+    if (selectedKelasId) params.set('kelasId', selectedKelasId);
+    if (subMode === 'mapel' && selectedMapelId) params.set('mapelId', selectedMapelId);
+    return `/kehadiran/input?${params.toString()}`;
+  }, [subMode, selectedKelasId, selectedMapelId]);
+
   return (
     <div className="space-y-6">
+      {/* Sub-Menu Tabs Switcher */}
+      <div className="flex bg-slate-100 p-1.5 rounded-2xl max-w-lg border border-slate-200/80">
+        <button
+          type="button"
+          onClick={() => setSubMode('mapel')}
+          className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+            subMode === 'mapel'
+              ? 'bg-white text-blue-600 shadow-sm'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <BookOpen className="w-4 h-4 shrink-0" />
+          <span>Kehadiran Mapel</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setSubMode('keseluruhan')}
+          className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+            subMode === 'keseluruhan'
+              ? 'bg-white text-blue-600 shadow-sm'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <Layers className="w-4 h-4 shrink-0" />
+          <span>Kehadiran Keseluruhan</span>
+        </button>
+      </div>
+
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -246,10 +351,14 @@ export default function RekapKehadiranPage() {
             <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
               <CalendarCheck2 className="w-5 h-5" />
             </div>
-            <h1 className="text-xl font-bold text-slate-900">Rekap Kehadiran Siswa</h1>
+            <h1 className="text-xl font-bold text-slate-900">
+              {subMode === 'mapel' ? 'Rekap Kehadiran Mapel' : 'Rekap Kehadiran Keseluruhan'}
+            </h1>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            Rekapitulasi presensi ketidakhadiran (Sakit, Izin, Alpa) per bulan dan semester.
+            {subMode === 'mapel'
+              ? `Rekapitulasi presensi ketidakhadiran siswa khusus mapel ${currentMapelName || ''}.`
+              : 'Rekapitulasi presensi ketidakhadiran siswa umum (tanpa memandang mapel).'}
           </p>
         </div>
 
@@ -264,7 +373,7 @@ export default function RekapKehadiranPage() {
             Unduh Excel
           </Button>
 
-          <Link href="/kehadiran/input">
+          <Link href={inputHref}>
             <Button
               variant="primary"
               size="sm"
@@ -277,7 +386,7 @@ export default function RekapKehadiranPage() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3.5">
           <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
             <UserCheck className="w-5 h-5" />
@@ -317,22 +426,57 @@ export default function RekapKehadiranPage() {
             <p className="text-lg font-bold text-rose-600">{totalAlpa}</p>
           </div>
         </div>
+
+        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+            D
+          </div>
+          <div>
+            <p className="text-xs text-slate-500 font-medium">Total Dispen</p>
+            <p className="text-lg font-bold text-purple-600">{totalDispen}</p>
+          </div>
+        </div>
       </div>
 
       {/* Filter and View Mode Switcher */}
       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-3">
-          <span className="text-xs font-semibold text-slate-600">Kelas:</span>
-          <div className="w-36">
-            <Select
-              value={selectedKelasId}
-              onChange={(e) => setSelectedKelasId(e.target.value)}
-              options={kelasList.map((k) => ({
-                value: k.id,
-                label: k.nama,
-              }))}
-            />
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-slate-600">Kelas:</span>
+            <div className="w-36">
+              <Select
+                value={selectedKelasId}
+                onChange={(e) => setSelectedKelasId(e.target.value)}
+                options={kelasList.map((k) => ({
+                  value: k.id,
+                  label: k.nama,
+                }))}
+              />
+            </div>
           </div>
+
+          {/* Mapel Filter: Admin has dropdown, Teacher is auto-mapped (info badge) */}
+          {subMode === 'mapel' && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-slate-600">Mapel:</span>
+              {isAdmin ? (
+                <div className="w-44">
+                  <Select
+                    value={selectedMapelId}
+                    onChange={(e) => setSelectedMapelId(e.target.value)}
+                    options={mapelList.map((m) => ({
+                      value: m.id,
+                      label: m.nama,
+                    }))}
+                  />
+                </div>
+              ) : (
+                <div className="px-3 py-1.5 bg-blue-50 text-blue-700 font-bold text-xs rounded-xl border border-blue-100">
+                  {assignedMapel?.nama || currentMapelName || 'Mapel Diampu'}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Mode Switcher */}
           <div className="flex bg-slate-100 p-1 rounded-xl">
@@ -406,30 +550,31 @@ export default function RekapKehadiranPage() {
         <TableHeader>
           <TableRow>
             <TableHead className="w-14">No</TableHead>
-            <TableHead className="w-28">NIS</TableHead>
             <TableHead className="w-32">NISN</TableHead>
+            <TableHead className="w-28">NIS</TableHead>
             <TableHead>Nama Siswa</TableHead>
             <TableHead className="text-center w-24">Sakit (S)</TableHead>
             <TableHead className="text-center w-24">Izin (I)</TableHead>
             <TableHead className="text-center w-24">Alpa (A)</TableHead>
+            <TableHead className="text-center w-24">Dispen (D)</TableHead>
             <TableHead className="text-center w-28">Total Absen</TableHead>
             <TableHead className="text-right w-24">Aksi</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {loading ? (
-            <TableEmpty colSpan={9} message="Memuat rekap kehadiran..." />
+            <TableEmpty colSpan={10} message="Memuat rekap kehadiran..." />
           ) : rekapData.length === 0 ? (
-            <TableEmpty colSpan={9} message="Belum ada data siswa di kelas ini." />
+            <TableEmpty colSpan={10} message="Belum ada data siswa di kelas ini." />
           ) : (
             rekapData.map((item, index) => (
               <TableRow key={item.siswa.id}>
                 <TableCell className="font-semibold text-slate-400">{index + 1}</TableCell>
-                <TableCell className="font-mono text-xs font-semibold text-slate-700">
-                  {item.siswa.nis}
-                </TableCell>
                 <TableCell className="font-mono text-xs text-slate-600">
                   {item.siswa.nisn || '-'}
+                </TableCell>
+                <TableCell className="font-mono text-xs font-semibold text-slate-700">
+                  {item.siswa.nis}
                 </TableCell>
                 <TableCell>
                   <span className="font-semibold text-slate-900">{item.siswa.nama}</span>
@@ -456,6 +601,15 @@ export default function RekapKehadiranPage() {
                   {item.alpa > 0 ? (
                     <span className="font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md">
                       {item.alpa}
+                    </span>
+                  ) : (
+                    <span className="text-slate-300">-</span>
+                  )}
+                </TableCell>
+                <TableCell className="text-center">
+                  {item.dispen > 0 ? (
+                    <span className="font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-md">
+                      {item.dispen}
                     </span>
                   ) : (
                     <span className="text-slate-300">-</span>
@@ -489,14 +643,14 @@ export default function RekapKehadiranPage() {
         isOpen={detailModalOpen}
         onClose={() => setDetailModalOpen(false)}
         title={`Riwayat Ketidakhadiran — ${selectedSiswaForDetail?.nama || ''}`}
-        description={`NIS: ${selectedSiswaForDetail?.nis || '-'}${selectedSiswaForDetail?.nisn ? ` • NISN: ${selectedSiswaForDetail.nisn}` : ''} • Semester ${activeSemester?.tipe || ''}`}
+        description={`NIS: ${selectedSiswaForDetail?.nis || '-'}${selectedSiswaForDetail?.nisn ? ` • NISN: ${selectedSiswaForDetail.nisn}` : ''} • ${subMode === 'mapel' ? `Mapel: ${currentMapelName}` : 'Kehadiran Keseluruhan'}`}
       >
         <div className="space-y-4">
           {studentDetailAbsences.length === 0 ? (
             <div className="p-8 text-center bg-slate-50 rounded-2xl text-slate-500 text-xs">
               <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
               <p className="font-semibold text-slate-800">Kehadiran Sempurna</p>
-              <p className="mt-0.5">Siswa ini tidak memiliki catatan ketidakhadiran (S/I/A) di semester ini.</p>
+              <p className="mt-0.5">Siswa ini tidak memiliki catatan ketidakhadiran (S/I/A/D) di periode ini.</p>
             </div>
           ) : (
             <div className="max-h-72 overflow-y-auto divide-y divide-slate-100 border border-slate-200 rounded-xl">
@@ -512,6 +666,7 @@ export default function RekapKehadiranPage() {
                     {record.status === 'S' && <Badge variant="sakit">Sakit</Badge>}
                     {record.status === 'I' && <Badge variant="izin">Izin</Badge>}
                     {record.status === 'A' && <Badge variant="alpa">Alpa</Badge>}
+                    {record.status === 'D' && <Badge variant="dispen">Dispen</Badge>}
                   </div>
                 </div>
               ))}

@@ -26,14 +26,14 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer active:scale-[0.98]';
+      'inline-flex items-center justify-center font-semibold rounded-lg min-h-[44px] transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4682b4] focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer active:scale-[0.98] border border-transparent';
 
     const variants = {
-      primary: 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm shadow-blue-500/20 focus:ring-blue-500',
-      secondary: 'bg-slate-100 hover:bg-slate-200 text-slate-800 focus:ring-slate-400',
-      outline: 'border border-slate-300 hover:bg-slate-50 text-slate-700 focus:ring-slate-400',
-      danger: 'bg-rose-600 hover:bg-rose-700 text-white shadow-sm shadow-rose-500/20 focus:ring-rose-500',
-      ghost: 'hover:bg-slate-100 text-slate-600 hover:text-slate-900 focus:ring-slate-300',
+      primary: 'bg-[#4682b4] hover:bg-[#36648b] text-white shadow-xs focus:ring-[#4682b4]',
+      secondary: 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200 focus:ring-slate-400',
+      outline: 'border-slate-300 hover:bg-slate-50 text-slate-700 focus:ring-slate-400',
+      danger: 'bg-rose-600 hover:bg-rose-700 text-white shadow-xs focus:ring-rose-500',
+      ghost: 'hover:bg-slate-100 text-slate-600 hover:text-slate-900 border-transparent focus:ring-slate-300',
     };
 
     const sizes = {

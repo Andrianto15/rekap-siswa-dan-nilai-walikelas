@@ -46,7 +46,7 @@ export function Sidebar() {
     <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-30 bg-white border-r border-slate-200">
       {/* Brand Header */}
       <div className="flex items-center gap-3 px-6 h-16 border-b border-slate-100">
-        <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 font-bold text-lg">
+        <div className="w-9 h-9 rounded-lg bg-[#4682b4] flex items-center justify-center text-white shadow-xs font-bold text-lg">
           R
         </div>
         <div>
@@ -70,13 +70,13 @@ export function Sidebar() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    'flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors',
+                    'flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors min-h-[44px]',
                     isActive
-                      ? 'bg-blue-50 text-blue-600 font-semibold'
+                      ? 'bg-[#4682b4]/10 text-[#4682b4] font-semibold'
                       : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                   )}
                 >
-                  <Icon className={cn('w-5 h-5 shrink-0', isActive ? 'text-blue-600' : 'text-slate-400')} />
+                  <Icon className={cn('w-5 h-5 shrink-0', isActive ? 'text-[#4682b4]' : 'text-slate-400')} />
                   <span>{item.name}</span>
                 </Link>
               );
@@ -87,8 +87,8 @@ export function Sidebar() {
         {isAdmin && (
           <div>
             <div className="flex items-center gap-1.5 px-3 mb-2">
-              <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
-              <p className="text-[10px] font-bold uppercase tracking-wider text-blue-600">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#4682b4]" />
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[#4682b4]">
                 Administrator
               </p>
             </div>
@@ -101,13 +101,13 @@ export function Sidebar() {
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      'flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors',
+                      'flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors min-h-[44px]',
                       isActive
-                        ? 'bg-blue-50 text-blue-600 font-semibold'
+                        ? 'bg-[#4682b4]/10 text-[#4682b4] font-semibold'
                         : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                     )}
                   >
-                    <Icon className={cn('w-5 h-5 shrink-0', isActive ? 'text-blue-600' : 'text-slate-400')} />
+                    <Icon className={cn('w-5 h-5 shrink-0', isActive ? 'text-[#4682b4]' : 'text-slate-400')} />
                     <span>{item.name}</span>
                   </Link>
                 );
@@ -122,7 +122,7 @@ export function Sidebar() {
         <button
           type="button"
           onClick={signOut}
-          className="flex items-center gap-3 w-full px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-600 hover:bg-rose-50 transition cursor-pointer"
+          className="flex items-center gap-3 w-full px-3.5 py-2.5 rounded-lg text-sm font-medium text-rose-600 hover:bg-rose-50 transition cursor-pointer min-h-[44px]"
         >
           <LogOut className="w-5 h-5 shrink-0" />
           <span>Keluar</span>

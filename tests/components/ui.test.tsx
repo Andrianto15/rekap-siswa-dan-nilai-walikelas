@@ -45,8 +45,14 @@ describe('UI Components', () => {
 
       rerender(<Button variant="secondary">Batal</Button>);
       expect(screen.getByRole('button')).toHaveClass('bg-slate-100');
+
+      rerender(<Button variant="primary">Simpan</Button>);
+      expect(screen.getByRole('button')).toHaveClass('bg-[#4682b4]');
+      expect(screen.getByRole('button')).toHaveClass('min-h-[44px]');
+      expect(screen.getByRole('button')).toHaveClass('rounded-lg');
     });
   });
+
 
   describe('Badge', () => {
     it('should render with different status variants', () => {
@@ -58,6 +64,9 @@ describe('UI Components', () => {
 
       rerender(<Badge variant="danger">Gagal</Badge>);
       expect(screen.getByText('Gagal')).toHaveClass('bg-rose-50');
+
+      rerender(<Badge variant="dispen">Dispen</Badge>);
+      expect(screen.getByText('Dispen')).toHaveClass('bg-purple-100 text-purple-800');
     });
   });
 
@@ -74,7 +83,10 @@ describe('UI Components', () => {
       expect(screen.getByText('Nama Siswa')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('Masukkan nama')).toBeInTheDocument();
       expect(screen.getByText('Nama lengkap sesuai akta')).toBeInTheDocument();
+      expect(screen.getByRole('textbox')).toHaveClass('min-h-[44px]');
+      expect(screen.getByRole('textbox')).toHaveClass('rounded-lg');
     });
+
 
     it('should display error state and message', () => {
       render(<Input label="NISN" error="NISN wajib diisi" />);
@@ -275,4 +287,50 @@ describe('UI Components', () => {
       expect(screen.getByText('Kosong')).toBeInTheDocument();
     });
   });
+
+  describe('Design System Tokens', () => {
+    it('should define exact color and elevation variables in globals.css per DESIGN.md', () => {
+      const fs = require('fs');
+      const path = require('path');
+      const cssContent = fs.readFileSync(path.resolve(__dirname, '../../src/app/globals.css'), 'utf-8');
+
+      // Colors from DESIGN.md
+      expect(cssContent).toContain('--color-primary: #4682b4;');
+      expect(cssContent).toContain('--color-primary-hover: #36648b;');
+      expect(cssContent).toContain('--color-accent: #0ea5e9;');
+      expect(cssContent).toContain('--bg-main: #f8fafc;');
+      expect(cssContent).toContain('--bg-card: #ffffff;');
+      expect(cssContent).toContain('--border-card: #e2e8f0;');
+      expect(cssContent).toContain('--text-main: #0f172a;');
+      expect(cssContent).toContain('--text-muted: #64748b;');
+
+      // Shadow vocabulary
+      expect(cssContent).toContain('--shadow-card-rest:');
+      expect(cssContent).toContain('--shadow-card-hover:');
+      expect(cssContent).toContain('--shadow-modal:');
+    });
+
+    it('should configure Public Sans and theme color #4682b4 in layout.tsx per DESIGN.md', () => {
+      const fs = require('fs');
+      const path = require('path');
+      const layoutContent = fs.readFileSync(path.resolve(__dirname, '../../src/app/layout.tsx'), 'utf-8');
+
+      expect(layoutContent).toContain('Public_Sans');
+      expect(layoutContent).toContain("themeColor: '#4682b4'");
+    });
+
+    it('should use contextual CalendarDays icon in Header without pulse slop per antislop R-04/R-19', () => {
+      const fs = require('fs');
+      const path = require('path');
+      const headerContent = fs.readFileSync(path.resolve(__dirname, '../../src/components/layout/Header.tsx'), 'utf-8');
+
+      expect(headerContent).not.toContain('Sparkles');
+      expect(headerContent).not.toContain('animate-pulse');
+      expect(headerContent).toContain('CalendarDays');
+      expect(headerContent).toContain('#4682b4');
+    });
+  });
 });
+
+
+

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Sparkles, LogOut, User } from 'lucide-react';
+import { CalendarDays, LogOut, User } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Badge } from '@/components/ui/Badge';
 
@@ -9,11 +9,11 @@ export function Header() {
   const { profile, signOut } = useAuth();
 
   return (
-    <header className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-slate-200 h-16 px-4 md:px-8 flex items-center justify-between">
+    <header className="sticky top-0 z-20 bg-white/90 backdrop-blur-md border-b border-slate-200 h-16 px-4 md:px-8 flex items-center justify-between">
       {/* Left: Active Semester & Breadcrumb status */}
       <div className="flex items-center gap-2.5">
-        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-semibold">
-          <Sparkles className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
+        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#4682b4]/10 border border-[#4682b4]/20 text-[#4682b4] text-xs font-semibold">
+          <CalendarDays className="w-3.5 h-3.5 text-[#4682b4]" />
           <span>Semester Aktif: Ganjil 2026/2027</span>
         </div>
       </div>
@@ -39,8 +39,9 @@ export function Header() {
         <button
           type="button"
           onClick={signOut}
-          className="hidden md:flex items-center justify-center p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer"
+          className="hidden md:flex items-center justify-center min-h-[44px] min-w-[44px] rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer"
           title="Keluar"
+          aria-label="Keluar"
         >
           <LogOut className="w-4 h-4" />
         </button>

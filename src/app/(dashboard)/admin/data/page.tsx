@@ -257,12 +257,14 @@ export default function AdminViewAllDataPage() {
       const sakit = records.filter((r) => r.status === 'S').length;
       const izin = records.filter((r) => r.status === 'I').length;
       const alpa = records.filter((r) => r.status === 'A').length;
+      const dispen = records.filter((r) => r.status === 'D').length;
       return {
         siswa,
         sakit,
         izin,
         alpa,
-        totalAbsen: sakit + izin + alpa,
+        dispen,
+        totalAbsen: sakit + izin + alpa + dispen,
       };
     });
   }, [attendanceStudents, attendanceRecords]);
@@ -316,15 +318,16 @@ export default function AdminViewAllDataPage() {
     const currentTeacher = teachers.find((t) => t.id === selectedTeacherId)?.full_name || 'Guru';
     const currentKelas = teacherWaliKelas?.nama || 'Kelas';
 
-    const headers = ['No', 'NIS', 'NISN', 'Nama Siswa', 'Sakit', 'Izin', 'Alpa', 'Total Absen'];
+    const headers = ['No', 'NISN', 'NIS', 'Nama Siswa', 'Sakit', 'Izin', 'Alpa', 'Dispen', 'Total Absen'];
     const rows = rekapKehadiran.map((item, idx) => [
       idx + 1,
-      item.siswa.nis,
       item.siswa.nisn || '-',
+      item.siswa.nis,
       item.siswa.nama,
       item.sakit,
       item.izin,
       item.alpa,
+      item.dispen,
       item.totalAbsen,
     ]);
 
@@ -343,11 +346,11 @@ export default function AdminViewAllDataPage() {
     const currentKelas = gradingClasses.find((k) => k.id === selectedGradingKelasId)?.nama || 'Kelas';
 
     const compHeaders = komponenList.map((c) => c.nama);
-    const headers = ['Peringkat', 'NIS', 'NISN', 'Nama Siswa', ...compHeaders, 'Rata-Rata', 'Nilai Akhir'];
+    const headers = ['Peringkat', 'NISN', 'NIS', 'Nama Siswa', ...compHeaders, 'Rata-Rata', 'Nilai Akhir'];
     const rows = rekapNilai.map((item) => [
       item.ranking || '-',
-      item.siswa.nis,
       item.siswa.nisn || '-',
+      item.siswa.nis,
       item.siswa.nama,
       ...komponenList.map((c) => item.nilaiKomponen[c.id] ?? '-'),
       item.rataRata > 0 ? item.rataRata : '-',
@@ -521,28 +524,29 @@ export default function AdminViewAllDataPage() {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-14">No</TableHead>
-                <TableHead className="w-28">NIS</TableHead>
                 <TableHead className="w-32">NISN</TableHead>
+                <TableHead className="w-28">NIS</TableHead>
                 <TableHead>Nama Siswa</TableHead>
                 <TableHead className="text-center w-24">Sakit</TableHead>
                 <TableHead className="text-center w-24">Izin</TableHead>
                 <TableHead className="text-center w-24">Alpa</TableHead>
+                <TableHead className="text-center w-24">Dispen</TableHead>
                 <TableHead className="text-center w-28">Total Absen</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableEmpty colSpan={8} message="Memuat presensi..." />
+                <TableEmpty colSpan={9} message="Memuat presensi..." />
               ) : !teacherWaliKelas ? (
-                <TableEmpty colSpan={8} message="Guru ini tidak ditugaskan sebagai wali kelas di semester aktif." />
+                <TableEmpty colSpan={9} message="Guru ini tidak ditugaskan sebagai wali kelas di semester aktif." />
               ) : rekapKehadiran.length === 0 ? (
-                <TableEmpty colSpan={8} message="Belum ada siswa di kelas ini." />
+                <TableEmpty colSpan={9} message="Belum ada siswa di kelas ini." />
               ) : (
                 rekapKehadiran.map((item, idx) => (
                   <TableRow key={item.siswa.id}>
                     <TableCell className="font-semibold text-slate-400">{idx + 1}</TableCell>
-                    <TableCell className="font-mono text-xs font-semibold text-slate-700">{item.siswa.nis}</TableCell>
                     <TableCell className="font-mono text-xs text-slate-600">{item.siswa.nisn || '-'}</TableCell>
+                    <TableCell className="font-mono text-xs font-semibold text-slate-700">{item.siswa.nis}</TableCell>
                     <TableCell className="font-semibold text-slate-900">{item.siswa.nama}</TableCell>
                     <TableCell className="text-center">
                       {item.sakit > 0 ? <Badge variant="sakit">{item.sakit}</Badge> : '-'}
@@ -552,6 +556,9 @@ export default function AdminViewAllDataPage() {
                     </TableCell>
                     <TableCell className="text-center">
                       {item.alpa > 0 ? <Badge variant="alpa">{item.alpa}</Badge> : '-'}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {item.dispen > 0 ? <Badge variant="dispen">{item.dispen}</Badge> : '-'}
                     </TableCell>
                     <TableCell className="text-center font-bold">
                       {item.totalAbsen > 0 ? `${item.totalAbsen} hari` : <span className="text-emerald-600 font-normal text-xs">100% Hadir</span>}
@@ -624,8 +631,8 @@ export default function AdminViewAllDataPage() {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-20 text-center">Ranking</TableHead>
-                <TableHead className="w-28">NIS</TableHead>
                 <TableHead className="w-32">NISN</TableHead>
+                <TableHead className="w-28">NIS</TableHead>
                 <TableHead>Nama Siswa</TableHead>
                 {komponenList.map((comp) => (
                   <TableHead key={comp.id} className="text-center">{comp.nama}</TableHead>
@@ -661,8 +668,8 @@ export default function AdminViewAllDataPage() {
                         '-'
                       )}
                     </TableCell>
-                    <TableCell className="font-mono text-xs font-semibold text-slate-700">{item.siswa.nis}</TableCell>
                     <TableCell className="font-mono text-xs text-slate-600">{item.siswa.nisn || '-'}</TableCell>
+                    <TableCell className="font-mono text-xs font-semibold text-slate-700">{item.siswa.nis}</TableCell>
                     <TableCell className="font-semibold text-slate-900">{item.siswa.nama}</TableCell>
                     {komponenList.map((comp) => (
                       <TableCell key={comp.id} className="text-center font-medium">

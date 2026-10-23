@@ -183,12 +183,7 @@ export default function KelasAdminPage() {
               <TableRow key={k.id}>
                 <TableCell className="font-semibold text-slate-400">{index + 1}</TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 font-bold text-xs flex items-center justify-center">
-                      {k.nama}
-                    </div>
-                    <span className="font-semibold text-slate-900">Kelas {k.nama}</span>
-                  </div>
+                  <span className="font-semibold text-slate-900">Kelas {k.nama}</span>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-1.5 text-xs text-slate-600">
