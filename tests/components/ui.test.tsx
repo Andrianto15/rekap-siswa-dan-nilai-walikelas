@@ -278,4 +278,28 @@ describe('UI Components', () => {
       expect(screen.getByText('Kosong')).toBeInTheDocument();
     });
   });
+
+  describe('Design System Tokens', () => {
+    it('should define exact color and elevation variables in globals.css per DESIGN.md', () => {
+      const fs = require('fs');
+      const path = require('path');
+      const cssContent = fs.readFileSync(path.resolve(__dirname, '../../src/app/globals.css'), 'utf-8');
+
+      // Colors from DESIGN.md
+      expect(cssContent).toContain('--color-primary: #4682b4;');
+      expect(cssContent).toContain('--color-primary-hover: #36648b;');
+      expect(cssContent).toContain('--color-accent: #0ea5e9;');
+      expect(cssContent).toContain('--bg-main: #f8fafc;');
+      expect(cssContent).toContain('--bg-card: #ffffff;');
+      expect(cssContent).toContain('--border-card: #e2e8f0;');
+      expect(cssContent).toContain('--text-main: #0f172a;');
+      expect(cssContent).toContain('--text-muted: #64748b;');
+
+      // Shadow vocabulary
+      expect(cssContent).toContain('--shadow-card-rest:');
+      expect(cssContent).toContain('--shadow-card-hover:');
+      expect(cssContent).toContain('--shadow-modal:');
+    });
+  });
 });
+
