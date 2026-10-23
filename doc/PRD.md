@@ -170,6 +170,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - `tests/components/kehadiran-nilai-table.test.tsx`: Verifikasi rendering tabel Kehadiran, Rekap Nilai, dan Input Nilai dengan urutan kolom NISN sebelum NIS.
   - `tests/components/input-kehadiran.test.tsx`: Verifikasi status disabled/enabled tombol Simpan Presensi pada perubahan data, freeze header tanggal & kolom nama siswa, serta interaktivitas hover highlight dua arah (horizontal baris siswa dan vertikal kolom tanggal).
   - `tests/components/a11y-p1.test.tsx`: Verifikasi kepatuhan A11y (viewport pinch-to-zoom tidak dimatikan, aria-invalid/aria-describedby pada Input/Select, dialog role & modal aria-labelledby, serta theming dark mode pada Table).
+  - `tests/components/header.test.tsx`: Verifikasi rendering dinamis semester aktif dari Supabase, fallback teks saat belum diatur, adaptasi label mobile-first, dan penanganan aksi logout pada komponen Header.
 - **Command**: `npm test` / `npm run test:coverage`
 
 ---
@@ -224,6 +225,10 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - Tombol Simpan Presensi pada `/kehadiran/input` berstatus disabled secara default ketika tidak ada perubahan status dari database baseline.
   - Tombol otomatis menjadi aktif (enabled) hanya ketika terdapat perbedaan antara status saat ini dengan status awal (mode harian maupun bulanan).
   - Tombol kembali disabled setelah proses penyimpanan berhasil diselesaikan atau perubahan dibatalkan ke nilai semula.
+- **Indikator Semester Aktif Dinamis & Adaptasi Mobile Header (`Header.tsx`)**:
+  - Semester aktif dimuat secara dinamis via query Supabase (`semester` relasi `tahun_ajaran` dengan filter `is_active = true` dan `deleted_at is null`).
+  - Fallback informatif (`Belum Diatur`) bila belum disetel oleh Administrator.
+  - Ergonomi mobile-first: menyembunyikan prefix label visual `"Semester Aktif: "` pada breakpoint kecil (`<sm`), mempertahankan ikon kalender dan format ringkas (misal: `Ganjil 2026/2027`) untuk mencegah overflow layout dengan pill identitas pengguna dan kontrol logout.
 - **Standar Design System & Mobile Ergonomics (DESIGN.md)**:
   - **Palet Warna**: Steel Blue Accent (`#4682b4`, dark `#6ba3ce`, hover `#36648b`), Sky Glow Accent (`#0ea5e9`, dark `#38bdf8`), Slate neutrals (`#f8fafc` bg, `#ffffff` card, `#e2e8f0` border, `#0f172a` text main).
   - **Tipografi**: Public Sans untuk display & body, JetBrains Mono untuk code & metadata teknis.

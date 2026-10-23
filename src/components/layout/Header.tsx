@@ -1,20 +1,64 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { CalendarDays, LogOut, User } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Badge } from '@/components/ui/Badge';
+import { createClient } from '@/lib/supabase/client';
 
 export function Header() {
   const { profile, signOut } = useAuth();
+  const [activeSemester, setActiveSemester] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    const supabase = createClient();
+
+    async function fetchActiveSemester() {
+      try {
+        const { data, error } = await supabase
+          .from('semester')
+          .select('tipe, tahun_ajaran(nama)')
+          .eq('is_active', true)
+          .is('deleted_at', null)
+          .single();
+
+        if (!isMounted) return;
+
+        if (error || !data) {
+          setActiveSemester('Belum Diatur');
+        } else {
+          const tipe = data.tipe
+            ? data.tipe.charAt(0).toUpperCase() + data.tipe.slice(1).toLowerCase()
+            : '';
+          const tahun = (data.tahun_ajaran as { nama?: string } | null)?.nama || '';
+          setActiveSemester([tipe, tahun].filter(Boolean).join(' ') || 'Belum Diatur');
+        }
+      } catch {
+        if (isMounted) setActiveSemester('Belum Diatur');
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    fetchActiveSemester();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <header className="sticky top-0 z-20 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 h-16 px-4 md:px-8 flex items-center justify-between">
       {/* Left: Active Semester & Breadcrumb status */}
       <div className="flex items-center gap-2.5">
         <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#4682b4]/10 dark:bg-[#4682b4]/20 border border-[#4682b4]/20 dark:border-[#4682b4]/40 text-[#4682b4] dark:text-[#6ba3ce] text-xs font-semibold">
-          <CalendarDays className="w-3.5 h-3.5 text-[#4682b4] dark:text-[#6ba3ce]" />
-          <span>Semester Aktif: Ganjil 2026/2027</span>
+          <CalendarDays className="w-3.5 h-3.5 text-[#4682b4] dark:text-[#6ba3ce] shrink-0" />
+          <span>
+            <span className="hidden sm:inline">Semester Aktif: </span>
+            {loading ? '...' : (activeSemester || 'Belum Diatur')}
+          </span>
         </div>
       </div>
 
