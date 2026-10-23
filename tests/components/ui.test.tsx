@@ -318,7 +318,19 @@ describe('UI Components', () => {
       expect(layoutContent).toContain('Public_Sans');
       expect(layoutContent).toContain("themeColor: '#4682b4'");
     });
+
+    it('should use contextual CalendarDays icon in Header without pulse slop per antislop R-04/R-19', () => {
+      const fs = require('fs');
+      const path = require('path');
+      const headerContent = fs.readFileSync(path.resolve(__dirname, '../../src/components/layout/Header.tsx'), 'utf-8');
+
+      expect(headerContent).not.toContain('Sparkles');
+      expect(headerContent).not.toContain('animate-pulse');
+      expect(headerContent).toContain('CalendarDays');
+      expect(headerContent).toContain('#4682b4');
+    });
   });
 });
+
 
 

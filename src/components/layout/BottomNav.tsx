@@ -54,7 +54,7 @@ export function BottomNav() {
             className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity"
             onClick={() => setIsMenuOpen(false)}
           />
-          <div className="relative bg-white rounded-t-3xl border-t border-slate-200 p-6 z-10 max-h-[80vh] overflow-y-auto animate-in slide-in-from-bottom duration-200">
+          <div className="relative bg-white rounded-t-2xl border-t border-slate-200 p-6 z-10 max-h-[80vh] overflow-y-auto animate-in slide-in-from-bottom duration-200 safe-bottom">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
               <div>
                 <h3 className="font-bold text-slate-900">{profile?.full_name || 'Pengguna'}</h3>
@@ -63,7 +63,8 @@ export function BottomNav() {
               <button
                 type="button"
                 onClick={() => setIsMenuOpen(false)}
-                className="p-2 text-slate-400 hover:text-slate-600 rounded-full"
+                className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 hover:text-slate-600 rounded-full"
+                aria-label="Tutup menu"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -71,7 +72,7 @@ export function BottomNav() {
 
             {isAdmin && (
               <div className="mb-6">
-                <div className="flex items-center gap-1.5 mb-3 text-blue-600">
+                <div className="flex items-center gap-1.5 mb-3 text-[#4682b4]">
                   <ShieldCheck className="w-4 h-4" />
                   <span className="text-xs font-bold uppercase tracking-wider">Menu Admin</span>
                 </div>
@@ -83,7 +84,7 @@ export function BottomNav() {
                         key={item.href}
                         href={item.href}
                         onClick={() => setIsMenuOpen(false)}
-                        className="flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-600 transition text-center gap-2 border border-slate-100"
+                        className="flex flex-col items-center justify-center p-3 min-h-[56px] rounded-lg bg-slate-50 hover:bg-[#4682b4]/10 hover:text-[#4682b4] transition text-center gap-1.5 border border-slate-100"
                       >
                         <Icon className="w-5 h-5 text-slate-600" />
                         <span className="text-xs font-medium text-slate-800">{item.name}</span>
@@ -97,7 +98,7 @@ export function BottomNav() {
             <button
               type="button"
               onClick={signOut}
-              className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-rose-50 text-rose-600 font-semibold text-sm hover:bg-rose-100 transition"
+              className="flex items-center justify-center gap-2 w-full min-h-[44px] py-3 rounded-lg bg-rose-50 text-rose-600 font-semibold text-sm hover:bg-rose-100 transition cursor-pointer"
             >
               <LogOut className="w-4 h-4" />
               <span>Keluar Akun</span>
@@ -107,7 +108,7 @@ export function BottomNav() {
       )}
 
       {/* Fixed Bottom Bar */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-3 py-2 safe-bottom">
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-3 py-1 safe-bottom">
         <div className="flex items-center justify-around">
           {mainItems.map((item) => {
             const Icon = item.icon;
@@ -118,8 +119,8 @@ export function BottomNav() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all duration-150',
-                  isActive ? 'text-blue-600 font-semibold' : 'text-slate-500 hover:text-slate-900'
+                  'flex flex-col items-center justify-center min-h-[44px] py-1 px-3 rounded-lg transition-all duration-150',
+                  isActive ? 'text-[#4682b4] font-semibold' : 'text-slate-500 hover:text-slate-900'
                 )}
               >
                 <Icon className={cn('w-5 h-5 mb-0.5', isActive && 'stroke-[2.5px]')} />
@@ -131,7 +132,8 @@ export function BottomNav() {
           <button
             type="button"
             onClick={() => setIsMenuOpen(true)}
-            className="flex flex-col items-center justify-center py-1 px-3 rounded-xl text-slate-500 hover:text-slate-900 cursor-pointer"
+            className="flex flex-col items-center justify-center min-h-[44px] py-1 px-3 rounded-lg text-slate-500 hover:text-slate-900 cursor-pointer"
+            aria-label="Menu lainnya"
           >
             <Menu className="w-5 h-5 mb-0.5" />
             <span className="text-[10px]">Lainnya</span>
