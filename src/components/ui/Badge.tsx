@@ -10,16 +10,16 @@ export function Badge({ className, variant = 'default', size = 'md', children, .
   const baseStyles = 'inline-flex items-center font-semibold rounded-full border transition-colors';
 
   const variants = {
-    default: 'bg-slate-100 text-slate-700 border-slate-200',
-    success: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    warning: 'bg-amber-50 text-amber-700 border-amber-200',
-    danger: 'bg-rose-50 text-rose-700 border-rose-200',
-    info: 'bg-[#4682b4]/10 text-[#4682b4] border-[#4682b4]/20',
-    sakit: 'bg-amber-100 text-amber-800 border-amber-300 font-bold',
-    izin: 'bg-sky-100 text-sky-800 border-sky-300 font-bold',
-    alpa: 'bg-rose-100 text-rose-800 border-rose-300 font-bold',
-    hadir: 'bg-emerald-100 text-emerald-800 border-emerald-300 font-bold',
-    dispen: 'bg-purple-100 text-purple-800 border-purple-300 font-bold',
+    default: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700',
+    success: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
+    warning: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800',
+    danger: 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800',
+    info: 'bg-[#4682b4]/10 dark:bg-[#4682b4]/20 text-[#4682b4] dark:text-[#6ba3ce] border-[#4682b4]/20 dark:border-[#4682b4]/40',
+    sakit: 'bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700 font-bold',
+    izin: 'bg-sky-100 dark:bg-sky-950/50 text-sky-800 dark:text-sky-300 border-sky-300 dark:border-sky-700 font-bold',
+    alpa: 'bg-rose-100 dark:bg-rose-950/50 text-rose-800 dark:text-rose-300 border-rose-300 dark:border-rose-700 font-bold',
+    hadir: 'bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700 font-bold',
+    dispen: 'bg-purple-100 dark:bg-purple-950/50 text-purple-800 dark:text-purple-300 border-purple-300 dark:border-purple-700 font-bold',
   };
 
   const sizes = {

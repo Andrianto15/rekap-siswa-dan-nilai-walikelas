@@ -819,12 +819,15 @@ function InputKehadiranContent() {
 
           <div className="overflow-auto max-h-[calc(100vh-280px)] min-h-[340px] border-t border-slate-200">
             <table
+              role="grid"
+              aria-label="Matriks Kehadiran Bulanan"
               onMouseLeave={() => setHoveredDay(null)}
               className="w-full text-xs text-center border-collapse"
             >
               <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200 sticky top-0 z-20 shadow-xs">
-                <tr>
+                <tr role="row">
                   <th
+                    role="columnheader"
                     onMouseEnter={() => setHoveredDay(null)}
                     className="p-2.5 text-left sticky top-0 left-0 bg-slate-100 z-30 min-w-[160px] border-r border-b border-slate-200"
                   >
@@ -835,6 +838,7 @@ function InputKehadiranContent() {
                     return (
                       <th
                         key={d}
+                        role="columnheader"
                         onMouseEnter={() => setHoveredDay(d)}
                         className={`p-2 w-8 border-r border-b border-slate-200 last:border-r-0 sticky top-0 z-20 cursor-pointer transition-colors ${
                           isColHovered
@@ -850,21 +854,22 @@ function InputKehadiranContent() {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {loading ? (
-                  <tr>
+                  <tr role="row">
                     <td colSpan={daysInMonth + 1} className="py-10 text-slate-400">
                       Memuat matrix kehadiran...
                     </td>
                   </tr>
                 ) : siswaList.length === 0 ? (
-                  <tr>
+                  <tr role="row">
                     <td colSpan={daysInMonth + 1} className="py-10 text-slate-400">
                       Belum ada siswa di kelas ini.
                     </td>
                   </tr>
                 ) : (
                   siswaList.map((siswa) => (
-                    <tr key={siswa.id} className="group hover:bg-blue-50/80 transition-colors">
+                    <tr key={siswa.id} role="row" className="group hover:bg-blue-50/80 transition-colors">
                       <td
+                        role="rowheader"
                         onMouseEnter={() => setHoveredDay(null)}
                         className="p-2.5 text-left sticky left-0 bg-white group-hover:bg-blue-50/80 z-10 border-r border-slate-200 max-w-[200px] transition-colors"
                       >
@@ -878,13 +883,31 @@ function InputKehadiranContent() {
                         const key = `${siswa.id}_${dateStr}`;
                         const status = gridStatusMap[key] || null;
                         const isColHovered = hoveredDay === d;
+                        const statusLabel =
+                          status === 'S'
+                            ? 'Sakit'
+                            : status === 'I'
+                            ? 'Izin'
+                            : status === 'A'
+                            ? 'Alpa'
+                            : status === 'D'
+                            ? 'Dispensasi'
+                            : 'Hadir';
 
                         return (
                           <td
                             key={d}
+                            role="gridcell"
+                            tabIndex={0}
                             onMouseEnter={() => setHoveredDay(d)}
                             onClick={() => handleCycleGridCell(siswa.id, d)}
-                            className={`p-1 border-r border-slate-100 last:border-r-0 cursor-pointer font-bold select-none transition ${
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                handleCycleGridCell(siswa.id, d);
+                              }
+                            }}
+                            className={`p-1 border-r border-slate-100 last:border-r-0 cursor-pointer font-bold select-none transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:z-10 ${
                               status === 'S'
                                 ? isColHovered
                                   ? 'bg-amber-200 text-amber-900 shadow-xs'
@@ -902,10 +925,11 @@ function InputKehadiranContent() {
                                   ? 'bg-purple-200 text-purple-900 shadow-xs'
                                   : 'bg-purple-100 text-purple-800 hover:bg-purple-200'
                                 : isColHovered
-                                ? 'bg-blue-50/90 text-slate-400 group-hover:bg-blue-100/90 hover:!bg-blue-200 hover:!text-slate-800'
-                                : 'group-hover:bg-blue-100/30 hover:!bg-blue-100 text-slate-300'
+                                ? 'bg-blue-100 text-blue-950 font-bold group-hover:bg-blue-200 hover:!bg-blue-300 hover:!text-blue-950'
+                                : 'group-hover:bg-blue-50 hover:!bg-blue-100 text-slate-500 font-bold'
                             }`}
-                            title={`Klik untuk ubah presensi (${siswa.nama}, Tanggal ${d})`}
+                            aria-label={`Presensi ${siswa.nama}, Tanggal ${d}: ${statusLabel}`}
+                            title={`Presensi ${siswa.nama}, Tanggal ${d}: ${statusLabel} (Klik atau tekan Enter/Spasi untuk ubah)`}
                           >
                             {status || '·'}
                           </td>

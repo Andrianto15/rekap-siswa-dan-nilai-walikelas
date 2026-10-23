@@ -236,6 +236,13 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - **Bentuk & Elevasi**: Base radius `0.5rem` (`rounded-lg`), Card radius `1rem` (`rounded-xl`), Pill radius `rounded-full`. Resting surface flat dengan hairline border (`1px solid var(--border-card)`), elevasi bertingkat (`--shadow-card-hover`, `--shadow-modal`) hanya aktif saat hover/focus/modal.
   - **Touch Ergonomics**: Minimum tap target 44px (`min-h-[44px]`) untuk seluruh kontrol interaktif di mobile, padding responsif dengan dukungan `env(safe-area-inset-bottom)`.
   - **Antislop Rules**: Ikon kontekstual fungsional tanpa pulse tanpa tujuan (misal `CalendarDays` pada indikator semester aktif).
+- **Aksesibilitas & Standar Kontras Matriks Kehadiran (`/kehadiran/input`)**:
+  - Matriks kehadiran bulanan memenuhi standar rasio kontras WCAG 2.1 AA (minimal 4.5:1). Mengeliminasi status teks kontras rendah pada hover kolom aktif dengan warna kontras tinggi `text-blue-950 font-bold dark:text-blue-100` pada `bg-blue-100` / `bg-blue-200`. Tanda presensi default menggunakan `text-slate-500 dark:text-slate-400`.
+  - Aksesibilitas keyboard dan pembaca layar: tabel matriks kehadiran mengimplementasikan semantik ARIA `role="grid"`, `role="row"`, `role="columnheader"`, `role="rowheader"`, dan `role="gridcell"`. Sel matriks mendukung navigasi fokus (`tabIndex={0}`) serta pengubahan siklus status presensi via tombol `Enter` atau `Space` dan dilengkapi `aria-label` deskriptif lengkap (nama siswa, tanggal, dan status presensi).
+- **Kompatibilitas Dark Mode & Token Desain Global**:
+  - Kontainer layout dashboard (`/src/app/(dashboard)/layout.tsx`) dan halaman login (`/src/app/login/page.tsx`) mengadopsi token semantik `bg-[var(--bg-main)] dark:bg-[#090d16] text-[var(--text-main)]`.
+  - Komponen inti UI `Button` dan `Badge` mendukung varian tema gelap lengkap (`dark:bg-slate-800`, `dark:border-slate-700`, `dark:text-slate-100`, varian dark status pills) guna menjamin konsistensi kontras saat tema gelap aktif.
+
 
 
 

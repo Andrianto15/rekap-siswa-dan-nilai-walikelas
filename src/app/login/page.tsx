@@ -67,20 +67,20 @@ function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-md bg-white rounded-3xl p-8 border border-slate-200 shadow-xl shadow-slate-200/50">
+    <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-none">
       <div className="text-center mb-8">
-        <div className="w-14 h-14 rounded-2xl bg-blue-600 text-white mx-auto flex items-center justify-center shadow-lg shadow-blue-500/30 mb-4">
+        <div className="w-14 h-14 rounded-2xl bg-[#4682b4] text-white mx-auto flex items-center justify-center shadow-lg shadow-[#4682b4]/30 mb-4">
           <School className="w-7 h-7" />
         </div>
-        <h1 className="text-2xl font-bold text-slate-900">Rekap Siswa & Nilai</h1>
-        <p className="text-sm text-slate-500 mt-1">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Rekap Siswa & Nilai</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
           Masuk dengan akun guru atau administrator
         </p>
       </div>
 
       {errorParam && (
-        <div className="mb-5 p-3.5 rounded-xl bg-amber-50 border border-amber-200 flex items-center gap-2.5 text-amber-800 text-xs">
-          <ShieldAlert className="w-4 h-4 shrink-0 text-amber-600" />
+        <div className="mb-5 p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 flex items-center gap-2.5 text-amber-800 dark:text-amber-200 text-xs">
+          <ShieldAlert className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400" />
           <span>Sesi login telah berakhir atau gagal. Silakan masuk kembali.</span>
         </div>
       )}
@@ -115,11 +115,11 @@ function LoginForm() {
         </div>
       </form>
 
-      <div className="mt-8 pt-6 border-t border-slate-100 text-center space-y-1.5">
-        <p className="text-xs text-slate-500">
+      <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 text-center space-y-1.5">
+        <p className="text-xs text-slate-500 dark:text-slate-400">
           Sistem Informasi Rekap Wali Kelas &amp; Guru Mapel
         </p>
-        <p className="text-[11px] text-slate-400">
+        <p className="text-[11px] text-slate-400 dark:text-slate-500">
           v{packageJson.version} &bull; &copy; 2026 - {new Date().getFullYear()}
         </p>
       </div>
@@ -129,7 +129,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[var(--bg-main)] dark:bg-[#090d16] text-[var(--text-main)] flex items-center justify-center p-4">
       <Suspense fallback={<div className="text-slate-400 text-sm">Memuat form login...</div>}>
         <LoginForm />
       </Suspense>
