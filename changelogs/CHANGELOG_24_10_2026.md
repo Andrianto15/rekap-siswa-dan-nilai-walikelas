@@ -164,3 +164,17 @@
 - **PRD (`doc/PRD.md`)**:
   - Memperbarui Bab 7 dan Bab 8 dengan spesifikasi mitigasi audit desain, aksesibilitas, dan performa klien.
 
+## Versi 0.3.31
+### Pembaruan Komprehensif README.md & Standardisasi Kualitas Dokumentasi
+- **Pembaruan Berkas README (`README.md`)**:
+  - Menyematkan header visual branding dengan logo aplikasi (`public/icon.svg`) dan badge teknologi terkini (Next.js 16, React 19, Tailwind CSS v4, TypeScript 5, Supabase, Lisensi MIT, dan status test passing).
+  - Merinci dokumentasi fitur mutakhir: presensi absence-only dual sub-menu (Kehadiran Mapel & Kehadiran Keseluruhan), matriks bulanan responsif dengan navigasi keyboard ARIA grid, cross-highlighting dua arah, fleksibilitas 5 komponen nilai dengan auto-order & validasi keunikan, nilai akhir & ranking kelas otomatis dengan medali, integrasi statistik absensi mapel pada rekap nilai, impor/ekspor Excel dengan NISN & L/P, bulk delete siswa, supervisi admin, kepatuhan WCAG 2.1 AA (touch target 44px), serta theming dark mode real-time sinkron.
+  - Menyediakan panduan instalasi lokal langkah demi langkah, setup skema database Supabase, konfigurasi environment variables, pengujian QA, dan panduan deployment Vercel.
+  - Memanfaatkan sintaks GitHub Admonitions (`> [!NOTE]`, `> [!IMPORTANT]`, `> [!TIP]`) untuk penekanan informasi kritis arsitektur dan database.
+  - Mengeliminasi bagian duplikat lisensi dan changelog sesuai aturan standar repositori open source (diarahkan ke file dedikasi `LICENSE` dan folder `changelogs/`).
+- **Testing & QA (`tests/readme.test.ts`)**:
+  - Menambahkan test suite baru untuk memvalidasi keberadaan file `README.md`, identitas brand/logo, ketersediaan seluruh section utama, sintaks GitHub admonition, serta ketiadaan section lisensi/changelog redundan.
+  - Seluruh 33 test suites lulus 100% (179 tests passed).
+- **PRD (`doc/PRD.md`)**:
+  - Mendokumentasikan suite pengujian `tests/readme.test.ts` pada Bab 7 (Testing Strategy & Quality Assurance).
+

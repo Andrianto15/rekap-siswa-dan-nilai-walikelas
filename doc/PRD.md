@@ -176,6 +176,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - `tests/lib/komponen-nilai.test.ts`: Verifikasi validasi client-side keunikan nomor urutan komponen nilai, humanisasi error database PostgreSQL (`uq_komponen_nilai_urutan_active`), dan penentuan otomatis slot urutan kosong berikutnya (`getNextAvailableOrder`).
   - `tests/components/footer.test.tsx`: Verifikasi rendering semantic footer (`<footer>` / `role="contentinfo"`), atribusi hak cipta, badge lisensi MIT, label versi aplikasi, dan clearance padding bawah untuk navigasi mobile `BottomNav`.
   - `tests/components/dashboard-layout.test.tsx`: Verifikasi integrasi terpadu layout utama dashboard yang merender `Header`, `Sidebar`, `BottomNav`, dan `Footer` pada seluruh halaman terautentikasi setelah login.
+  - `tests/readme.test.ts`: Verifikasi integritas struktur berkas `README.md`, keberadaan aset branding/logo, badges, kelengkapan panduan instalasi/QA, penggunaan GitHub admonitions, dan ketiadaan section redundan sesuai standar open-source.
 - **Command**: `npm test` / `npm run test:coverage`
 
 ---
