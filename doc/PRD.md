@@ -259,8 +259,6 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - Sistem otomatis menyarankan slot nomor urutan terendah yang masih tersedia (`getNextAvailableOrder`) saat membuka modal tambah atau membatalkan mode edit, mencegah konflik nomor urutan pada daftar non-kontigu.
   - Validasi *client-side* memblokir pengiriman urutan duplikat sebelum request ke database dikirim.
   - Error handler memetakan pesan teknis database PostgreSQL `duplicate key value violates unique constraint "uq_komponen_nilai_urutan_active"` menjadi notifikasi toast manusiawi: `"Nomor urutan [N] sudah digunakan oleh komponen lain. Silakan pilih nomor urutan yang berbeda."` dengan judul `"Urutan Sudah Digunakan"`.
-
-
-
-
-
+- **Tombol Keluar & Konfigurasi Overlay Lingkungan Pengembangan (`Sidebar.tsx`, `next.config.ts`)**:
+  - Tombol aksi Keluar akun pada sidebar navigasi menggunakan ikon standar `LogOut` dari `lucide-react` dengan standar aksesibilitas touch target minimal 44px (`min-h-[44px]`), atribut `title="Keluar"`, serta `aria-label="Keluar"`.
+  - Mengonfigurasi `devIndicators: false` pada `next.config.ts` untuk menonaktifkan badge floating developer indicator Next.js ("N") di pojok kiri bawah yang menutupi ikon tombol keluar pada lingkungan development (`next dev`).

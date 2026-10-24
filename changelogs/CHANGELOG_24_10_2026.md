@@ -113,5 +113,14 @@
 - **PRD**:
   - Memperbarui `doc/PRD.md` Bab 3.5, Bab 7, dan Bab 8 dengan spesifikasi validasi dan humanisasi error komponen nilai.
 
-
-
+## Versi 0.3.27
+### Eliminasi Dev Overlay Next.js & Standardisasi Tombol Keluar Sidebar
+- **Konfigurasi Lingkungan Development (`next.config.ts`)**:
+  - Mengonfigurasi `devIndicators: false` untuk menonaktifkan floating badge Next.js dev indicator ("N") di pojok kiri bawah layar yang menimpa tombol Keluar di Sidebar saat menjalankan `next dev`.
+- **Aksesibilitas Tombol Keluar Sidebar (`src/components/layout/Sidebar.tsx`)**:
+  - Mempertahankan ikon standar `LogOut` dari `lucide-react` dan melengkapi tombol keluar dengan atribut `title="Keluar"` serta `aria-label="Keluar"` sesuai standar aksesibilitas touch target (`min-h-[44px]`).
+- **Testing & QA**:
+  - Menambahkan test suite baru `tests/components/sidebar.test.tsx` (3 tests) untuk memvalidasi rendering header brand, menu navigasi guru/admin, dan fungsionalitas tombol Keluar / trigger `signOut`.
+  - Seluruh 28 test suites lulus 100% (168 tests passed).
+- **PRD**:
+  - Memperbarui `doc/PRD.md` Bab 7 dengan dokumentasi tombol keluar dan konfigurasi devIndicators.

@@ -122,6 +122,8 @@ export function Sidebar() {
         <button
           type="button"
           onClick={signOut}
+          title="Keluar"
+          aria-label="Keluar"
           className="flex items-center gap-3 w-full px-3.5 py-2.5 rounded-lg text-sm font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer min-h-[44px]"
         >
           <LogOut className="w-5 h-5 shrink-0" />
