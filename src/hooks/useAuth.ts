@@ -26,14 +26,14 @@ export function useAuth() {
         setProfile({
           id: currentUser.id,
           full_name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Pengguna',
-          role: currentUser.user_metadata?.role || 'guru',
+          role: 'guru',
         });
       }
     } catch {
       setProfile({
         id: currentUser.id,
         full_name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Pengguna',
-        role: currentUser.user_metadata?.role || 'guru',
+        role: 'guru',
       });
     }
   }, [supabase]);

@@ -107,6 +107,40 @@ describe('useAuth hook', () => {
     });
   });
 
+  it('should never fallback to admin role from user metadata when profile query fails (SEC-03)', async () => {
+    mockSupabase.auth.getUser.mockResolvedValue({
+      data: {
+        user: {
+          id: 'attacker-1',
+          email: 'attacker@school.test',
+          user_metadata: { full_name: 'Attacker', role: 'admin' },
+        },
+      },
+    });
+
+    mockSupabase.from.mockReturnValue({
+      select: jest.fn().mockReturnValue({
+        eq: jest.fn().mockReturnValue({
+          is: jest.fn().mockReturnValue({
+            single: jest.fn().mockResolvedValue({
+              data: null,
+              error: new Error('Profile fetch failed'),
+            }),
+          }),
+        }),
+      }),
+    });
+
+    const { result } = renderHook(() => useAuth());
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    // Role MUST remain 'guru', never elevated to 'admin' via client metadata
+    expect(result.current.profile?.role).toBe('guru');
+  });
+
   it('should handle unauthenticated initial user state', async () => {
     mockSupabase.auth.getUser.mockResolvedValue({
       data: { user: null },
