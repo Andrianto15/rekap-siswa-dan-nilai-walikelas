@@ -278,3 +278,26 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - **Konsistensi Theming Dark Mode & Brand Accent Steel Blue (`#4682b4`)**: Menyempurnakan kartu ringkasan, bilah filter, tab navigasi, dan header halaman admin (`/nilai`, `/kehadiran`, `/admin/kelas`, `/admin/mapel`, `/admin/periode`, `/admin/mapping`, `/admin/users`) dengan token tema gelap lengkap (`dark:bg-slate-900`, `dark:border-slate-800`, `dark:text-slate-100`) serta aksen primer Steel Blue.
   - **Optimalisasi Performa Klien Supabase (Admin Pages)**: Membungkus inisialisasi `createClient()` dengan React `useMemo(() => createClient(), [])` pada seluruh halaman admin (`admin/kelas`, `admin/mapel`, `admin/periode`, `admin/mapping`) guna mencegah instansiasi ulang klien Supabase dan kebocoran listener pada tiap siklus re-render komponen.
 
+---
+
+## 9. Kebijakan & Hardening Keamanan (Security Hardening & Access Control)
+
+Sesuai hasil audit keamanan menyeluruh dan mematuhi aturan wewenang wali kelas (Rule 13 [AGENTS.md](file:///Users/andriantonuriskandar/Documents/Playground/rekap-siswa-dan-nilai-walikelas/AGENTS.md#L13)):
+
+- **Proteksi Otorisasi Row Level Security (RLS)**:
+  - **Pencegahan Privilege Escalation**: Kebijakan UPDATE tabel `profiles` membatasi pengubahan kolom `role` sehingga pengguna dengan role `guru` tidak dapat menaikkan hak istimewanya sendiri menjadi `admin`.
+  - **Pencegahan Role Spoofing Registrasi**: Fungsi trigger `public.handle_new_user()` secara ketat mengabaikan `raw_user_meta_data->>'role'` dari klien dan selalu menetapkan role default `'guru'`. Promosi role hanya dapat dilakukan oleh Admin melalui API server terproteksi.
+  - **Isolasi Data Siswa & Presensi**: Kebijakan SELECT pada tabel `siswa` dan `kehadiran` dibatasi hanya untuk Admin, Wali Kelas (`guru_kelas`), atau Guru Pengampu (`guru_mapel`) semester aktif, mengeliminasi paparan data berlebih (excessive data exposure) siswa lintas kelas.
+  - **Pencegahan Manipulasi Nilai Lintas Kelas & Mapel (BOLA Fix)**: Kebijakan mutasi tabel `komponen_nilai`, `nilai`, dan `nilai_akhir` mewajibkan verifikasi relasi penugasan aktif di `guru_mapel` atau hak Admin, menghapus celah otorisasi mandiri `guru_id = auth.uid()`.
+- **Proteksi Route Middleware & Sanitasi Auth Callback**:
+  - Rute pertukaran kode autentikasi `/auth/callback` diizinkan diakses tanpa session aktif pada middleware Next.js.
+  - Filter berkas publik pada middleware diganti dari shortcut titik longgar (`pathname.includes('.')`) menjadi regex ekstensi aset statis presisi (`.(svg|png|jpg|jpeg|gif|webp|ico|css|js|woff|woff2|ttf|eot)$`).
+  - Handler `/auth/callback` mensterilkan parameter `next` dengan memvalidasi awalan `/` tunggal dan menolak URL protocol-relative (`//`, `/\`) maupun protokol eksternal guna mencegah serangan Open Redirect.
+- **Validasi Berkas Impor Siswa (DoS & Memory Exhaustion Defense)**:
+  - Pembatasan ukuran berkas impor Excel maksimal 2MB (`MAX_EXCEL_FILE_SIZE = 2 * 1024 * 1024`) serta validasi format ekstensi (`.xlsx`, `.xls`) sebelum berkas dimuat ke memori browser via `FileReader`.
+- **Isolasi Klien Server Admin**:
+  - Inisialisasi `createAdminClient()` diisolasi secara mandiri menggunakan `@supabase/supabase-js` dengan `persistSession: false` tanpa pembagian cookie store sesi pengguna biasa.
+  - Menghapus fallback diam-diam ke `NEXT_PUBLIC_SUPABASE_ANON_KEY` dan melempar error eksplisit jika variabel `SUPABASE_SERVICE_ROLE_KEY` tidak tersedia di environment server.
+- **Isolasi UI Pemilih Kelas**:
+  - Dropdown pemilihan kelas pada halaman `/siswa` secara otomatis dibatasi hanya menampilkan kelas binaan yang ditugaskan kepada guru yang bersangkutan jika bukan berstatus Admin.
+
