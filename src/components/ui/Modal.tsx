@@ -22,13 +22,20 @@ export function Modal({
   maxWidth = 'md',
 }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isOpen) return;
+    if (!isOpen) {
+      document.body.style.overflow = 'unset';
+      return;
+    }
 
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        onClose();
+        onCloseRef.current();
         return;
       }
 
@@ -57,33 +64,24 @@ export function Modal({
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-      const timer = setTimeout(() => {
-        if (dialogRef.current) {
-          const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
-            'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-          );
-          if (focusable.length > 0) {
-            focusable[0].focus();
-          }
-        }
-      }, 50);
 
-      return () => {
-        clearTimeout(timer);
-        window.removeEventListener('keydown', handleKeyDown);
-        document.body.style.overflow = 'unset';
-      };
-    } else {
-      document.body.style.overflow = 'unset';
-    }
+    const timer = setTimeout(() => {
+      if (dialogRef.current && !dialogRef.current.contains(document.activeElement)) {
+        const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length > 0) {
+          focusable[0].focus();
+        }
+      }
+    }, 50);
 
     return () => {
+      clearTimeout(timer);
       window.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = 'unset';
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 

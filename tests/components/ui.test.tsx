@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -176,6 +176,44 @@ describe('UI Components', () => {
 
       fireEvent.keyDown(window, { key: 'Escape' });
       expect(handleClose).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not steal focus to close button when re-rendered with new onClose while input is focused', () => {
+      jest.useFakeTimers();
+
+      function Consumer() {
+        const [text, setText] = React.useState('');
+        return (
+          <Modal isOpen={true} onClose={() => {}} title="Form Modal">
+            <input
+              data-testid="comp-name-input"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+            />
+          </Modal>
+        );
+      }
+
+      render(<Consumer />);
+
+      act(() => {
+        jest.advanceTimersByTime(100);
+      });
+
+      const input = screen.getByTestId('comp-name-input');
+
+      input.focus();
+      expect(document.activeElement).toBe(input);
+
+      fireEvent.change(input, { target: { value: 'T' } });
+
+      act(() => {
+        jest.advanceTimersByTime(100);
+      });
+
+      expect(document.activeElement).toBe(input);
+
+      jest.useRealTimers();
     });
   });
 

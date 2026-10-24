@@ -85,3 +85,18 @@
   - Memverifikasi `npx tsc --noEmit` bersih tanpa error.
   - Seluruh 26 test suites lulus 100% (152 tests passed).
 
+## Versi 0.3.25
+### Perbaikan Focus Stealing pada Input Modal Pengaturan Komponen Nilai
+- **Stabilitas Fokus Input Modal (`src/components/ui/Modal.tsx`)**:
+  - Memindahkan referensi `onClose` ke `useRef` (`onCloseRef.current = onClose`) sehingga effect event listener dan fokus tidak re-subscribe / re-trigger setiap kali parent me-render ulang callback handler.
+  - Membatasi eksekusi auto-focus timer hanya saat `isOpen` pertama kali aktif (`[isOpen]`), serta menyematkan proteksi `!dialogRef.current.contains(document.activeElement)`.
+  - Mengeliminasi bug focus-stealing ke tombol close `X` (`<button aria-label="Tutup modal">`) saat pengguna mengetik karakter pada text field input komponen nilai.
+- **Konsistensi Handler Modal Nilai (`src/app/(dashboard)/nilai/input/page.tsx`)**:
+  - Membungkus handler penutup modal komponen nilai ke `useCallback` (`handleCloseCompModal`).
+- **Testing & QA**:
+  - Menambahkan unit test reproduksi bug re-render modal focus retention di `tests/components/ui.test.tsx`.
+  - Seluruh 26 test suites lulus 100% (153 tests passed).
+- **PRD**:
+  - Memperbarui `doc/PRD.md` Bab 8 spesifikasi stabilitas fokus modal dan form control.
+
+

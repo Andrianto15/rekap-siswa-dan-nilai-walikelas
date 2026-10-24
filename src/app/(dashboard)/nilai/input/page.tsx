@@ -56,6 +56,7 @@ export default function InputNilaiPage() {
   const [compOrder, setCompOrder] = useState<number>(1);
   const [editingComp, setEditingComp] = useState<KomponenNilai | null>(null);
   const [savingComp, setSavingComp] = useState(false);
+  const handleCloseCompModal = useCallback(() => setIsCompModalOpen(false), []);
 
   // 1. Initial metadata
   const initData = useCallback(async () => {
@@ -767,7 +768,7 @@ export default function InputNilaiPage() {
       {/* Modal: Manage Components (T-037) */}
       <Modal
         isOpen={isCompModalOpen}
-        onClose={() => setIsCompModalOpen(false)}
+        onClose={handleCloseCompModal}
         title="Pengaturan Komponen Nilai"
         description="Maksimal 5 komponen per mata pelajaran (misal: Tugas, UH1, UTS, UAS)."
         maxWidth="lg"
@@ -887,7 +888,7 @@ export default function InputNilaiPage() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => setIsCompModalOpen(false)}
+              onClick={handleCloseCompModal}
             >
               Selesai
             </Button>
