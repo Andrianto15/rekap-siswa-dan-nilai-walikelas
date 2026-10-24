@@ -24,7 +24,7 @@ import { useToast } from '@/components/ui/Toast';
 import { useConfirm } from '@/components/ui/ConfirmDialog';
 import { useAuth } from '@/hooks/useAuth';
 import { useRole } from '@/hooks/useRole';
-import { downloadExcelTemplate, parseExcelFile } from '@/lib/excel';
+import { downloadExcelTemplate, parseExcelFile, MAX_EXCEL_FILE_SIZE } from '@/lib/excel';
 import {
   parseGender,
   partitionSiswaImport,
@@ -390,6 +390,20 @@ export default function SiswaPage() {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (file.size > MAX_EXCEL_FILE_SIZE) {
+      toastError('File Terlalu Besar', 'Ukuran file melebihi batas maksimal 2MB.');
+      e.target.value = '';
+      return;
+    }
+
+    const lowerName = file.name.toLowerCase();
+    if (!lowerName.endsWith('.xlsx') && !lowerName.endsWith('.xls')) {
+      toastError('Format Tidak Didukung', 'Harap unggah file dengan format .xlsx atau .xls.');
+      e.target.value = '';
+      return;
+    }
+
     setExcelFile(file);
 
     try {

@@ -62,10 +62,21 @@ export function exportToExcel(
   downloadWorkbook(workbook, filename);
 }
 
+export const MAX_EXCEL_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+
 /**
  * Parse uploaded Excel (.xlsx, .xls) file into an array of objects
  */
 export async function parseExcelFile<T = Record<string, unknown>>(file: File): Promise<T[]> {
+  if (file.size > MAX_EXCEL_FILE_SIZE) {
+    throw new Error('Ukuran file melebihi batas maksimal 2MB');
+  }
+
+  const lowerName = file.name.toLowerCase();
+  if (!lowerName.endsWith('.xlsx') && !lowerName.endsWith('.xls')) {
+    throw new Error('Format file tidak didukung. Harap unggah file .xlsx atau .xls');
+  }
+
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 

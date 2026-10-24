@@ -107,5 +107,19 @@ describe('excel.ts', () => {
 
       window.FileReader = originalFileReader;
     });
+
+    it('should reject file exceeding maximum size (2MB) (SEC-06)', async () => {
+      // Create a mock file with size > 2MB (e.g. 2.5MB)
+      const oversizedBlob = new Blob([new Uint8Array(2.5 * 1024 * 1024)]);
+      const file = new File([oversizedBlob], 'oversized.xlsx');
+
+      await expect(parseExcelFile(file)).rejects.toThrow('Ukuran file melebihi batas maksimal 2MB');
+    });
+
+    it('should reject file with unsupported extension (SEC-06)', async () => {
+      const file = new File(['test content'], 'malicious.exe');
+
+      await expect(parseExcelFile(file)).rejects.toThrow('Format file tidak didukung');
+    });
   });
 });
