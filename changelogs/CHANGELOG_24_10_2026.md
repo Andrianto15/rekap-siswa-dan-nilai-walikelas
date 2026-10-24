@@ -57,3 +57,20 @@
   - Seluruh 24 test suites lulus 100% (142 tests passed).
 - **PRD**:
   - Memperbarui `doc/PRD.md` Bab 8 dengan spesifikasi pengalih tema, konsistensi dark mode dashboard, dan palet semantik dispen.
+
+## Versi 0.3.23
+### Perbaikan Bug Toggle Tema Terang/Gelap & Sinkronisasi Real-Time
+- **Konfigurasi Class-Based Dark Mode Tailwind CSS v4 (`src/app/globals.css`)**:
+  - Menambahkan `@custom-variant dark (&:where(.dark, .dark *));` agar utility class `dark:...` tidak bergantung pada media query preferensi sistem operasi, sehingga pergantian ke tema terang langsung efektif.
+- **Shared Theme Hook & Event Bus (`src/lib/theme.ts`)**:
+  - Menyediakan fungsi `getInitialTheme()`, `setTheme()`, `toggleTheme()`, serta hook `useTheme()` berbasis `useSyncExternalStore` dengan event `theme-change` (`THEME_EVENT`).
+  - Menjamin state tema sinkron otomatis secara real-time di seluruh komponen (Header desktop dan BottomNav mobile drawer) tanpa cascading re-render.
+- **Pencegahan Flash of Unstyled Content (FOUC) (`src/app/layout.tsx`)**:
+  - Menambahkan inline script di `<head>` RootLayout untuk membaca preferensi `theme` dari `localStorage` dan menyetel class `.dark` sebelum DOM pertama kali di-paint.
+- **Testing & QA**:
+  - Menambahkan unit test suite baru `tests/lib/theme.test.ts` (6 tests) untuk logika helper tema, konfigurasi `@custom-variant dark`, dan inline script FOUC.
+  - Menambahkan test suite baru `tests/components/bottom-nav.test.tsx` (2 tests) untuk toggle tema pada menu drawer mobile dan sinkronisasi event eksternal.
+  - Memperbarui `tests/components/header.test.tsx` untuk memvalidasi pembaruan state saat `THEME_EVENT` dipicu dari komponen lain.
+  - Seluruh 26 test suites lulus 100% (151 tests passed).
+- **PRD**:
+  - Memperbarui `doc/PRD.md` Bab 8 dengan arsitektur sinkronisasi tema Tailwind CSS v4.

@@ -5,38 +5,13 @@ import { CalendarDays, LogOut, Moon, Sun, User } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Badge } from '@/components/ui/Badge';
 import { createClient } from '@/lib/supabase/client';
+import { useTheme } from '@/lib/theme';
 
 export function Header() {
   const { profile, signOut } = useAuth();
   const [activeSemester, setActiveSemester] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    const isDarkMode =
-      document.documentElement.classList.contains('dark') ||
-      localStorage.getItem('theme') === 'dark' ||
-      (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-      setIsDark(true);
-    } else {
-      document.documentElement.classList.remove('dark');
-      setIsDark(false);
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    if (isDark) {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-      setIsDark(false);
-    } else {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-      setIsDark(true);
-    }
-  };
+  const { isDark, toggleTheme } = useTheme();
 
   useEffect(() => {
     let isMounted = true;

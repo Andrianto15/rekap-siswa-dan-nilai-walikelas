@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
 import { Header } from '@/components/layout/Header';
 import { useAuth } from '@/hooks/useAuth';
 import { createClient } from '@/lib/supabase/client';
+import { setTheme } from '@/lib/theme';
 
 jest.mock('@/hooks/useAuth');
 jest.mock('@/lib/supabase/client');
@@ -144,5 +145,34 @@ describe('Header component', () => {
     fireEvent.click(screen.getByRole('button', { name: /Ganti ke Mode Terang/i }));
     expect(document.documentElement.classList.contains('dark')).toBe(false);
     expect(localStorage.getItem('theme')).toBe('light');
+  });
+
+  it('updates theme icon and state when THEME_EVENT is dispatched externally', async () => {
+    mockSupabase.from.mockReturnValue({
+      select: jest.fn().mockReturnValue({
+        eq: jest.fn().mockReturnValue({
+          is: jest.fn().mockReturnValue({
+            single: jest.fn().mockResolvedValue({
+              data: null,
+              error: null,
+            }),
+          }),
+        }),
+      }),
+    });
+
+    render(<Header />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Ganti ke Mode Gelap/i })).toBeInTheDocument();
+    });
+
+    act(() => {
+      setTheme('dark');
+    });
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Ganti ke Mode Terang/i })).toBeInTheDocument();
+    });
   });
 });

@@ -38,7 +38,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${publicSans.variable} ${jetbrainsMono.variable}`}>
+    <html lang="id" className={`${publicSans.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                var stored = localStorage.getItem('theme');
+                var isDark = stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                if (isDark) {
+                  document.documentElement.classList.add('dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                }
+              } catch (e) {}
+            `,
+          }}
+        />
+      </head>
       <body className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans antialiased selection:bg-[#4682b4] selection:text-white">
         <ConfirmProvider>
           <ToastProvider>{children}</ToastProvider>

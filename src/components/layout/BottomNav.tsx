@@ -24,31 +24,14 @@ import {
 import { cn } from '@/lib/utils';
 import { useRole } from '@/hooks/useRole';
 import { useAuth } from '@/hooks/useAuth';
+import { useTheme } from '@/lib/theme';
 
 export function BottomNav() {
   const pathname = usePathname();
   const { isAdmin } = useRole();
   const { signOut, profile } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDark, setIsDark] = useState(false);
-
-  React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setIsDark(document.documentElement.classList.contains('dark'));
-    }
-  }, [isMenuOpen]);
-
-  const toggleTheme = () => {
-    if (document.documentElement.classList.contains('dark')) {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-      setIsDark(false);
-    } else {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-      setIsDark(true);
-    }
-  };
+  const { isDark, toggleTheme } = useTheme();
 
   const mainItems = [
     { name: 'Home', href: '/dashboard', icon: LayoutDashboard },
