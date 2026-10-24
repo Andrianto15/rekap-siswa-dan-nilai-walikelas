@@ -1,9 +1,11 @@
 import { createClient as createBrowserClientWrapper } from '@/lib/supabase/client';
 import { createClient as createServerClientWrapper, createAdminClient } from '@/lib/supabase/server';
 import { createBrowserClient, createServerClient } from '@supabase/ssr';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 
 jest.mock('@supabase/ssr');
+jest.mock('@supabase/supabase-js');
 jest.mock('next/headers');
 
 describe('Supabase Client Factories', () => {
@@ -81,16 +83,29 @@ describe('Supabase Client Factories', () => {
       expect(mockCookieStore.set).toHaveBeenCalledWith('new-cookie', 'val', {});
     });
 
-    it('should create server admin client with service role key', async () => {
+    it('should throw an error when SUPABASE_SERVICE_ROLE_KEY is missing (SEC-07)', async () => {
+      delete process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+      await expect(createAdminClient()).rejects.toThrow(
+        'SUPABASE_SERVICE_ROLE_KEY is required for admin client'
+      );
+    });
+
+    it('should create isolated server admin client with service role key (SEC-07)', async () => {
       process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://server.supabase.co';
       process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role-secret-key';
 
       await createAdminClient();
 
-      expect(createServerClient).toHaveBeenCalledWith(
+      expect(createSupabaseClient).toHaveBeenCalledWith(
         'https://server.supabase.co',
         'service-role-secret-key',
-        expect.any(Object)
+        expect.objectContaining({
+          auth: expect.objectContaining({
+            persistSession: false,
+            autoRefreshToken: false,
+          }),
+        })
       );
     });
   });
