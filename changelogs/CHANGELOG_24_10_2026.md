@@ -124,3 +124,15 @@
   - Seluruh 28 test suites lulus 100% (168 tests passed).
 - **PRD**:
   - Memperbarui `doc/PRD.md` Bab 7 dengan dokumentasi tombol keluar dan konfigurasi devIndicators.
+
+## Versi 0.3.28
+### Penambahan Lisensi Open-Source MIT
+- **File Lisensi (`LICENSE`)**:
+  - Menambahkan lisensi MIT standar dengan hak cipta tahun 2026 atas nama Andrianto Nur Iskandar.
+- **Konfigurasi Proyek & Dokumentasi (`package.json`, `README.md`, `doc/PRD.md`)**:
+  - Menambahkan field `"license": "MIT"` pada `package.json`.
+  - Menambahkan section Lisensi pada `README.md`.
+  - Mendokumentasikan lisensi MIT pada `doc/PRD.md` Bab 7.
+- **Testing & QA (`tests/license.test.ts`)**:
+  - Menambahkan test suite baru untuk memverifikasi keberadaan file `LICENSE` dan metadata `license` di `package.json`.
+  - Seluruh 29 test suites lulus 100% (170 tests passed).

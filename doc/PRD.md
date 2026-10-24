@@ -262,3 +262,5 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 - **Tombol Keluar & Konfigurasi Overlay Lingkungan Pengembangan (`Sidebar.tsx`, `next.config.ts`)**:
   - Tombol aksi Keluar akun pada sidebar navigasi menggunakan ikon standar `LogOut` dari `lucide-react` dengan standar aksesibilitas touch target minimal 44px (`min-h-[44px]`), atribut `title="Keluar"`, serta `aria-label="Keluar"`.
   - Mengonfigurasi `devIndicators: false` pada `next.config.ts` untuk menonaktifkan badge floating developer indicator Next.js ("N") di pojok kiri bawah yang menutupi ikon tombol keluar pada lingkungan development (`next dev`).
+- **Lisensi Repositori**:
+  - Seluruh repositori dan source code dilisensikan di bawah open-source [MIT License](file:///Users/andriantonuriskandar/Documents/Playground/rekap-siswa-dan-nilai-walikelas/LICENSE) dengan atribusi hak cipta tahun 2026.

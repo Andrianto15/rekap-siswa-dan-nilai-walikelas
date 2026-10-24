@@ -77,3 +77,9 @@ Buka browser di `http://localhost:3000`.
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `SUPABASE_SERVICE_ROLE_KEY`
 4. Klik **Deploy**.
+
+---
+
+## Lisensi
+
+Proyek ini dilisensikan di bawah [MIT License](file:///Users/andriantonuriskandar/Documents/Playground/rekap-siswa-dan-nilai-walikelas/LICENSE).

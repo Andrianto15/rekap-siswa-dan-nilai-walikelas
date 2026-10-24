@@ -1,6 +1,7 @@
 {
   "name": "rekap-siswa-dan-nilai-walikelas",
-  "version": "0.3.27",
+  "version": "0.3.28",
+  "license": "MIT",
   "private": true,
   "scripts": {
     "dev": "next dev",
