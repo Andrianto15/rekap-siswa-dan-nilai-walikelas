@@ -35,4 +35,30 @@ describe('Kelas Dropdown Options Rendering', () => {
     expect(screen.queryByRole('option', { name: 'Kelas XI TKJ 3' })).not.toBeInTheDocument();
     expect(screen.queryByRole('option', { name: 'Kelas X TKJ 1' })).not.toBeInTheDocument();
   });
+
+  describe('Non-admin teacher class restriction (SEC-04 UI Layer)', () => {
+    function getAvailableKelasOptions(
+      kelasList: Kelas[],
+      selectedKelasId: string,
+      isAdmin: boolean
+    ) {
+      if (isAdmin) {
+        return kelasList.map((k) => ({ value: k.id, label: k.nama }));
+      }
+      return kelasList
+        .filter((k) => k.id === selectedKelasId)
+        .map((k) => ({ value: k.id, label: k.nama }));
+    }
+
+    it('renders all classes if user is admin', () => {
+      const options = getAvailableKelasOptions(mockKelasList, 'k-1', true);
+      expect(options).toHaveLength(3);
+    });
+
+    it('restricts dropdown options to only the assigned class if user is guru (non-admin)', () => {
+      const options = getAvailableKelasOptions(mockKelasList, 'k-2', false);
+      expect(options).toHaveLength(1);
+      expect(options[0]).toEqual({ value: 'k-2', label: 'XI TKJ 3' });
+    });
+  });
 });

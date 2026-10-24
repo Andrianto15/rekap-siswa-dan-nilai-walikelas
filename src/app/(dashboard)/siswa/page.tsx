@@ -180,6 +180,16 @@ export default function SiswaPage() {
     [kelasList, selectedKelasId]
   );
 
+  // Available classes: admin sees all, non-admin only sees assigned class (SEC-04 UI Layer)
+  const availableKelasOptions = useMemo(() => {
+    if (isAdmin) {
+      return kelasList.map((k) => ({ value: k.id, label: k.nama }));
+    }
+    return kelasList
+      .filter((k) => k.id === selectedKelasId)
+      .map((k) => ({ value: k.id, label: k.nama }));
+  }, [isAdmin, kelasList, selectedKelasId]);
+
   // Filtered students by search query
   const filteredSiswa = useMemo(() => {
     const q = searchQuery.toLowerCase().trim();
@@ -570,14 +580,12 @@ export default function SiswaPage() {
             <Select
               aria-label="Pilih Kelas"
               value={selectedKelasId}
+              disabled={!isAdmin && availableKelasOptions.length <= 1}
               onChange={(e) => {
                 setSelectedKelasId(e.target.value);
                 setSelectedIds([]);
               }}
-              options={kelasList.map((k) => ({
-                value: k.id,
-                label: k.nama,
-              }))}
+              options={availableKelasOptions}
             />
           </div>
         </div>
