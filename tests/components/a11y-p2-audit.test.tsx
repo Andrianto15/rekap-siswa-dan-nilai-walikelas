@@ -127,5 +127,35 @@ describe('Impeccable Audit P2 Fixes (Touch Targets & Accessibility)', () => {
       fireEvent.click(delBtn);
       expect(onDelete).toHaveBeenCalledTimes(1);
     });
+
+    it('should format GuruKelas mapping delete button aria-label correctly from relations', () => {
+      const guruKelas = {
+        id: 'gk-1',
+        guru_id: 'g-1',
+        kelas_id: 'k-1',
+        semester_id: 's-1',
+        guru: { id: 'g-1', full_name: 'Pak Budi', role: 'guru' as const },
+        kelas: { id: 'k-1', nama: '7A', tingkat: 7 },
+      };
+
+      const ariaLabel = `Hapus penugasan wali kelas ${guruKelas.guru?.full_name || 'Guru'} untuk kelas ${guruKelas.kelas?.nama || ''}`.trim();
+
+      render(
+        <button
+          type="button"
+          className="p-2 min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-lg"
+          aria-label={ariaLabel}
+        >
+          Hapus
+        </button>
+      );
+
+      const btn = screen.getByRole('button', {
+        name: 'Hapus penugasan wali kelas Pak Budi untuk kelas 7A',
+      });
+      expect(btn).toBeInTheDocument();
+      expect(btn.className).toContain('min-h-[44px]');
+      expect(btn.className).toContain('min-w-[44px]');
+    });
   });
 });

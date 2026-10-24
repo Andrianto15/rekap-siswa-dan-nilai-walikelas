@@ -74,3 +74,14 @@
   - Seluruh 26 test suites lulus 100% (151 tests passed).
 - **PRD**:
   - Memperbarui `doc/PRD.md` Bab 8 dengan arsitektur sinkronisasi tema Tailwind CSS v4.
+
+## Versi 0.3.24
+### Perbaikan Type Error Property GuruKelas pada Build Vercel
+- **Perbaikan Type Check TypeScript (`src/app/(dashboard)/admin/mapping/page.tsx`)**:
+  - Memperbaiki akses properti pada `aria-label` tombol hapus penugasan wali kelas dari properti yang tidak ada (`item.guru_nama` dan `item.kelas_nama`) menjadi relasi yang valid (`item.guru?.full_name` dan `item.kelas?.nama`).
+  - Menghilangkan `error TS2339: Property 'guru_nama' does not exist on type 'GuruKelas'` dan `error TS2339: Property 'kelas_nama' does not exist on type 'GuruKelas'` saat build dan type checking Vercel.
+- **Testing & QA**:
+  - Menambahkan unit test spesifik relasi `GuruKelas` pada `tests/components/a11y-p2-audit.test.tsx` untuk mencegah regresi format `aria-label`.
+  - Memverifikasi `npx tsc --noEmit` bersih tanpa error.
+  - Seluruh 26 test suites lulus 100% (152 tests passed).
+
