@@ -25,11 +25,10 @@ begin
   values (
     new.id,
     coalesce(new.raw_user_meta_data->>'full_name', split_part(new.email, '@', 1)),
-    coalesce(new.raw_user_meta_data->>'role', 'guru')
+    'guru'
   )
   on conflict (id) do update set
     full_name = coalesce(excluded.full_name, public.profiles.full_name),
-    role = coalesce(excluded.role, public.profiles.role),
     updated_at = now();
   return new;
 end;
@@ -269,7 +268,12 @@ create policy "Users can update own profile"
   on public.profiles for update
   to authenticated
   using (auth.uid() = id or public.is_admin())
-  with check (auth.uid() = id or public.is_admin());
+  with check (
+    public.is_admin() or (
+      auth.uid() = id and
+      role = (select p.role from public.profiles p where p.id = auth.uid())
+    )
+  );
 
 create policy "Admin can insert/delete profiles"
   on public.profiles for all
@@ -347,10 +351,23 @@ create policy "Guru mapel manageable by admin"
   with check (public.is_admin());
 
 -- SISWA POLICIES
-create policy "Siswa viewable by authenticated"
+create policy "Siswa viewable by admin, wali kelas, or guru mapel"
   on public.siswa for select
   to authenticated
-  using (true);
+  using (
+    public.is_admin() or
+    exists (
+      select 1 from public.guru_kelas gk
+      where gk.guru_id = auth.uid()
+        and gk.kelas_id = public.siswa.kelas_id
+        and gk.semester_id = public.siswa.semester_id
+    ) or
+    exists (
+      select 1 from public.guru_mapel gm
+      where gm.guru_id = auth.uid()
+        and gm.semester_id = public.siswa.semester_id
+    )
+  );
 
 create policy "Siswa manageable by admin or wali kelas"
   on public.siswa for all
@@ -375,10 +392,27 @@ create policy "Siswa manageable by admin or wali kelas"
   );
 
 -- KEHADIRAN POLICIES
-create policy "Kehadiran viewable by authenticated"
+create policy "Kehadiran viewable by admin, wali kelas, or guru mapel"
   on public.kehadiran for select
   to authenticated
-  using (true);
+  using (
+    public.is_admin() or
+    exists (
+      select 1 from public.siswa s
+      join public.guru_kelas gk on gk.kelas_id = s.kelas_id and gk.semester_id = s.semester_id
+      where s.id = public.kehadiran.siswa_id
+        and gk.guru_id = auth.uid()
+    ) or
+    (
+      public.kehadiran.mapel_id is not null and
+      exists (
+        select 1 from public.guru_mapel gm
+        where gm.guru_id = auth.uid()
+          and gm.mapel_id = public.kehadiran.mapel_id
+          and gm.semester_id = public.kehadiran.semester_id
+      )
+    )
+  );
 
 create policy "Kehadiran manageable by admin or wali kelas"
   on public.kehadiran for all
@@ -413,7 +447,6 @@ create policy "Komponen nilai manageable by admin or guru mapel"
   to authenticated
   using (
     public.is_admin() or
-    guru_id = auth.uid() or
     exists (
       select 1 from public.guru_mapel gm
       where gm.guru_id = auth.uid()
@@ -423,12 +456,14 @@ create policy "Komponen nilai manageable by admin or guru mapel"
   )
   with check (
     public.is_admin() or
-    guru_id = auth.uid() or
-    exists (
-      select 1 from public.guru_mapel gm
-      where gm.guru_id = auth.uid()
-        and gm.mapel_id = public.komponen_nilai.mapel_id
-        and gm.semester_id = public.komponen_nilai.semester_id
+    (
+      guru_id = auth.uid() and
+      exists (
+        select 1 from public.guru_mapel gm
+        where gm.guru_id = auth.uid()
+          and gm.mapel_id = public.komponen_nilai.mapel_id
+          and gm.semester_id = public.komponen_nilai.semester_id
+      )
     )
   );
 
@@ -438,33 +473,25 @@ create policy "Nilai viewable by authenticated"
   to authenticated
   using (true);
 
-create policy "Nilai manageable by admin or guru"
+create policy "Nilai manageable by admin or assigned guru"
   on public.nilai for all
   to authenticated
   using (
     public.is_admin() or
     exists (
       select 1 from public.komponen_nilai kn
+      join public.guru_mapel gm on gm.mapel_id = kn.mapel_id and gm.semester_id = kn.semester_id
       where kn.id = public.nilai.komponen_nilai_id
-        and (kn.guru_id = auth.uid() or exists (
-          select 1 from public.guru_mapel gm
-          where gm.guru_id = auth.uid()
-            and gm.mapel_id = kn.mapel_id
-            and gm.semester_id = kn.semester_id
-        ))
+        and gm.guru_id = auth.uid()
     )
   )
   with check (
     public.is_admin() or
     exists (
       select 1 from public.komponen_nilai kn
+      join public.guru_mapel gm on gm.mapel_id = kn.mapel_id and gm.semester_id = kn.semester_id
       where kn.id = public.nilai.komponen_nilai_id
-        and (kn.guru_id = auth.uid() or exists (
-          select 1 from public.guru_mapel gm
-          where gm.guru_id = auth.uid()
-            and gm.mapel_id = kn.mapel_id
-            and gm.semester_id = kn.semester_id
-        ))
+        and gm.guru_id = auth.uid()
     )
   );
 
@@ -473,12 +500,11 @@ create policy "Nilai akhir viewable by authenticated"
   to authenticated
   using (true);
 
-create policy "Nilai akhir manageable by admin or guru"
+create policy "Nilai akhir manageable by admin or assigned guru"
   on public.nilai_akhir for all
   to authenticated
   using (
     public.is_admin() or
-    guru_id = auth.uid() or
     exists (
       select 1 from public.guru_mapel gm
       where gm.guru_id = auth.uid()
@@ -488,12 +514,14 @@ create policy "Nilai akhir manageable by admin or guru"
   )
   with check (
     public.is_admin() or
-    guru_id = auth.uid() or
-    exists (
-      select 1 from public.guru_mapel gm
-      where gm.guru_id = auth.uid()
-        and gm.mapel_id = public.nilai_akhir.mapel_id
-        and gm.semester_id = public.nilai_akhir.semester_id
+    (
+      guru_id = auth.uid() and
+      exists (
+        select 1 from public.guru_mapel gm
+        where gm.guru_id = auth.uid()
+          and gm.mapel_id = public.nilai_akhir.mapel_id
+          and gm.semester_id = public.nilai_akhir.semester_id
+      )
     )
   );
 
