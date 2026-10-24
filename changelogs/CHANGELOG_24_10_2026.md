@@ -177,13 +177,30 @@
   - Seluruh 33 test suites lulus 100% (179 tests passed).
 - **PRD (`doc/PRD.md`)**:
   - Mendokumentasikan suite pengujian `tests/readme.test.ts` pada Bab 7 (Testing Strategy & Quality Assurance).
-- **Remediasi Keamanan & Hardening Otorisasi (Security Audit Fixes - SEC-01 s.d. SEC-07)**:
-  - **Pencegahan Privilege Escalation (SEC-01)**: Memperbarui RLS policy UPDATE `public.profiles` dengan pembatasan perubahan kolom `role` sehingga user dengan role `guru` tidak dapat mengekskalasi diri menjadi `admin`.
-  - **Pencegahan BOLA / Manipulasi Nilai Lintas Kelas & Mapel (SEC-02)**: Menghapus klausul bypass `guru_id = auth.uid()` mandiri pada `komponen_nilai`, `nilai`, dan `nilai_akhir`; mewajibkan verifikasi relasi penugasan aktif di tabel `guru_mapel` atau status Admin (memenuhi Rule 13 `AGENTS.md`).
-  - **Sanitasi Trigger Registrasi & Fallback useAuth (SEC-03)**: Memperbaiki fungsi trigger `handle_new_user()` agar tidak mempercayai `raw_user_meta_data->>'role'` dari klien dan selalu menetapkan role default `'guru'`, serta mematikan fallback role admin di `src/hooks/useAuth.ts` jika database query gagal.
-  - **Isolasi Data Siswa & Presensi (SEC-04)**: Menghapus klausul terbuka `using (true)` pada SELECT `siswa` dan `kehadiran`; membatasi akses baca hanya untuk Admin, Wali Kelas (`guru_kelas`), atau Guru Pengampu (`guru_mapel`), serta memfilter opsi dropdown kelas pada UI siswa untuk guru non-admin.
-  - **Proteksi Middleware & Sanitasi Open Redirect (SEC-05)**: Memperbaiki pengenalan rute publik callback `/auth/callback` di middleware Next.js, mengganti bypass ekstensi titik longgar dengan regex ekstensi statis presisi, serta mensterilkan parameter `next` pada auth callback untuk mencegah eksploitasi Open Redirect.
-  - **Validasi Berkas Impor Excel (SEC-06)**: Menambahkan pembatasan ukuran berkas impor Excel maksimal 2MB (`MAX_EXCEL_FILE_SIZE`) dan validasi ekstensi berkas (`.xlsx`, `.xls`) pada `src/lib/excel.ts` dan `src/app/(dashboard)/siswa/page.tsx` guna mencegah serangan Denial of Service (DoS) dan eksploitasi dependensi parser.
-  - **Isolasi Klien Server Admin (SEC-07)**: Mengisolasi `createAdminClient()` di `src/lib/supabase/server.ts` menggunakan `@supabase/supabase-js` murni dengan `persistSession: false` tanpa pembagian cookie sesi pengguna biasa, serta menghapus fallback diam-diam ke `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+## Versi 0.3.32
+### Remediasi Keamanan & Hardening Otorisasi (Security Audit Fixes - SEC-01 s.d. SEC-07)
+- **Pencegahan Privilege Escalation (SEC-01)**:
+  - Memperbarui RLS policy UPDATE `public.profiles` dengan pembatasan perubahan kolom `role` sehingga user dengan role `guru` tidak dapat mengekskalasi diri menjadi `admin`.
+- **Pencegahan BOLA / Manipulasi Nilai Lintas Kelas & Mapel (SEC-02)**:
+  - Menghapus klausul bypass `guru_id = auth.uid()` mandiri pada `komponen_nilai`, `nilai`, dan `nilai_akhir`; mewajibkan verifikasi relasi penugasan aktif di tabel `guru_mapel` atau status Admin (mematuhi Rule 13 `AGENTS.md`).
+- **Sanitasi Trigger Registrasi & Fallback useAuth (SEC-03)**:
+  - Memperbaiki fungsi trigger `handle_new_user()` agar tidak mempercayai `raw_user_meta_data->>'role'` dari klien dan selalu menetapkan role default `'guru'`.
+  - Mematikan fallback role admin di `src/hooks/useAuth.ts` jika database query profil gagal.
+- **Isolasi Data Siswa & Presensi (SEC-04)**:
+  - Menghapus klausul terbuka `using (true)` pada SELECT `siswa` dan `kehadiran`; membatasi akses baca hanya untuk Admin, Wali Kelas (`guru_kelas`), atau Guru Pengampu (`guru_mapel`).
+  - Memfilter opsi dropdown kelas pada UI siswa (`src/app/(dashboard)/siswa/page.tsx`) agar guru non-admin hanya melihat kelas binaannya.
+- **Proteksi Middleware & Sanitasi Open Redirect (SEC-05)**:
+  - Memperbaiki pengenalan rute publik callback `/auth/callback` di middleware Next.js.
+  - Mengganti bypass ekstensi titik longgar dengan regex ekstensi statis presisi.
+  - Mensterilkan parameter `next` pada auth callback untuk mencegah eksploitasi Open Redirect ke domain/protokol eksternal.
+- **Validasi Berkas Impor Excel (SEC-06)**:
+  - Menambahkan pembatasan ukuran berkas impor Excel maksimal 2MB (`MAX_EXCEL_FILE_SIZE`) dan validasi ekstensi berkas (`.xlsx`, `.xls`) pada `src/lib/excel.ts` dan `src/app/(dashboard)/siswa/page.tsx` guna mencegah serangan DoS dan memory exhaustion.
+- **Isolasi Klien Server Admin (SEC-07)**:
+  - Mengisolasi `createAdminClient()` di `src/lib/supabase/server.ts` menggunakan `@supabase/supabase-js` murni dengan `persistSession: false` tanpa pembagian cookie sesi pengguna biasa.
+  - Menghapus fallback diam-diam ke `NEXT_PUBLIC_SUPABASE_ANON_KEY` dan melempar error eksplisit jika `SUPABASE_SERVICE_ROLE_KEY` kosong.
+- **Testing & QA**:
+  - Menambahkan test suites: `tests/supabase/rls-security-schema.test.ts` dan `tests/app/auth-callback.test.ts`.
+  - Memperbarui pengujian pada `tests/hooks/useAuth.test.ts`, `tests/lib/supabase/middleware.test.ts`, `tests/lib/excel.test.ts`, `tests/lib/supabase/supabase.test.ts`, dan `tests/components/kelas-dropdown.test.tsx`.
+  - Seluruh 35 test suites lulus 100% (197 tests passed).
 
 
