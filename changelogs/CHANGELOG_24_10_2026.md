@@ -136,3 +136,19 @@
 - **Testing & QA (`tests/license.test.ts`)**:
   - Menambahkan test suite baru untuk memverifikasi keberadaan file `LICENSE` dan metadata `license` di `package.json`.
   - Seluruh 29 test suites lulus 100% (170 tests passed).
+
+## Versi 0.3.29
+### Penambahan Komponen Footer Pascalogin Terpadu
+- **Komponen Layout Footer (`src/components/layout/Footer.tsx`)**:
+  - Membuat komponen Footer semantik (`<footer>`, `role="contentinfo"`) menampilkan nama aplikasi "Rekap Siswa & Nilai Wali Kelas", hak cipta tahun 2026 atas nama Andrianto Nur Iskandar, badge versi aplikasi dinamis dari `package.json`, serta label Lisensi MIT.
+  - Menerapkan desain responsif berdasar `DESIGN.md` dan `antislop-layoutmobile`: layout reflow tumpuk vertikal di layar sempit (<md) dan menyebar horizontal berimbang di layar desktop (>=md).
+  - Mengintegrasikan clearance padding bawah mobile (`pb-24 md:pb-0`) sehingga konten footer tidak tertutup atau terhalang oleh bilah navigasi bawah (`BottomNav`) yang menempel di layar mobile.
+- **Integrasi Layout Dashboard (`src/app/(dashboard)/layout.tsx`)**:
+  - Mengintegrasikan `<Footer />` ke dalam layout utama dashboard sehingga tampil secara konsisten di seluruh halaman aplikasi pascalogin (Dashboard, Siswa, Kehadiran, Nilai, dan Admin).
+  - Menyesuaikan padding bawah area `<main>` (`pb-6 md:pb-8`) untuk menjaga ritme vertikal ruang konten sebelum footer.
+- **Testing & QA (`tests/components/footer.test.tsx`, `tests/components/dashboard-layout.test.tsx`)**:
+  - Menambahkan test suite baru untuk `Footer` (verifikasi semantik footer, hak cipta, lisensi MIT, versi, dan class clearance navigasi mobile).
+  - Menambahkan test suite baru untuk `DashboardLayout` (verifikasi rendering terpadu header, konten halaman, dan footer pascalogin).
+  - Seluruh 31 test suites lulus 100% (173 tests passed).
+- **PRD (`doc/PRD.md`)**:
+  - Memperbarui Bab 7 (Testing Strategy) dan Bab 8 (UI/UX Standards) dengan spesifikasi komponen footer dan layout responsif.

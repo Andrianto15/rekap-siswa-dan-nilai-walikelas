@@ -2,6 +2,7 @@ import React from 'react';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
 
 export default function DashboardLayout({
   children,
@@ -16,9 +17,10 @@ export default function DashboardLayout({
       {/* Main Content Area */}
       <div className="flex-1 md:pl-64 flex flex-col min-h-screen">
         <Header />
-        <main className="flex-1 p-4 md:p-8 pb-24 md:pb-8 max-w-7xl mx-auto w-full">
+        <main className="flex-1 p-4 md:p-8 pb-6 md:pb-8 max-w-7xl mx-auto w-full">
           {children}
         </main>
+        <Footer />
       </div>
 
       {/* Mobile Bottom Navigation */}

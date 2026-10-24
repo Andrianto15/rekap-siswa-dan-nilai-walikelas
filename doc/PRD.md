@@ -174,6 +174,8 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - `tests/components/header.test.tsx`: Verifikasi rendering dinamis semester aktif dari Supabase, fallback teks saat belum diatur, adaptasi label mobile-first, dan penanganan aksi logout pada komponen Header.
   - `tests/components/a11y-p2.test.tsx`: Verifikasi focus trap keyboard (`Tab` & `Shift+Tab` wrapping) pada komponen `Modal` dan `ConfirmDialog` demi kepatuhan WCAG 2.4.3 Focus Order.
   - `tests/lib/komponen-nilai.test.ts`: Verifikasi validasi client-side keunikan nomor urutan komponen nilai, humanisasi error database PostgreSQL (`uq_komponen_nilai_urutan_active`), dan penentuan otomatis slot urutan kosong berikutnya (`getNextAvailableOrder`).
+  - `tests/components/footer.test.tsx`: Verifikasi rendering semantic footer (`<footer>` / `role="contentinfo"`), atribusi hak cipta, badge lisensi MIT, label versi aplikasi, dan clearance padding bawah untuk navigasi mobile `BottomNav`.
+  - `tests/components/dashboard-layout.test.tsx`: Verifikasi integrasi terpadu layout utama dashboard yang merender `Header`, `Sidebar`, `BottomNav`, dan `Footer` pada seluruh halaman terautentikasi setelah login.
 - **Command**: `npm test` / `npm run test:coverage`
 
 ---
@@ -264,3 +266,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - Mengonfigurasi `devIndicators: false` pada `next.config.ts` untuk menonaktifkan badge floating developer indicator Next.js ("N") di pojok kiri bawah yang menutupi ikon tombol keluar pada lingkungan development (`next dev`).
 - **Lisensi Repositori**:
   - Seluruh repositori dan source code dilisensikan di bawah open-source [MIT License](file:///Users/andriantonuriskandar/Documents/Playground/rekap-siswa-dan-nilai-walikelas/LICENSE) dengan atribusi hak cipta tahun 2026.
+- **Komponen Footer Terpadu Pascartautentikasi (`Footer.tsx`, `DashboardLayout.tsx`)**:
+  - Footer tersemat di seluruh halaman aplikasi setelah login melalui wrapper layout utama `src/app/(dashboard)/layout.tsx`.
+  - Menyajikan informasi nama aplikasi, atribusi hak cipta pengembang, penanda versi aplikasi dinamis dari `package.json`, dan status lisensi open-source MIT.
+  - Ergonomi Mobile-First: Dilengkapi clearance padding bawah responsif (`pb-24 md:pb-0`) pada elemen footer agar teks hak cipta dan metadata tidak terhalang atau bertumpukan dengan bilah navigasi bawah (`BottomNav`) yang menempel tetap (`fixed bottom-0`). Layout reflow vertikal tersusun rapi di layar sempit (<md) dan menyebar horizontal berimbang di layar desktop (>=md).
