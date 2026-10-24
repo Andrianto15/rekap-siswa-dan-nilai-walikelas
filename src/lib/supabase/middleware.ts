@@ -36,7 +36,12 @@ export async function updateSession(request: NextRequest) {
 
   // If user not authenticated and trying to access protected routes
   const isAuthRoute = pathname.startsWith('/login');
-  const isPublicRoute = pathname === '/' || pathname.startsWith('/_next') || pathname.startsWith('/api/auth') || pathname.includes('.');
+  const isStaticAsset = /\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|woff|woff2|ttf|eot)$/i.test(pathname);
+  const isPublicRoute =
+    pathname === '/' ||
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/auth/callback') ||
+    isStaticAsset;
 
   if (!user && !isAuthRoute && !isPublicRoute) {
     const url = request.nextUrl.clone();

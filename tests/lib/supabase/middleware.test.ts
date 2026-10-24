@@ -66,6 +66,24 @@ describe('Supabase Middleware updateSession', () => {
     expect(res.status).toBe(200);
   });
 
+  it('should allow unauthenticated access to /auth/callback (SEC-05)', async () => {
+    const reqCallback = createMockRequest('http://localhost:3000/auth/callback?code=test-code');
+    mockSupabase.auth.getUser.mockResolvedValue({ data: { user: null } });
+
+    const res = await updateSession(reqCallback);
+    expect(res.status).toBe(200);
+    expect(res.headers.get('location')).toBeNull();
+  });
+
+  it('should NOT allow arbitrary paths with dots to bypass login redirection (SEC-05)', async () => {
+    const reqDot = createMockRequest('http://localhost:3000/admin.secret');
+    mockSupabase.auth.getUser.mockResolvedValue({ data: { user: null } });
+
+    const res = await updateSession(reqDot);
+    expect(res.status).toBe(307);
+    expect(res.headers.get('location')).toBe('http://localhost:3000/login');
+  });
+
   it('should redirect authenticated users accessing /login to /dashboard', async () => {
     const req = createMockRequest('http://localhost:3000/login');
     mockSupabase.auth.getUser.mockResolvedValue({
