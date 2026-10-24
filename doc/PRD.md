@@ -55,6 +55,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
 
 - Maksimal **5 komponen nilai** per mapel (misal: UH1, UH2, UTS, UAS, Tugas).
 - Nama komponen bisa dikustomisasi oleh guru.
+- Pengaturan komponen nilai: Urutan komponen unik per mapel, guru, dan semester dengan validasi ramah pengguna, saran urutan otomatis, penanda status urutan pada dropdown, dan penerjemah error teknis Postgres ke pesan toast manusiawi.
 - Rata-rata dihitung otomatis dari komponen yang terisi.
 - **Nilai akhir** = rata-rata, tapi bisa di-edit manual.
 - Ranking otomatis berdasarkan nilai akhir.
@@ -172,6 +173,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - `tests/components/a11y-p1.test.tsx`: Verifikasi kepatuhan A11y (viewport pinch-to-zoom tidak dimatikan, aria-invalid/aria-describedby pada Input/Select, dialog role & modal aria-labelledby, serta theming dark mode pada Table).
   - `tests/components/header.test.tsx`: Verifikasi rendering dinamis semester aktif dari Supabase, fallback teks saat belum diatur, adaptasi label mobile-first, dan penanganan aksi logout pada komponen Header.
   - `tests/components/a11y-p2.test.tsx`: Verifikasi focus trap keyboard (`Tab` & `Shift+Tab` wrapping) pada komponen `Modal` dan `ConfirmDialog` demi kepatuhan WCAG 2.4.3 Focus Order.
+  - `tests/lib/komponen-nilai.test.ts`: Verifikasi validasi client-side keunikan nomor urutan komponen nilai, humanisasi error database PostgreSQL (`uq_komponen_nilai_urutan_active`), dan penentuan otomatis slot urutan kosong berikutnya (`getNextAvailableOrder`).
 - **Command**: `npm test` / `npm run test:coverage`
 
 ---
@@ -252,6 +254,11 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - Memenuhi standar touch target minimal 44x44px (`min-h-[44px] min-w-[44px]`) serta dilengkapi atribut `aria-label` deskriptif (`Ganti ke Mode Gelap` / `Ganti ke Mode Terang`).
   - Halaman Dashboard (`/dashboard`) diselaraskan penuh dengan varian tema gelap (`dark:bg-slate-900`, `dark:border-slate-800`, `dark:text-slate-100`, `dark:text-slate-400`, `dark:bg-blue-950/60`, `dark:bg-emerald-950/60`, `dark:bg-amber-950/60`, `dark:bg-teal-950/60`).
   - Palet status dispensasi (`Badge variant="dispen"`) diselaraskan ke warna semantik Teal (`bg-teal-100 text-teal-800 dark:bg-teal-950/50 dark:text-teal-300`) guna menghindari kesan AI color palette dan mempertahankan kontras visual natural di mode terang maupun gelap.
+- **Pengaturan Komponen Nilai & Validasi Humanis (`/nilai/input`)**:
+  - Modal pengaturan komponen nilai menyediakan pemilihan urutan tampil 1..5 dengan penanda visual jika suatu nomor urutan telah digunakan oleh komponen lain (`Urutan N (Dipakai: [nama])`).
+  - Sistem otomatis menyarankan slot nomor urutan terendah yang masih tersedia (`getNextAvailableOrder`) saat membuka modal tambah atau membatalkan mode edit, mencegah konflik nomor urutan pada daftar non-kontigu.
+  - Validasi *client-side* memblokir pengiriman urutan duplikat sebelum request ke database dikirim.
+  - Error handler memetakan pesan teknis database PostgreSQL `duplicate key value violates unique constraint "uq_komponen_nilai_urutan_active"` menjadi notifikasi toast manusiawi: `"Nomor urutan [N] sudah digunakan oleh komponen lain. Silakan pilih nomor urutan yang berbeda."` dengan judul `"Urutan Sudah Digunakan"`.
 
 
 

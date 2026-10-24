@@ -96,7 +96,22 @@
 - **Testing & QA**:
   - Menambahkan unit test reproduksi bug re-render modal focus retention di `tests/components/ui.test.tsx`.
   - Seluruh 26 test suites lulus 100% (153 tests passed).
+## Versi 0.3.26
+### Humanisasi Pesan Error & Validasi Urutan Komponen Nilai
+- **Validasi Klien & Pencegahan Duplikasi Urutan (`src/app/(dashboard)/nilai/input/page.tsx`)**:
+  - Menambahkan validasi *client-side* sebelum request simpan / edit komponen nilai dikirim ke database untuk memblokir input urutan yang telah digunakan oleh komponen lain.
+  - Memetakan error database PostgreSQL (`uq_komponen_nilai_urutan_active` / `23505`) ke pesan toast manusiawi: `"Nomor urutan [N] sudah digunakan oleh komponen lain. Silakan pilih nomor urutan yang berbeda."` (Judul: `"Urutan Sudah Digunakan"`).
+  - Menyediakan penanda visual status pemakaian urutan pada pilihan dropdown `<Select>` (`Urutan N (Dipakai: [nama])`).
+  - Menyediakan saran otomatis nomor urutan terendah yang masih tersedia (`getNextAvailableOrder`) saat membuka modal atau membatalkan mode edit agar tidak memicu bentrok urutan pada daftar non-kontigu.
+- **Helper Logika Komponen Nilai (`src/lib/komponen-nilai.ts`)**:
+  - Fungsi `validateKomponenUrutan()`: validasi keunikan urutan dengan dukungan mode edit.
+  - Fungsi `getHumanizedKomponenError()`: normalisasi pesan error PostgreSQL menjadi pesan ramah pengguna.
+  - Fungsi `getNextAvailableOrder()`: kalkulasi slot urutan kosong pertama (rentang 1..5).
+- **Testing & QA**:
+  - Menambahkan unit test suite baru `tests/lib/komponen-nilai.test.ts` (12 tests) memvalidasi keunikan urutan, pemetaan error humanis, dan kalkulasi slot urutan berikutnya.
+  - Seluruh 27 test suites lulus 100% (165 tests passed).
 - **PRD**:
-  - Memperbarui `doc/PRD.md` Bab 8 spesifikasi stabilitas fokus modal dan form control.
+  - Memperbarui `doc/PRD.md` Bab 3.5, Bab 7, dan Bab 8 dengan spesifikasi validasi dan humanisasi error komponen nilai.
+
 
 

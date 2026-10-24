@@ -23,6 +23,11 @@ import { useConfirm } from '@/components/ui/ConfirmDialog';
 import { useAuth } from '@/hooks/useAuth';
 import { useRole } from '@/hooks/useRole';
 import { formatNumber } from '@/lib/utils';
+import {
+  validateKomponenUrutan,
+  getHumanizedKomponenError,
+  getNextAvailableOrder,
+} from '@/lib/komponen-nilai';
 import type { Siswa, Kelas, Mapel, Semester, KomponenNilai, GuruKelas, GuruMapel } from '@/lib/types';
 
 export default function InputNilaiPage() {
@@ -490,6 +495,13 @@ export default function InputNilaiPage() {
   const handleSaveComponent = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!compName.trim() || !selectedMapelId || !activeSemester) return;
+
+    const validation = validateKomponenUrutan(compOrder, komponenList, editingComp?.id);
+    if (!validation.valid) {
+      toastError('Urutan Sudah Digunakan', validation.error || 'Nomor urutan sudah digunakan.');
+      return;
+    }
+
     setSavingComp(true);
 
     try {
@@ -530,7 +542,8 @@ export default function InputNilaiPage() {
       setEditingComp(null);
       fetchKomponen();
     } catch (err: unknown) {
-      toastError('Gagal Menyimpan Komponen', (err as Error).message);
+      const humanized = getHumanizedKomponenError(err, compOrder);
+      toastError(humanized.title, humanized.message);
     } finally {
       setSavingComp(false);
     }
@@ -597,7 +610,7 @@ export default function InputNilaiPage() {
             onClick={() => {
               setEditingComp(null);
               setCompName('');
-              setCompOrder(komponenList.length + 1);
+              setCompOrder(getNextAvailableOrder(komponenList));
               setIsCompModalOpen(true);
             }}
           >
@@ -795,13 +808,15 @@ export default function InputNilaiPage() {
                   label="Urutan Tampil"
                   value={compOrder}
                   onChange={(e) => setCompOrder(parseInt(e.target.value, 10))}
-                  options={[
-                    { value: 1, label: 'Urutan 1' },
-                    { value: 2, label: 'Urutan 2' },
-                    { value: 3, label: 'Urutan 3' },
-                    { value: 4, label: 'Urutan 4' },
-                    { value: 5, label: 'Urutan 5' },
-                  ]}
+                  options={[1, 2, 3, 4, 5].map((num) => {
+                    const existing = komponenList.find(
+                      (c) => c.urutan === num && (!editingComp || c.id !== editingComp.id)
+                    );
+                    return {
+                      value: num,
+                      label: existing ? `Urutan ${num} (Dipakai: ${existing.nama})` : `Urutan ${num}`,
+                    };
+                  })}
                 />
               </div>
             </div>
@@ -815,7 +830,7 @@ export default function InputNilaiPage() {
                   onClick={() => {
                     setEditingComp(null);
                     setCompName('');
-                    setCompOrder(komponenList.length + 1);
+                    setCompOrder(getNextAvailableOrder(komponenList));
                   }}
                 >
                   Batal Edit
