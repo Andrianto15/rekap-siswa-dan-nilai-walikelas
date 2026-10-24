@@ -139,12 +139,12 @@ export default function UsersAdminPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
+            <div className="p-2 bg-[#4682b4]/10 text-[#4682b4] dark:bg-[#4682b4]/20 rounded-xl">
               <UserCheck className="w-5 h-5" />
             </div>
-            <h1 className="text-xl font-bold text-slate-900">Manajemen Pengguna</h1>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">Manajemen Pengguna</h1>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Kelola akun guru dan administrator sistem.
           </p>
         </div>
@@ -178,21 +178,21 @@ export default function UsersAdminPage() {
           ) : (
             users.map((u, index) => (
               <TableRow key={u.id}>
-                <TableCell className="font-semibold text-slate-400">{index + 1}</TableCell>
+                <TableCell className="font-semibold text-slate-500 dark:text-slate-400">{index + 1}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center justify-center">
                       {u.full_name ? u.full_name.charAt(0).toUpperCase() : <User className="w-4 h-4" />}
                     </div>
-                    <span className="font-semibold text-slate-900">{u.full_name}</span>
+                    <span className="font-semibold text-slate-900 dark:text-slate-100">{u.full_name}</span>
                   </div>
                 </TableCell>
-                <TableCell className="text-slate-600 font-mono text-xs">{u.email || '-'}</TableCell>
+                <TableCell className="text-slate-600 dark:text-slate-300 font-mono text-xs">{u.email || '-'}</TableCell>
                 <TableCell>
                   <Badge variant={u.role === 'admin' ? 'info' : 'default'} size="sm">
                     {u.role === 'admin' ? (
                       <span className="flex items-center gap-1">
-                        <Shield className="w-3 h-3 text-blue-600" />
+                        <Shield className="w-3 h-3 text-[#4682b4]" />
                         Admin
                       </span>
                     ) : (
@@ -200,7 +200,7 @@ export default function UsersAdminPage() {
                     )}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-xs text-slate-500">
+                <TableCell className="text-xs text-slate-500 dark:text-slate-400">
                   {u.created_at ? formatDate(u.created_at) : '-'}
                 </TableCell>
                 <TableCell className="text-right">
@@ -208,7 +208,7 @@ export default function UsersAdminPage() {
                     <button
                       type="button"
                       onClick={() => openModal(u)}
-                      className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                      className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
                       title="Edit Pengguna"
                       aria-label={`Edit pengguna ${u.full_name}`}
                     >
@@ -217,7 +217,7 @@ export default function UsersAdminPage() {
                     <button
                       type="button"
                       onClick={() => handleDeleteUser(u.id, u.full_name)}
-                      className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
+                      className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
                       title="Hapus Pengguna"
                       aria-label={`Hapus pengguna ${u.full_name}`}
                     >

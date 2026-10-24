@@ -146,9 +146,21 @@
 - **Integrasi Layout Dashboard (`src/app/(dashboard)/layout.tsx`)**:
   - Mengintegrasikan `<Footer />` ke dalam layout utama dashboard sehingga tampil secara konsisten di seluruh halaman aplikasi pascalogin (Dashboard, Siswa, Kehadiran, Nilai, dan Admin).
   - Menyesuaikan padding bawah area `<main>` (`pb-6 md:pb-8`) untuk menjaga ritme vertikal ruang konten sebelum footer.
-- **Testing & QA (`tests/components/footer.test.tsx`, `tests/components/dashboard-layout.test.tsx`)**:
-  - Menambahkan test suite baru untuk `Footer` (verifikasi semantik footer, hak cipta, lisensi MIT, versi, dan class clearance navigasi mobile).
-  - Menambahkan test suite baru untuk `DashboardLayout` (verifikasi rendering terpadu header, konten halaman, dan footer pascalogin).
-  - Seluruh 31 test suites lulus 100% (173 tests passed).
+## Versi 0.3.30
+### Mitigasi Komprehensif Audit Impeccable (A11y, Theming, Ergonomi Mobile, & Optimasi Performa)
+- **Aksesibilitas Label Kontrol (`aria-label`)**:
+  - Menambahkan atribut `aria-label` deskriptif pada seluruh kontrol `<Select>` filter (`aria-label="Pilih Kelas"`, `"Pilih Mata Pelajaran"`, `"Pilih Semester"`, `"Pilih Guru yang Ingin Disupervisi"`) di `/nilai`, `/kehadiran`, `/nilai/input`, `/kehadiran/input`, `/admin/data`, dan `/admin/mapping`.
+- **Target Sentuh Mobile Checkbox Seleksi Siswa (`/siswa`)**:
+  - Membungkus checkbox tabel (select-all di header dan checkbox baris data siswa) dalam pembungkus ergonomis minimum 44x44px (`min-w-[44px] min-h-[44px] flex items-center justify-center`) sesuai standar WCAG 2.5.5 tanpa merusak kerapian kolom tabel.
+- **Standarisasi Kontras Teks WCAG 2.1 AA**:
+  - Mengeliminasi teks kontras rendah (`text-slate-400`, rasio ~2.8:1) pada latar terang menjadi `text-slate-500` (rasio 4.6:1) dan mempertahankan `dark:text-slate-400` pada mode gelap di `Sidebar`, `Footer`, `login`, `TableEmpty`, serta baris tabel data.
+- **Konsistensi Theming Dark Mode & Brand Primer Steel Blue (`#4682b4`)**:
+  - Menyelaraskan seluruh kartu ringkasan, bilah filter, dan header halaman admin (`/nilai`, `/kehadiran`, `/admin/kelas`, `/admin/mapel`, `/admin/periode`, `/admin/mapping`, `/admin/users`) dengan token tema gelap (`dark:bg-slate-900`, `dark:border-slate-800`, `dark:text-slate-100`) dan aksen brand primer.
+- **Optimalisasi Klien Supabase (Admin Pages)**:
+  - Membungkus `createClient()` dengan React `useMemo(() => createClient(), [])` pada seluruh halaman admin (`admin/kelas`, `admin/mapel`, `admin/periode`, `admin/mapping`) untuk mencegah instansiasi berulang dan kebocoran listener pada siklus render.
+- **Testing & QA (`tests/components/audit-mitigations.test.tsx`)**:
+  - Menambahkan test suite baru memvalidasi standar kontras teks, atribut `aria-label` pada select, dan dimensi target sentuh mobile 44x44px.
+  - Seluruh 32 test suites lulus 100% (178 tests passed).
 - **PRD (`doc/PRD.md`)**:
-  - Memperbarui Bab 7 (Testing Strategy) dan Bab 8 (UI/UX Standards) dengan spesifikasi komponen footer dan layout responsif.
+  - Memperbarui Bab 7 dan Bab 8 dengan spesifikasi mitigasi audit desain, aksesibilitas, dan performa klien.
+

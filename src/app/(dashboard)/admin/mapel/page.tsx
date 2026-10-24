@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { BookOpen, Plus, Edit2, Trash2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/Button';
@@ -12,7 +12,7 @@ import { useConfirm } from '@/components/ui/ConfirmDialog';
 import type { Mapel } from '@/lib/types';
 
 export default function MapelAdminPage() {
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const { success: toastSuccess, error: toastError } = useToast();
   const confirm = useConfirm();
 
@@ -122,12 +122,12 @@ export default function MapelAdminPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
+            <div className="p-2 bg-[#4682b4]/10 text-[#4682b4] dark:bg-[#4682b4]/20 rounded-xl">
               <BookOpen className="w-5 h-5" />
             </div>
-            <h1 className="text-xl font-bold text-slate-900">Mata Pelajaran</h1>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">Mata Pelajaran</h1>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Daftar mata pelajaran untuk kurikulum sekolah.
           </p>
         </div>
@@ -158,13 +158,13 @@ export default function MapelAdminPage() {
           ) : (
             mapelList.map((m, index) => (
               <TableRow key={m.id}>
-                <TableCell className="font-semibold text-slate-400">{index + 1}</TableCell>
+                <TableCell className="font-semibold text-slate-500 dark:text-slate-400">{index + 1}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 font-bold text-xs flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 font-bold text-xs flex items-center justify-center">
                       <BookOpen className="w-4 h-4" />
                     </div>
-                    <span className="font-semibold text-slate-900">{m.nama}</span>
+                    <span className="font-semibold text-slate-900 dark:text-slate-100">{m.nama}</span>
                   </div>
                 </TableCell>
                 <TableCell className="text-right">
@@ -172,7 +172,7 @@ export default function MapelAdminPage() {
                     <button
                       type="button"
                       onClick={() => openModal(m)}
-                      className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                      className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
                       title="Edit Nama Mapel"
                       aria-label={`Edit mata pelajaran ${m.nama}`}
                     >
@@ -181,7 +181,7 @@ export default function MapelAdminPage() {
                     <button
                       type="button"
                       onClick={() => handleDeleteMapel(m.id, m.nama)}
-                      className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
+                      className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
                       title="Hapus Mapel"
                       aria-label={`Hapus mata pelajaran ${m.nama}`}
                     >

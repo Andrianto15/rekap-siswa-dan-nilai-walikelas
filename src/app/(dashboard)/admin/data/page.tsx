@@ -394,13 +394,14 @@ export default function AdminViewAllDataPage() {
       </div>
 
       {/* Teacher & Semester Selector Card */}
-      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+      <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Pilih Guru yang Ingin Disupervisi:
             </label>
             <Select
+              aria-label="Pilih Guru yang Ingin Disupervisi"
               value={selectedTeacherId}
               onChange={(e) => setSelectedTeacherId(e.target.value)}
               options={teachers.map((t) => ({
@@ -411,10 +412,10 @@ export default function AdminViewAllDataPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Semester Aktif:
             </label>
-            <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800">
+            <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200">
               {activeSemester
                 ? `Semester ${activeSemester.tipe.toUpperCase()} (${activeSemester.tahun_ajaran?.nama || ''})`
                 : 'Memuat...'}
@@ -574,12 +575,13 @@ export default function AdminViewAllDataPage() {
       {/* TAB 2: NILAI */}
       {activeTab === 'nilai' && (
         <div className="space-y-4">
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-4">
+          <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-wrap items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-slate-600">Pilih Mapel:</span>
+                <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">Pilih Mapel:</span>
                 <div className="w-44">
                   <Select
+                    aria-label="Pilih Mata Pelajaran"
                     value={selectedMapelId}
                     onChange={(e) => setSelectedMapelId(e.target.value)}
                     options={teacherMapels.map((m) => ({
@@ -591,9 +593,10 @@ export default function AdminViewAllDataPage() {
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-slate-600">Pilih Kelas:</span>
+                <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">Pilih Kelas:</span>
                 <div className="w-36">
                   <Select
+                    aria-label="Pilih Kelas"
                     value={selectedGradingKelasId}
                     onChange={(e) => setSelectedGradingKelasId(e.target.value)}
                     options={gradingClasses.map((k) => ({

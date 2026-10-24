@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { GitFork, Plus, Trash2, School, BookOpen, User, CheckCircle2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/Button';
@@ -12,7 +12,7 @@ import { useConfirm } from '@/components/ui/ConfirmDialog';
 import type { Profile, Kelas, Mapel, Semester, GuruKelas, GuruMapel } from '@/lib/types';
 
 export default function MappingAdminPage() {
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const { success: toastSuccess, error: toastError } = useToast();
   const confirm = useConfirm();
 
@@ -290,12 +290,12 @@ export default function MappingAdminPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
+            <div className="p-2 bg-[#4682b4]/10 text-[#4682b4] dark:bg-[#4682b4]/20 rounded-xl">
               <GitFork className="w-5 h-5" />
             </div>
-            <h1 className="text-xl font-bold text-slate-900">Mapping Guru</h1>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">Mapping Guru</h1>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Petakan guru sebagai wali kelas atau pengampu mata pelajaran pada tiap semester.
           </p>
         </div>
@@ -303,6 +303,7 @@ export default function MappingAdminPage() {
         {/* Semester Filter */}
         <div className="w-full sm:w-64">
           <Select
+            aria-label="Pilih Semester"
             value={selectedSemesterId}
             onChange={(e) => setSelectedSemesterId(e.target.value)}
             options={semesters.map((s) => ({
@@ -314,14 +315,14 @@ export default function MappingAdminPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-slate-200">
+      <div className="flex border-b border-slate-200 dark:border-slate-800">
         <button
           type="button"
           onClick={() => setActiveTab('wali')}
           className={`flex items-center gap-2 px-5 py-3 text-sm font-semibold border-b-2 transition cursor-pointer ${
             activeTab === 'wali'
-              ? 'border-blue-600 text-blue-600'
-              : 'border-transparent text-slate-500 hover:text-slate-900'
+              ? 'border-[#4682b4] text-[#4682b4]'
+              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
           }`}
         >
           <School className="w-4 h-4" />
@@ -333,8 +334,8 @@ export default function MappingAdminPage() {
           onClick={() => setActiveTab('mapel')}
           className={`flex items-center gap-2 px-5 py-3 text-sm font-semibold border-b-2 transition cursor-pointer ${
             activeTab === 'mapel'
-              ? 'border-blue-600 text-blue-600'
-              : 'border-transparent text-slate-500 hover:text-slate-900'
+              ? 'border-[#4682b4] text-[#4682b4]'
+              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
           }`}
         >
           <BookOpen className="w-4 h-4" />
@@ -346,7 +347,7 @@ export default function MappingAdminPage() {
       {activeTab === 'wali' && (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Satu guru menjadi wali kelas untuk satu rombel kelas per semester.
             </p>
             <Button
@@ -380,17 +381,17 @@ export default function MappingAdminPage() {
               ) : (
                 waliMappings.map((item, index) => (
                   <TableRow key={item.id}>
-                    <TableCell className="font-semibold text-slate-400">{index + 1}</TableCell>
+                    <TableCell className="font-semibold text-slate-500 dark:text-slate-400">{index + 1}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-700 font-bold text-xs flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-bold text-xs flex items-center justify-center">
                           <User className="w-4 h-4" />
                         </div>
-                        <span className="font-semibold text-slate-900">{item.guru?.full_name || 'Guru'}</span>
+                        <span className="font-semibold text-slate-900 dark:text-slate-100">{item.guru?.full_name || 'Guru'}</span>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 font-bold text-xs border border-emerald-200">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 font-bold text-xs border border-emerald-200 dark:border-emerald-800/60">
                         Kelas {item.kelas?.nama}
                       </span>
                     </TableCell>
@@ -398,7 +399,7 @@ export default function MappingAdminPage() {
                       <button
                         type="button"
                         onClick={() => handleDeleteWali(item.id)}
-                        className="p-2 min-h-[44px] min-w-[44px] inline-flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
+                        className="p-2 min-h-[44px] min-w-[44px] inline-flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
                         title="Hapus Penugasan"
                         aria-label={`Hapus penugasan wali kelas ${item.guru?.full_name || 'Guru'} untuk kelas ${item.kelas?.nama || ''}`.trim()}
                       >
@@ -417,7 +418,7 @@ export default function MappingAdminPage() {
       {activeTab === 'mapel' && (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Guru dapat mengampu satu atau lebih mata pelajaran pada semester ini.
             </p>
             <Button
@@ -451,17 +452,17 @@ export default function MappingAdminPage() {
               ) : (
                 mapelMappings.map((item, index) => (
                   <TableRow key={item.id}>
-                    <TableCell className="font-semibold text-slate-400">{index + 1}</TableCell>
+                    <TableCell className="font-semibold text-slate-500 dark:text-slate-400">{index + 1}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full bg-[#4682b4]/10 text-[#4682b4] font-bold text-xs flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-full bg-[#4682b4]/10 text-[#4682b4] dark:bg-[#4682b4]/20 font-bold text-xs flex items-center justify-center">
                           <User className="w-4 h-4" />
                         </div>
-                        <span className="font-semibold text-slate-900">{item.guru?.full_name || 'Guru'}</span>
+                        <span className="font-semibold text-slate-900 dark:text-slate-100">{item.guru?.full_name || 'Guru'}</span>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-[#4682b4]/10 text-[#4682b4] font-bold text-xs border border-[#4682b4]/20">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-[#4682b4]/10 text-[#4682b4] dark:bg-[#4682b4]/20 dark:text-[#4682b4] font-bold text-xs border border-[#4682b4]/20 dark:border-[#4682b4]/30">
                         {item.mapel?.nama}
                       </span>
                     </TableCell>
@@ -469,9 +470,9 @@ export default function MappingAdminPage() {
                       <button
                         type="button"
                         onClick={() => handleDeleteMapel(item.id)}
-                        className="p-1.5 min-h-[44px] min-w-[44px] inline-flex items-center justify-center text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition cursor-pointer"
+                        className="p-1.5 min-h-[44px] min-w-[44px] inline-flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
                         title="Hapus Penugasan"
-                        aria-label="Hapus Penugasan"
+                        aria-label={`Hapus penugasan mapel ${item.mapel?.nama || ''} untuk ${item.guru?.full_name || 'Guru'}`.trim()}
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>

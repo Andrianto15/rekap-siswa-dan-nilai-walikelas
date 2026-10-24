@@ -58,7 +58,7 @@ export function TableCell({ className, children, ...props }: React.TdHTMLAttribu
 export function TableEmpty({ colSpan, message = 'Tidak ada data ditemukan.' }: { colSpan: number; message?: string }) {
   return (
     <tr>
-      <td colSpan={colSpan} className="text-center py-10 text-slate-400 dark:text-slate-500 text-sm">
+      <td colSpan={colSpan} className="text-center py-10 text-slate-500 dark:text-slate-400 text-sm">
         {message}
       </td>
     </tr>

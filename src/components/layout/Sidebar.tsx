@@ -51,14 +51,14 @@ export function Sidebar() {
         </div>
         <div>
           <h1 className="text-sm font-bold text-slate-900 dark:text-slate-100 leading-tight">Rekap Siswa</h1>
-          <p className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Wali Kelas & Guru</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Wali Kelas & Guru</p>
         </div>
       </div>
 
       {/* Nav List */}
       <div className="flex-1 overflow-y-auto px-4 py-5 space-y-6">
         <div>
-          <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">
+          <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
             Menu Utama
           </p>
           <nav className="space-y-1">

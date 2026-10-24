@@ -630,12 +630,13 @@ export default function InputNilaiPage() {
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-slate-600">Kelas:</span>
+            <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">Kelas:</span>
             <div className="w-36">
               <Select
+                aria-label="Pilih Kelas"
                 value={selectedKelasId}
                 onChange={(e) => setSelectedKelasId(e.target.value)}
                 options={kelasList.map((k) => ({
@@ -647,9 +648,10 @@ export default function InputNilaiPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-slate-600">Mata Pelajaran:</span>
+            <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">Mata Pelajaran:</span>
             <div className="w-48">
               <Select
+                aria-label="Pilih Mata Pelajaran"
                 value={selectedMapelId}
                 onChange={(e) => setSelectedMapelId(e.target.value)}
                 options={mapelList.map((m) => ({

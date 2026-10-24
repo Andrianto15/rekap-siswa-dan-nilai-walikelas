@@ -499,12 +499,12 @@ export default function SiswaPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
+            <div className="p-2 bg-[#4682b4]/10 dark:bg-[#4682b4]/20 text-[#4682b4] dark:text-[#6ba3ce] rounded-xl">
               <Users className="w-5 h-5" />
             </div>
-            <h1 className="text-xl font-bold text-slate-900">Kelola Data Siswa</h1>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">Kelola Data Siswa</h1>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Daftar siswa aktif di kelas binaan pada semester berjalan.
           </p>
         </div>
@@ -515,7 +515,7 @@ export default function SiswaPage() {
             <Button
               variant="outline"
               size="sm"
-              className="text-rose-600 hover:text-rose-700 hover:bg-rose-50 border-rose-200"
+              className="text-rose-600 hover:text-rose-700 hover:bg-rose-50 border-rose-200 dark:border-rose-900/60"
               leftIcon={<Trash2 className="w-4 h-4 text-rose-500" />}
               disabled={loading || deletingBulk}
               onClick={handleDeleteAllInClass}
@@ -527,7 +527,7 @@ export default function SiswaPage() {
           <Button
             variant="outline"
             size="sm"
-            leftIcon={<FileSpreadsheet className="w-4 h-4 text-emerald-600" />}
+            leftIcon={<FileSpreadsheet className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />}
             onClick={() => {
               setExcelFile(null);
               setParsedList([]);
@@ -549,9 +549,9 @@ export default function SiswaPage() {
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
         <div className="flex items-center gap-3 w-full sm:w-auto">
-          <span className="text-xs font-semibold text-slate-600 shrink-0">Pilih Kelas:</span>
+          <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 shrink-0">Pilih Kelas:</span>
           <div className="w-full sm:w-48">
             <Select
               aria-label="Pilih Kelas"
@@ -580,15 +580,15 @@ export default function SiswaPage() {
 
       {/* Selection / Bulk Action Bar */}
       {selectedIds.length > 0 && (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-blue-50/90 border border-blue-200 p-3 sm:px-4 sm:py-3 rounded-2xl shadow-xs">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-blue-50/90 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 p-3 sm:px-4 sm:py-3 rounded-2xl shadow-xs">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center justify-center min-w-6 h-6 px-1.5 rounded-full text-xs font-bold bg-blue-600 text-white">
+            <span className="inline-flex items-center justify-center min-w-6 h-6 px-1.5 rounded-full text-xs font-bold bg-[#4682b4] text-white">
               {selectedIds.length}
             </span>
-            <span className="text-xs font-semibold text-blue-950">
+            <span className="text-xs font-semibold text-blue-950 dark:text-blue-100">
               siswa dipilih
             </span>
-            <span className="text-xs text-blue-600 hidden sm:inline">
+            <span className="text-xs text-[#4682b4] dark:text-[#6ba3ce] hidden sm:inline">
               (dari total {siswaList.length} siswa)
             </span>
           </div>
@@ -623,12 +623,12 @@ export default function SiswaPage() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-12 text-center">
-              <div className="flex items-center justify-center">
+            <TableHead className="w-14 text-center p-0">
+              <div className="flex items-center justify-center min-w-[44px] min-h-[44px]">
                 <input
                   type="checkbox"
                   aria-label="Pilih semua siswa"
-                  className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
+                  className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-[#4682b4] focus:ring-[#4682b4] cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
                   checked={isAllSelected}
                   disabled={loading || filteredSiswa.length === 0}
                   ref={(el) => {
@@ -664,42 +664,42 @@ export default function SiswaPage() {
               return (
                 <TableRow
                   key={item.id}
-                  className={isSelected ? 'bg-blue-50/40 hover:bg-blue-50/70' : undefined}
+                  className={isSelected ? 'bg-blue-50/40 dark:bg-blue-950/20 hover:bg-blue-50/70 dark:hover:bg-blue-950/30' : undefined}
                 >
-                  <TableCell className="text-center">
-                    <div className="flex items-center justify-center">
+                  <TableCell className="text-center p-0">
+                    <div className="flex items-center justify-center min-w-[44px] min-h-[44px]">
                       <input
                         type="checkbox"
                         aria-label={`Pilih siswa ${item.nama}`}
-                        className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                        className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-[#4682b4] focus:ring-[#4682b4] cursor-pointer"
                         checked={isSelected}
                         onChange={() => handleToggleSelectSiswa(item.id)}
                       />
                     </div>
                   </TableCell>
-                  <TableCell className="font-semibold text-slate-400">{index + 1}</TableCell>
-                  <TableCell className="font-mono text-xs text-slate-600">
+                  <TableCell className="font-semibold text-slate-500 dark:text-slate-400">{index + 1}</TableCell>
+                  <TableCell className="font-mono text-xs text-slate-600 dark:text-slate-400">
                     {item.nisn || '-'}
                   </TableCell>
-                  <TableCell className="font-mono text-xs font-semibold text-slate-700">
+                  <TableCell className="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300">
                     {item.nis}
                   </TableCell>
                   <TableCell>
-                    <span className="font-semibold text-slate-900">{item.nama}</span>
+                    <span className="font-semibold text-slate-900 dark:text-slate-100">{item.nama}</span>
                   </TableCell>
                   <TableCell className="text-center">
                     {item.jenis_kelamin ? (
                       <span
                         className={`inline-flex items-center justify-center px-2 py-0.5 rounded-md text-xs font-bold ${
                           item.jenis_kelamin === 'L'
-                            ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                            : 'bg-pink-50 text-pink-700 border border-pink-200'
+                            ? 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900/60'
+                            : 'bg-pink-50 dark:bg-pink-950/40 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-900/60'
                         }`}
                       >
                         {item.jenis_kelamin}
                       </span>
                     ) : (
-                      <span className="text-slate-300">-</span>
+                      <span className="text-slate-400 dark:text-slate-500">-</span>
                     )}
                   </TableCell>
                   <TableCell className="text-right">

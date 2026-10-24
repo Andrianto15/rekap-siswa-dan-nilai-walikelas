@@ -317,14 +317,14 @@ export default function RekapKehadiranPage() {
   return (
     <div className="space-y-6">
       {/* Sub-Menu Tabs Switcher */}
-      <div className="flex bg-slate-100 p-1.5 rounded-2xl max-w-lg border border-slate-200/80">
+      <div className="flex bg-slate-100 dark:bg-slate-800 p-1.5 rounded-2xl max-w-lg border border-slate-200/80 dark:border-slate-700/80">
         <button
           type="button"
           onClick={() => setSubMode('mapel')}
           className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
             subMode === 'mapel'
-              ? 'bg-white text-blue-600 shadow-sm'
-              : 'text-slate-600 hover:text-slate-900'
+              ? 'bg-white dark:bg-slate-700 text-[#4682b4] dark:text-[#6ba3ce] shadow-sm'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
           }`}
         >
           <BookOpen className="w-4 h-4 shrink-0" />
@@ -335,8 +335,8 @@ export default function RekapKehadiranPage() {
           onClick={() => setSubMode('keseluruhan')}
           className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
             subMode === 'keseluruhan'
-              ? 'bg-white text-blue-600 shadow-sm'
-              : 'text-slate-600 hover:text-slate-900'
+              ? 'bg-white dark:bg-slate-700 text-[#4682b4] dark:text-[#6ba3ce] shadow-sm'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
           }`}
         >
           <Layers className="w-4 h-4 shrink-0" />
@@ -348,14 +348,14 @@ export default function RekapKehadiranPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
+            <div className="p-2 bg-[#4682b4]/10 dark:bg-[#4682b4]/20 text-[#4682b4] dark:text-[#6ba3ce] rounded-xl">
               <CalendarCheck2 className="w-5 h-5" />
             </div>
-            <h1 className="text-xl font-bold text-slate-900">
+            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
               {subMode === 'mapel' ? 'Rekap Kehadiran Mapel' : 'Rekap Kehadiran Keseluruhan'}
             </h1>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             {subMode === 'mapel'
               ? `Rekapitulasi presensi ketidakhadiran siswa khusus mapel ${currentMapelName || ''}.`
               : 'Rekapitulasi presensi ketidakhadiran siswa umum (tanpa memandang mapel).'}
@@ -367,7 +367,7 @@ export default function RekapKehadiranPage() {
           <Button
             variant="outline"
             size="sm"
-            leftIcon={<Download className="w-4 h-4 text-slate-600" />}
+            leftIcon={<Download className="w-4 h-4 text-slate-600 dark:text-slate-300" />}
             onClick={handleExportExcel}
           >
             Unduh Excel
@@ -387,53 +387,53 @@ export default function RekapKehadiranPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-[#4682b4]/10 dark:bg-[#4682b4]/20 text-[#4682b4] dark:text-[#6ba3ce] flex items-center justify-center font-bold">
             <UserCheck className="w-5 h-5" />
           </div>
           <div>
-            <p className="text-xs text-slate-500 font-medium">Total Siswa</p>
-            <p className="text-lg font-bold text-slate-900">{siswaList.length}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Total Siswa</p>
+            <p className="text-lg font-bold text-slate-900 dark:text-slate-100">{siswaList.length}</p>
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
             S
           </div>
           <div>
-            <p className="text-xs text-slate-500 font-medium">Total Sakit</p>
-            <p className="text-lg font-bold text-amber-600">{totalSakit}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Total Sakit</p>
+            <p className="text-lg font-bold text-amber-600 dark:text-amber-400">{totalSakit}</p>
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-[#4682b4]/10 dark:bg-[#4682b4]/20 text-[#4682b4] dark:text-[#6ba3ce] flex items-center justify-center font-bold">
             I
           </div>
           <div>
-            <p className="text-xs text-slate-500 font-medium">Total Izin</p>
-            <p className="text-lg font-bold text-blue-600">{totalIzin}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Total Izin</p>
+            <p className="text-lg font-bold text-[#4682b4] dark:text-[#6ba3ce]">{totalIzin}</p>
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold">
             A
           </div>
           <div>
-            <p className="text-xs text-slate-500 font-medium">Total Alpa</p>
-            <p className="text-lg font-bold text-rose-600">{totalAlpa}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Total Alpa</p>
+            <p className="text-lg font-bold text-rose-600 dark:text-rose-400">{totalAlpa}</p>
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold">
             D
           </div>
           <div>
-            <p className="text-xs text-slate-500 font-medium">Total Dispen</p>
-            <p className="text-lg font-bold text-purple-600">{totalDispen}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Total Dispen</p>
+            <p className="text-lg font-bold text-teal-600 dark:text-teal-400">{totalDispen}</p>
           </div>
         </div>
       </div>
@@ -573,57 +573,57 @@ export default function RekapKehadiranPage() {
           ) : (
             rekapData.map((item, index) => (
               <TableRow key={item.siswa.id}>
-                <TableCell className="font-semibold text-slate-400">{index + 1}</TableCell>
-                <TableCell className="font-mono text-xs text-slate-600">
+                <TableCell className="font-semibold text-slate-500 dark:text-slate-400">{index + 1}</TableCell>
+                <TableCell className="font-mono text-xs text-slate-600 dark:text-slate-400">
                   {item.siswa.nisn || '-'}
                 </TableCell>
-                <TableCell className="font-mono text-xs font-semibold text-slate-700">
+                <TableCell className="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300">
                   {item.siswa.nis}
                 </TableCell>
                 <TableCell>
-                  <span className="font-semibold text-slate-900">{item.siswa.nama}</span>
+                  <span className="font-semibold text-slate-900 dark:text-slate-100">{item.siswa.nama}</span>
                 </TableCell>
                 <TableCell className="text-center">
                   {item.sakit > 0 ? (
-                    <span className="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md">
+                    <span className="font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-md">
                       {item.sakit}
                     </span>
                   ) : (
-                    <span className="text-slate-300">-</span>
+                    <span className="text-slate-400 dark:text-slate-500">-</span>
                   )}
                 </TableCell>
                 <TableCell className="text-center">
                   {item.izin > 0 ? (
-                    <span className="font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md">
+                    <span className="font-bold text-[#4682b4] dark:text-[#6ba3ce] bg-[#4682b4]/10 dark:bg-[#4682b4]/20 px-2 py-0.5 rounded-md">
                       {item.izin}
                     </span>
                   ) : (
-                    <span className="text-slate-300">-</span>
+                    <span className="text-slate-400 dark:text-slate-500">-</span>
                   )}
                 </TableCell>
                 <TableCell className="text-center">
                   {item.alpa > 0 ? (
-                    <span className="font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md">
+                    <span className="font-bold text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 px-2 py-0.5 rounded-md">
                       {item.alpa}
                     </span>
                   ) : (
-                    <span className="text-slate-300">-</span>
+                    <span className="text-slate-400 dark:text-slate-500">-</span>
                   )}
                 </TableCell>
                 <TableCell className="text-center">
                   {item.dispen > 0 ? (
-                    <span className="font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-md">
+                    <span className="font-bold text-teal-700 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/40 px-2 py-0.5 rounded-md">
                       {item.dispen}
                     </span>
                   ) : (
-                    <span className="text-slate-300">-</span>
+                    <span className="text-slate-400 dark:text-slate-500">-</span>
                   )}
                 </TableCell>
-                <TableCell className="text-center font-bold text-slate-800">
+                <TableCell className="text-center font-bold text-slate-800 dark:text-slate-200">
                   {item.totalAbsen > 0 ? (
                     `${item.totalAbsen} hari`
                   ) : (
-                    <span className="text-emerald-600 font-normal text-xs">100% Hadir</span>
+                    <span className="text-emerald-600 dark:text-emerald-400 font-normal text-xs">100% Hadir</span>
                   )}
                 </TableCell>
                 <TableCell className="text-right">

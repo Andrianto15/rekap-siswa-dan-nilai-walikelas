@@ -11,7 +11,7 @@ export function Footer() {
           <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">
             Rekap Siswa &amp; Nilai Wali Kelas
           </p>
-          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
             &copy; {currentYear === 2026 ? '2026' : `2026 - ${currentYear}`} Andrianto Nur Iskandar. Hak cipta dilindungi undang-undang.
           </p>
         </div>

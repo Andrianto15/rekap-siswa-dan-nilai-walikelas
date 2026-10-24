@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { School, Plus, Edit2, Trash2, Users } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/Button';
@@ -16,7 +16,7 @@ interface KelasWithCount extends Kelas {
 }
 
 export default function KelasAdminPage() {
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const { success: toastSuccess, error: toastError } = useToast();
   const confirm = useConfirm();
 
@@ -144,12 +144,12 @@ export default function KelasAdminPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
+            <div className="p-2 bg-[#4682b4]/10 dark:bg-[#4682b4]/20 text-[#4682b4] dark:text-[#6ba3ce] rounded-xl">
               <School className="w-5 h-5" />
             </div>
-            <h1 className="text-xl font-bold text-slate-900">Kelola Kelas</h1>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">Kelola Kelas</h1>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Tambah, ubah nama, atau hapus data kelas (rombongan belajar).
           </p>
         </div>
@@ -181,13 +181,13 @@ export default function KelasAdminPage() {
           ) : (
             kelasList.map((k, index) => (
               <TableRow key={k.id}>
-                <TableCell className="font-semibold text-slate-400">{index + 1}</TableCell>
+                <TableCell className="font-semibold text-slate-500 dark:text-slate-400">{index + 1}</TableCell>
                 <TableCell>
-                  <span className="font-semibold text-slate-900">Kelas {k.nama}</span>
+                  <span className="font-semibold text-slate-900 dark:text-slate-100">Kelas {k.nama}</span>
                 </TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-1.5 text-xs text-slate-600">
-                    <Users className="w-4 h-4 text-slate-400" />
+                  <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400">
+                    <Users className="w-4 h-4 text-slate-400 dark:text-slate-500" />
                     <span>{k.siswaCount ?? 0} siswa</span>
                   </div>
                 </TableCell>

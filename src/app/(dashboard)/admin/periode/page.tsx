@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { CalendarDays, Plus, CheckCircle2, Trash2, Edit2, Check } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/Button';
@@ -17,7 +17,7 @@ interface TahunAjaranWithSemesters extends TahunAjaran {
 }
 
 export default function PeriodeAdminPage() {
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const { success: toastSuccess, error: toastError } = useToast();
   const confirm = useConfirm();
 
@@ -283,12 +283,12 @@ export default function PeriodeAdminPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
+            <div className="p-2 bg-[#4682b4]/10 text-[#4682b4] dark:bg-[#4682b4]/20 rounded-xl">
               <CalendarDays className="w-5 h-5" />
             </div>
-            <h1 className="text-xl font-bold text-slate-900">Tahun Ajaran & Semester</h1>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">Tahun Ajaran & Semester</h1>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Kelola periode kalender akademik dan tentukan semester yang sedang aktif.
           </p>
         </div>
@@ -304,9 +304,9 @@ export default function PeriodeAdminPage() {
 
       {/* Content */}
       {loading ? (
-        <div className="p-12 text-center text-slate-400 text-sm">Memuat data periode...</div>
+        <div className="p-12 text-center text-slate-500 dark:text-slate-400 text-sm">Memuat data periode...</div>
       ) : periodes.length === 0 ? (
-        <div className="p-12 text-center bg-white rounded-2xl border border-slate-200 text-slate-500">
+        <div className="p-12 text-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400">
           Belum ada tahun ajaran. Silakan klik tombol di atas untuk menambahkan.
         </div>
       ) : (
@@ -314,12 +314,12 @@ export default function PeriodeAdminPage() {
           {periodes.map((tahun) => (
             <div
               key={tahun.id}
-              className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden"
+              className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden"
             >
               {/* Tahun Ajaran Card Header */}
-              <div className="p-5 bg-slate-50/70 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="p-5 bg-slate-50/70 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <span className="text-base font-bold text-slate-900">{tahun.nama}</span>
+                  <span className="text-base font-bold text-slate-900 dark:text-slate-100">{tahun.nama}</span>
                   {tahun.is_active ? (
                     <Badge variant="success" size="sm">
                       Aktif
@@ -328,7 +328,7 @@ export default function PeriodeAdminPage() {
                     <button
                       type="button"
                       onClick={() => handleSetActiveTahun(tahun.id)}
-                      className="text-xs text-blue-600 hover:text-blue-700 font-medium underline"
+                      className="text-xs text-[#4682b4] hover:underline font-medium"
                     >
                       Set Sebagai Tahun Aktif
                     </button>
@@ -347,7 +347,7 @@ export default function PeriodeAdminPage() {
                   <button
                     type="button"
                     onClick={() => openTahunModal(tahun)}
-                    className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 rounded-lg hover:bg-slate-200/60 dark:hover:bg-slate-800 transition cursor-pointer"
+                    className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded-lg hover:bg-slate-200/60 dark:hover:bg-slate-800 transition cursor-pointer"
                     title="Edit Tahun"
                     aria-label={`Edit tahun ${tahun.nama}`}
                   >
@@ -356,7 +356,7 @@ export default function PeriodeAdminPage() {
                   <button
                     type="button"
                     onClick={() => handleDeleteTahun(tahun.id)}
-                    className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
+                    className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
                     title="Hapus Tahun"
                     aria-label={`Hapus tahun ${tahun.nama}`}
                   >
@@ -367,11 +367,11 @@ export default function PeriodeAdminPage() {
 
               {/* Semesters List */}
               <div className="p-5">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
                   Daftar Semester
                 </h2>
                 {tahun.semesters.length === 0 ? (
-                  <p className="text-xs text-slate-400 italic">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 italic">
                     Belum ada semester untuk tahun ajaran ini.
                   </p>
                 ) : (
@@ -381,25 +381,25 @@ export default function PeriodeAdminPage() {
                         key={sem.id}
                         className={`p-4 rounded-xl border flex items-center justify-between transition ${
                           sem.is_active
-                            ? 'bg-blue-50/50 border-blue-200 ring-1 ring-blue-500/20'
-                            : 'bg-slate-50 border-slate-200'
+                            ? 'bg-[#4682b4]/10 border-[#4682b4]/30 ring-1 ring-[#4682b4]/20 dark:bg-[#4682b4]/20 dark:border-[#4682b4]/40'
+                            : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/60'
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
                           <div
                             className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs ${
                               sem.is_active
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-slate-200 text-slate-600'
+                                ? 'bg-[#4682b4] text-white'
+                                : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
                             }`}
                           >
                             {sem.tipe === 'ganjil' ? '1' : '2'}
                           </div>
                           <div>
-                            <p className="text-sm font-semibold text-slate-800 capitalize">
+                            <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 capitalize">
                               Semester {sem.tipe}
                             </p>
-                            <p className="text-[11px] text-slate-500">
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400">
                               {sem.is_active ? 'Sedang Aktif' : 'Tidak Aktif'}
                             </p>
                           </div>
@@ -407,7 +407,7 @@ export default function PeriodeAdminPage() {
 
                         <div className="flex items-center gap-2">
                           {sem.is_active ? (
-                            <span className="flex items-center gap-1 text-xs font-semibold text-blue-600 bg-blue-100/70 px-2.5 py-1 rounded-full">
+                            <span className="flex items-center gap-1 text-xs font-semibold text-[#4682b4] bg-[#4682b4]/10 dark:bg-[#4682b4]/20 px-2.5 py-1 rounded-full">
                               <CheckCircle2 className="w-3.5 h-3.5" />
                               Aktif
                             </span>
@@ -424,7 +424,7 @@ export default function PeriodeAdminPage() {
                           <button
                             type="button"
                             onClick={() => handleDeleteSemester(sem.id)}
-                            className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
+                            className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
                             title="Hapus Semester"
                             aria-label={`Hapus semester ${sem.tipe} ${tahun.nama}`}
                           >

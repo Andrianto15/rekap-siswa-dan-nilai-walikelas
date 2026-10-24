@@ -378,12 +378,12 @@ export default function RekapNilaiPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
+            <div className="p-2 bg-[#4682b4]/10 dark:bg-[#4682b4]/20 text-[#4682b4] dark:text-[#6ba3ce] rounded-xl">
               <GraduationCap className="w-5 h-5" />
             </div>
-            <h1 className="text-xl font-bold text-slate-900">Rekap Nilai & Ranking</h1>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">Rekap Nilai & Ranking</h1>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Rekapitulasi perolehan nilai, ranking siswa, dan absensi per mata pelajaran.
           </p>
         </div>
@@ -393,7 +393,7 @@ export default function RekapNilaiPage() {
           <Button
             variant="outline"
             size="sm"
-            leftIcon={<Download className="w-4 h-4 text-slate-600" />}
+            leftIcon={<Download className="w-4 h-4 text-slate-600 dark:text-slate-300" />}
             onClick={handleExportExcel}
           >
             Unduh Excel
@@ -413,49 +413,49 @@ export default function RekapNilaiPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-[#4682b4]/10 dark:bg-[#4682b4]/20 text-[#4682b4] dark:text-[#6ba3ce] flex items-center justify-center font-bold">
             <TrendingUp className="w-5 h-5" />
           </div>
           <div>
-            <p className="text-xs text-slate-500 font-medium">Rata-Rata Kelas</p>
-            <p className="text-lg font-bold text-blue-600">
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Rata-Rata Kelas</p>
+            <p className="text-lg font-bold text-[#4682b4] dark:text-[#6ba3ce]">
               {classAverage > 0 ? formatNumber(classAverage, 1) : '-'}
             </p>
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
             <Trophy className="w-5 h-5" />
           </div>
           <div>
-            <p className="text-xs text-slate-500 font-medium">Nilai Tertinggi</p>
-            <p className="text-lg font-bold text-emerald-600">
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Nilai Tertinggi</p>
+            <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
               {maxScore > 0 ? formatNumber(maxScore, 1) : '-'}
             </p>
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
             <BarChart3 className="w-5 h-5" />
           </div>
           <div>
-            <p className="text-xs text-slate-500 font-medium">Nilai Terendah</p>
-            <p className="text-lg font-bold text-amber-600">
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Nilai Terendah</p>
+            <p className="text-lg font-bold text-amber-600 dark:text-amber-400">
               {minScore > 0 ? formatNumber(minScore, 1) : '-'}
             </p>
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-[#4682b4]/10 text-[#4682b4] flex items-center justify-center font-bold">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-[#4682b4]/10 dark:bg-[#4682b4]/20 text-[#4682b4] dark:text-[#6ba3ce] flex items-center justify-center font-bold">
             <Award className="w-5 h-5" />
           </div>
           <div>
-            <p className="text-xs text-slate-500 font-medium">Siswa Dinilai</p>
-            <p className="text-lg font-bold text-[#4682b4]">
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Siswa Dinilai</p>
+            <p className="text-lg font-bold text-slate-900 dark:text-slate-100">
               {validScores.length} / {siswaList.length}
             </p>
           </div>
@@ -463,12 +463,13 @@ export default function RekapNilaiPage() {
       </div>
 
       {/* Filter and Sorting Options */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-slate-600">Kelas:</span>
+            <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">Kelas:</span>
             <div className="w-36">
               <Select
+                aria-label="Pilih Kelas"
                 value={selectedKelasId}
                 onChange={(e) => setSelectedKelasId(e.target.value)}
                 options={kelasList.map((k) => ({
@@ -480,9 +481,10 @@ export default function RekapNilaiPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-slate-600">Mapel:</span>
+            <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">Mapel:</span>
             <div className="w-48">
               <Select
+                aria-label="Pilih Mata Pelajaran"
                 value={selectedMapelId}
                 onChange={(e) => setSelectedMapelId(e.target.value)}
                 options={mapelList.map((m) => ({
@@ -496,15 +498,15 @@ export default function RekapNilaiPage() {
 
         {/* Sort Switcher */}
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-slate-500">Urutkan:</span>
-          <div className="flex bg-slate-100 p-1 rounded-xl">
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Urutkan:</span>
+          <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200/80 dark:border-slate-700/80">
             <button
               type="button"
               onClick={() => setSortMode('ranking')}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
                 sortMode === 'ranking'
-                  ? 'bg-white text-blue-600 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-white dark:bg-slate-700 text-[#4682b4] dark:text-[#6ba3ce] shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
               }`}
             >
               Ranking (Tertinggi)
@@ -514,8 +516,8 @@ export default function RekapNilaiPage() {
               onClick={() => setSortMode('alphabetical')}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
                 sortMode === 'alphabetical'
-                  ? 'bg-white text-blue-600 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-white dark:bg-slate-700 text-[#4682b4] dark:text-[#6ba3ce] shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
               }`}
             >
               Nama Siswa (A-Z)
@@ -575,14 +577,14 @@ export default function RekapNilaiPage() {
                       <span className="text-slate-300">-</span>
                     )}
                   </TableCell>
-                  <TableCell className="font-mono text-xs text-slate-600">
+                  <TableCell className="font-mono text-xs text-slate-600 dark:text-slate-400">
                     {item.siswa.nisn || '-'}
                   </TableCell>
-                  <TableCell className="font-mono text-xs font-semibold text-slate-700">
+                  <TableCell className="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300">
                     {item.siswa.nis}
                   </TableCell>
                   <TableCell>
-                    <span className="font-semibold text-slate-900">{item.siswa.nama}</span>
+                    <span className="font-semibold text-slate-900 dark:text-slate-100">{item.siswa.nama}</span>
                   </TableCell>
 
                   {/* Component Scores */}
@@ -590,24 +592,24 @@ export default function RekapNilaiPage() {
                     const score = item.nilaiKomponen[comp.id];
                     return (
                       <TableCell key={comp.id} className="text-center font-medium">
-                        {typeof score === 'number' ? formatNumber(score, 1) : <span className="text-slate-300">-</span>}
+                        {typeof score === 'number' ? formatNumber(score, 1) : <span className="text-slate-400 dark:text-slate-500">-</span>}
                       </TableCell>
                     );
                   })}
 
                   {/* Calculated Average */}
-                  <TableCell className="text-center bg-slate-50/60 font-semibold text-slate-700">
-                    {item.rataRata > 0 ? formatNumber(item.rataRata, 1) : <span className="text-slate-300">-</span>}
+                  <TableCell className="text-center bg-slate-50/60 dark:bg-slate-800/40 font-semibold text-slate-700 dark:text-slate-300">
+                    {item.rataRata > 0 ? formatNumber(item.rataRata, 1) : <span className="text-slate-400 dark:text-slate-500">-</span>}
                   </TableCell>
 
                   {/* Materialized Final Score */}
-                  <TableCell className="text-center bg-blue-50/30 font-bold text-blue-900">
+                  <TableCell className="text-center bg-blue-50/30 dark:bg-blue-950/20 font-bold text-blue-900 dark:text-blue-200">
                     {item.nilaiAkhir > 0 ? (
-                      <span className="px-2.5 py-1 rounded-lg bg-blue-100 text-blue-900 font-bold text-xs">
+                      <span className="px-2.5 py-1 rounded-lg bg-blue-100 dark:bg-blue-950/60 text-blue-900 dark:text-blue-200 font-bold text-xs">
                         {formatNumber(item.nilaiAkhir, 1)}
                       </span>
                     ) : (
-                      <span className="text-slate-300">-</span>
+                      <span className="text-slate-400 dark:text-slate-500">-</span>
                     )}
                   </TableCell>
 

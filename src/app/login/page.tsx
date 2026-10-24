@@ -119,7 +119,7 @@ function LoginForm() {
         <p className="text-xs text-slate-500 dark:text-slate-400">
           Sistem Informasi Rekap Wali Kelas &amp; Guru Mapel
         </p>
-        <p className="text-[11px] text-slate-400 dark:text-slate-500">
+        <p className="text-[11px] text-slate-500 dark:text-slate-400">
           v{packageJson.version} &bull; &copy; 2026 - {new Date().getFullYear()}
         </p>
       </div>
