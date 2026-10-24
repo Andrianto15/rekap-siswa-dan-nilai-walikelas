@@ -177,6 +177,7 @@ Aplikasi web **mobile-first** untuk guru wali kelas dalam mengelola **rekap keha
   - `tests/components/footer.test.tsx`: Verifikasi rendering semantic footer (`<footer>` / `role="contentinfo"`), atribusi hak cipta, badge lisensi MIT, label versi aplikasi, dan clearance padding bawah untuk navigasi mobile `BottomNav`.
   - `tests/components/dashboard-layout.test.tsx`: Verifikasi integrasi terpadu layout utama dashboard yang merender `Header`, `Sidebar`, `BottomNav`, dan `Footer` pada seluruh halaman terautentikasi setelah login.
   - `tests/readme.test.ts`: Verifikasi integritas struktur berkas `README.md`, keberadaan aset branding/logo, badges, kelengkapan panduan instalasi/QA, penggunaan GitHub admonitions, dan ketiadaan section redundan sesuai standar open-source.
+  - `tests/dependencies.test.ts`: Verifikasi persyaratan versi dependensi framework aman (Next.js >= 16.4.3, React >= 19.3.1) dan konfigurasi build stabil dengan flag `--webpack`.
 - **Command**: `npm test` / `npm run test:coverage`
 
 ---
@@ -300,4 +301,10 @@ Sesuai hasil audit keamanan menyeluruh dan mematuhi aturan wewenang wali kelas (
   - Menghapus fallback diam-diam ke `NEXT_PUBLIC_SUPABASE_ANON_KEY` dan melempar error eksplisit jika variabel `SUPABASE_SERVICE_ROLE_KEY` tidak tersedia di environment server.
 - **Isolasi UI Pemilih Kelas**:
   - Dropdown pemilihan kelas pada halaman `/siswa` secara otomatis dibatasi hanya menampilkan kelas binaan yang ditugaskan kepada guru yang bersangkutan jika bukan berstatus Admin.
+- **Pembaruan Dependensi & Keamanan Framework**:
+  - Pembaruan framework utama ke `next@16.4.3` dan `eslint-config-next@16.4.3` guna meremediasi kerentanan keamanan kritis Next.js (RCE pada Image Optimization & API `use cache`, cache poisoning SSG/ISR, SSRF, dan DoS).
+  - Pembaruan pustaka dependensi inti: `@supabase/supabase-js@2.118.0`, `@supabase/ssr@0.12.7`, `react@19.3.1`, `react-dom@19.3.1`, `@types/node@^22.20.5` (penyelarasan ke Node.js 22 Active LTS), `lucide-react@1.61.0`, `tailwind-merge@3.7.0`, dan tooling dev Jest 30.5.2.
+  - Mitigasi ref mutation pada `src/components/ui/Modal.tsx` menggunakan `useEffect` untuk kepatuhan React 19 hooks.
+  - Konfigurasi skrip build `"build": "next build --webpack"` untuk memastikan stabilitas kompilasi produksi tanpa kendala port socket Turbopack di lingkungan terisolasi.
+
 

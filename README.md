@@ -78,7 +78,7 @@
 
 ## Persiapan Lingkungan (Prerequisites)
 
-- **Node.js**: Versi `>= 20.x`
+- **Node.js**: Versi `>= 22.x` (Active LTS)
 - **NPM**: Versi `>= 10.x`
 - **Proyek Supabase**: URL & API Keys Supabase yang aktif
 

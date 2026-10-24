@@ -203,4 +203,22 @@
   - Memperbarui pengujian pada `tests/hooks/useAuth.test.ts`, `tests/lib/supabase/middleware.test.ts`, `tests/lib/excel.test.ts`, `tests/lib/supabase/supabase.test.ts`, dan `tests/components/kelas-dropdown.test.tsx`.
   - Seluruh 35 test suites lulus 100% (197 tests passed).
 
+## Versi 0.3.33
+### Pembaruan Dependensi & Remediasi Keamanan Framework
+- **Pembaruan Next.js 16.4.3 & eslint-config-next 16.4.3**:
+  - Meremediasi kerentanan keamanan kritis pada Next.js (RCE pada Image Optimization & `use cache`, cache poisoning SSG/ISR, SSRF, DoS).
+- **Pembaruan Pustaka Dependensi (Patch/Minor)**:
+  - Pembaruan `@supabase/supabase-js` (`2.118.0`), `@supabase/ssr` (`0.12.7`), `react` & `react-dom` (`19.3.1`), `@types/react` & `@types/react-dom` (`19.3.0`), `@types/node` (`^22.20.5` menyelaraskan dengan Node.js 22 Active LTS), `lucide-react` (`1.61.0`), `tailwind-merge` (`3.7.0`), `jest` & `jest-environment-jsdom` (`30.5.2`), dan `@testing-library/*` (`dom`, `react`, `user-event`).
+  - Menjalankan `npm audit fix` untuk pembaruan aman dependensi transitif (`brace-expansion`, `source-map-js`, `js-yaml`).
+- **Penyesuaian Kompatibilitas Framework**:
+  - Memperbaiki mutasi ref langsung saat render pada `src/components/ui/Modal.tsx` menggunakan `useEffect` agar sesuai dengan aturan React 19 hooks.
+  - Mengonfigurasi `eslint.config.mjs` untuk menonaktifkan aturan experimental `react-hooks/set-state-in-effect` pada data fetching dan mengizinkan require di konfigurasi js/tests.
+  - Memperbarui skrip build di `package.json` menjadi `next build --webpack` guna menjamin keandalan build lintas platform.
+  - Memperbarui dokumentasi prasyarat `README.md` ke Node.js `>= 22.x` (Active LTS).
+- **Testing & QA**:
+  - Menambahkan test suite baru `tests/dependencies.test.ts` untuk memverifikasi kepatuhan versi dependensi framework aman (Next >= 16.4.3, React >= 19.3.1, `@types/node` >= 22) dan integritas skrip build.
+  - Seluruh 36 test suites lulus 100% (201 tests passed).
+
+
+
 
